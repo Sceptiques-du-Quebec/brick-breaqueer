@@ -284,6 +284,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
     spawnComboWord(x, y) {
+        this.score += 100;
         const word = Phaser.Utils.Array.GetRandom(this.comboWords);
         const txt = this.add.text(x, y, word, {
             fontFamily: this.SYSTEM_FONT, fontSize: "28px", color: "#000", fontWeight: "900",
@@ -325,6 +326,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             fontFamily: this.SYSTEM_FONT, fontSize: "42px", color: "#000", fontWeight: "900"
         }).setOrigin(0.5);
         this.uiGroup.add(title);
+        this.livesText.setText(`Vies: 0`);
 
         if (this.onGameOverCallback) {
             await this.onGameOverCallback({ score: this.score, levelReached: this.level + 1 });
