@@ -111,7 +111,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         // Brick
         const bw = this.gridConfig.brickW;
         const bh = this.gridConfig.brickH;
-        g.fillStyle(0xbdc3c7, 1); 
+        g.fillStyle(0xbdc3c7, 0.85); 
         g.fillRect(0, 0, bw, bh);
         g.fillStyle(0xffffff, 0.3);
         g.fillRect(0, 0, bw, bh / 2);
