@@ -62,7 +62,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.comboCount = 0;
         this.lastBrickTime = 0;
-        this.comboThreshold = 450; // Légèrement augmenté pour faciliter la chaîne
+        this.comboThreshold = 450; 
         this.comboWords = ["INTOLÉRANCE", "OBSCURANTISME", "AVEUGLEMENT", "BIGOTERIE", "BULLYING", "OFFUSCATION", "CHAUVINISME", "SOPHISME", "XÉNOPHOBIE", "RACISME", "HAINE", "IGNORANCE", "BON DIEUZARD", "PROFANE", "HOSTILITÉ", "HUBRIS", "TÊTE DE COCHON", "ESPRIT DE CLOCHER", "FIEL", "MÉPRIS", "FANATISME", "ACHARNEMENT", "CRUAUTÉ", "MALIGNITÉ", "TIDIO CONNAISSANT", "DUNNING-KRUGER", "PÉDANTE", "MADAME JE-SAIS-TOUT", "PEUR", "ARROGANCE", "CONDESCENDANCE"];
 
         this.gridConfig = { cols: 8, rows: 4, brickW: 90, brickH: 45, startY: 100 };
@@ -76,7 +76,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             { id: "flag_intersex", name: "Drapeau Intersexe", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAwIDYwMCI+CiAgPHBhdGggZmlsbD0iI2ZmZDgwMCIgZD0iTTAgMGgyNDAwdjYwMEgweiIvPgogIDxjaXJjbGUgY3g9IjEyMDAiIGN5PSIzMDAiIHI9IjE0NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNzkwMmFhIiBzdHJva2Utd2lkdGg9IjUwIi8+Cjwvc3ZnPg==", history: "Créé par Morgan Carpenter en 2013. Le fond jaune et le cercle violet évitent les couleurs associées au genre. Le cercle symbolise la complétude." },
             { id: "flag_lesbian", name: "Drapeau Lesbien", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjZDQyYzAwIiBkPSJNMCAwaDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZDk4NTUiIGQ9Ik0wIDM2aDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDcyaDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNkMTYxYTIiIGQ9Ik0wIDEwOGg3MjB2MzZIMHoiLz4KICA8cGF0aCBmaWxsPSIjYTIwMTYxIiBkPSJNMCAxNDRoNzIwdjM2SDB6Ii8+Cjwvc3ZnPgo=", history: "Cette version à 7 bandes représente la non-conformité de genre, l'indépendance, la communauté, l'amour et la féminité." },
             { id: "flag_pan", name: "Drapeau Pansexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjMjFiMWZmIiBkPSJNMCAwaDcyMHYxODBIMCIvPgogIDxwYXRoIGZpbGw9IiNmZmQ4MDAiIGQ9Ik0wIDBoNzIwdjEyMEgwIi8+CiAgPHBhdGggZmlsbD0iI2ZmMjE4YyIgZD0iTTAgMGg3MjB2NjBIMCIvPgo8L3N2Zz4K", history: "Représente l'attirance pour tous les genres : féminin (rose), masculin (bleu) et non-binaire (jaune)." },
-            { id: "flag_pride", name: "Pride Progressif", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjNmQyMzgwIiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjMmM1OGE0IiBkPSJNMCAwaDcyMHYxNTBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNzhiODJhIiBkPSJNMCAwaDcyMHYxMjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZWZlNTI0IiBkPSJNMCAwaDcyMHY5MEgweiIvPgogIDxwYXRoIGZpbGw9IiNmMjg5MTciIGQ9Ik0wIDBoNzIwdjYwSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2UyMjAxNiIgZD0iTTAgMGg3MjB2MzBIMHoiLz4KICA8Y2lyY2xlIGN4PSIyNi4yIiBjeT0iOTAiIHI9IjE4LjkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzY2MzM4YiIgc3Ryb2tlLXdpZHRoPSI0LjUiLz4KPC9zdmc+", history: "Créé en 2018 par Daniel Quasar et mis à jour en 2021 par Valentino Vecchietti, ce drapeau inclut les personnes trans, les communautés racisées, les personnes vivant avec le VIH/SIDA ainsi que les personnes intersexes." }
+            { id: "flag_pride", name: "Pride Progressif", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjNmQyMzgwIiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjMmM1OGE0IiBkPSJNMCAwaDcyMHYxNTBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNzhiODJhIiBkPSJNMCAwaDcyMHYxMjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZWZlNTI0IiBkPSJNMCAwaDcyMHY5MEgweiIvPgogIDxwYXRoIGZpbGw9IiNmMjg5MTciIGQ9Ik0wIDBoNzIwdjYwSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2UyMjAxNiIgZD0iTTAgMGg3MjB2MzBIMHoiLz4KICA8cGF0aCBkPSJNNzQgMEgwdjE4MGg3NGw4NC05MHoiLz4KICA8cGF0aCBmaWxsPSIjOTQ1NTE2IiBkPSJNNTcgMEgwdjE4MGg1N2w4My05MHoiLz4KICA8cGF0aCBmaWxsPSIjN2JjY2U1IiBkPSJNNDAgMEgwdjE4MGg0MGw4My05MHoiLz4KICA8cGF0aCBmaWxsPSIjZjRhZWM4IiBkPSJNMjIgMEgwdjE4MGgyMmw4NC05MHoiLz4KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwdjE4MGg1bDgzLTkwTDUgMHoiLz4KICA8Y2lyY2xlIGN4PSIyNi4yIiBjeT0iOTAiIHI9IjE4LjkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzY2MzM4YiIgc3Ryb2tlLXdpZHRoPSI0LjUiLz4KPC9zdmc+", history: "Créé en 2018 par Daniel Quasar et mis à jour en 2021 par Valentino Vecchietti, ce drapeau inclut les personnes trans, les communautés racisées, les personnes vivant avec le VIH/SIDA ainsi que les personnes intersexes." }
         ];
     }
 
@@ -238,16 +238,14 @@ export default class RainbowBreaker extends Phaser.Scene {
     hitBrick(ball, brick) {
         const currentTime = this.time.now;
         
-        // Logique de Combo Incrémental
         if (currentTime - this.lastBrickTime < this.comboThreshold) {
             this.comboCount++;
-            // Calcul des points: 100 pour 2e brique, 150 pour 3e, etc.
             const comboBonus = 100 + ((this.comboCount - 1) * 50);
             this.score += comboBonus;
             this.spawnComboWord(brick.x, brick.y, comboBonus);
         } else {
             this.comboCount = 0;
-            this.score += 25; // Score de base
+            this.score += 25;
         }
         
         this.lastBrickTime = currentTime;
@@ -268,7 +266,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         const mainColor = this.registry.get('gameColor');
         const word = Phaser.Utils.Array.GetRandom(this.comboWords);
         
-        // On affiche le mot + le score bonus
         const txt = this.add.text(x, y, `${word}\n+${bonus}`, {
             font: `${fontWeight} 22px "${fontName}"`, fill: mainColor,
             stroke: "#FFF", strokeThickness: 4, align: "center"
@@ -298,10 +295,24 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
     resetBall() {
-        const speed = Math.min(this.baseSpeed + (this.level * 20), this.MAX_SPEED);
+        this.comboCount = 0;
+        this.trail = [];
+        this.trailG.clear();
+
+        // 1. Positionner la balle au centre
+        this.ball.setVelocity(0, 0);
         this.ball.setPosition(this.sys.game.config.width / 2, this.sys.game.config.height - 150);
-        this.ball.setVelocity(Phaser.Math.Between(-80, 80), -speed);
-        this.comboCount = 0; // On reset le combo quand on perd la balle ou reset
+        this.ball.setAlpha(1);
+        this.ball.setVisible(true);
+
+        // 2. Geler la balle pendant 1 seconde avant le départ
+        this.time.delayedCall(1000, () => {
+            // Sécurité : on vérifie que le jeu est toujours en cours
+            if (this.gameState !== "PLAYING" || !this.ball.active) return;
+            
+            const speed = Math.min(this.baseSpeed + (this.level * 20), this.MAX_SPEED);
+            this.ball.setVelocity(Phaser.Math.Between(-80, 80), -speed);
+        });
     }
 
     async gameOver() {
@@ -347,16 +358,26 @@ export default class RainbowBreaker extends Phaser.Scene {
             else if (this.cursors.right.isDown) this.paddle.setVelocityX(750);
             else this.paddle.setVelocityX(0);
 
+            // Détection de la chute de la balle
             if (this.ball && this.ball.y > this.sys.game.config.height + 20) {
+                // On déplace la balle hors champ pour éviter les doubles détections
+                this.ball.y = -100; 
                 this.lives--;
-                if (this.lives <= 0) this.gameOver();
-                else this.resetBall();
+                
+                if (this.lives <= 0) {
+                    this.gameOver();
+                } else {
+                    this.resetBall();
+                }
             }
 
-            if (this.ball && this.ball.active && this.ball.visible) {
+            // Gestion du trail : on ne dessine que si la balle bouge
+            if (this.ball && this.ball.active && this.ball.visible && (this.ball.body.velocity.x !== 0 || this.ball.body.velocity.y !== 0)) {
                 this.trail.push({ x: this.ball.x, y: this.ball.y });
                 if (this.trail.length > 12) this.trail.shift();
                 this.drawTrail();
+            } else {
+                this.trailG.clear();
             }
         }
     }
