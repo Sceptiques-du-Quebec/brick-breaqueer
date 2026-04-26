@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "chokibasic": "^1.1.10",
+    "phaser": "^4.0.0"
+  },
+  "scripts": {
+    "export": "node ./scripts/export.js",
+    "build": "node ./scripts/build.js"
+  }
+}
