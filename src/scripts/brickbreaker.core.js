@@ -4,8 +4,8 @@ import RainbowBreaker from "./libraries/rainbowbreaker";
 document.fonts.load('10pt "Unbounded"').then(() => {
     const gameSettings = {
         parent: "game-container",
-        width: 800,
-        height: 600,
+        width: 664,
+        height: 498,
         fontFamily: "Unbounded",
         fontWeight: 500,
         color: '#161616',

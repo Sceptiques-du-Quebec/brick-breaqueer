@@ -1,12 +1,6 @@
 import * as Phaser from "phaser";
 
 export default class RainbowBreaker extends Phaser.Scene {
-    /**
-     * @param {Object} settings 
-     * @param {string} settings.fontFamily - Ex: 'Unbounded'
-     * @param {string|number} settings.fontWeight - Ex: 900
-     * @param {string} settings.color - Hexadécimal pour le texte et pad. Ex: '#000000'
-     */
     static init(settings) {
         const config = {
             type: Phaser.AUTO,
@@ -65,9 +59,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.comboThreshold = 450; 
         this.comboWords = ["INTOLÉRANCE", "OBSCURANTISME", "AVEUGLEMENT", "BIGOTERIE", "BULLYING", "OFFUSCATION", "CHAUVINISME", "SOPHISME", "XÉNOPHOBIE", "RACISME", "HAINE", "IGNORANCE", "BON DIEUZARD", "PROFANE", "HOSTILITÉ", "HUBRIS", "TÊTE DE COCHON", "ESPRIT DE CLOCHER", "FIEL", "MÉPRIS", "FANATISME", "ACHARNEMENT", "CRUAUTÉ", "MALIGNITÉ", "TIDIO CONNAISSANT", "DUNNING-KRUGER", "PÉDANTE", "MADAME JE-SAIS-TOUT", "PEUR", "ARROGANCE", "CONDESCENDANCE"];
 
-        this.gridConfig = { cols: 8, rows: 4, brickW: 90, brickH: 45, startY: 100 };
-        this.gridConfig.totalWidth = this.gridConfig.cols * this.gridConfig.brickW;
-        this.gridConfig.totalHeight = this.gridConfig.rows * this.gridConfig.brickH;
+        // Configuration de la grille (les dimensions de briques seront ajustées dans create)
+        this.gridConfig = { cols: 8, rows: 4, brickW: 0, brickH: 0, startY: 0 };
         this.rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
 
         this.FLAGS = [
@@ -76,7 +69,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             { id: "flag_intersex", name: "Drapeau Intersexe", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAwIDYwMCI+CiAgPHBhdGggZmlsbD0iI2ZmZDgwMCIgZD0iTTAgMGgyNDAwdjYwMEgweiIvPgogIDxjaXJjbGUgY3g9IjEyMDAiIGN5PSIzMDAiIHI9IjE0NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNzkwMmFhIiBzdHJva2Utd2lkdGg9IjUwIi8+Cjwvc3ZnPg==", history: "Créé par Morgan Carpenter en 2013. Le fond jaune et le cercle violet évitent les couleurs associées au genre. Le cercle symbolise la complétude." },
             { id: "flag_lesbian", name: "Drapeau Lesbien", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjZDQyYzAwIiBkPSJNMCAwaDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZDk4NTUiIGQ9Ik0wIDM2aDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDcyaDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNkMTYxYTIiIGQ9Ik0wIDEwOGg3MjB2MzZIMHoiLz4KICA8cGF0aCBmaWxsPSIjYTIwMTYxIiBkPSJNMCAxNDRoNzIwdjM2SDB6Ii8+Cjwvc3ZnPgo=", history: "Cette version à 7 bandes représente la non-conformité de genre, l'indépendance, la communauté, l'amour et la féminité." },
             { id: "flag_pan", name: "Drapeau Pansexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjMjFiMWZmIiBkPSJNMCAwaDcyMHYxODBIMCIvPgogIDxwYXRoIGZpbGw9IiNmZmQ4MDAiIGQ9Ik0wIDBoNzIwdjEyMEgwIi8+CiAgPHBhdGggZmlsbD0iI2ZmMjE4YyIgZD0iTTAgMGg3MjB2NjBIMCIvPgo8L3N2Zz4K", history: "Représente l'attirance pour tous les genres : féminin (rose), masculin (bleu) et non-binaire (jaune)." },
-            { id: "flag_pride", name: "Pride Progressif", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjNmQyMzgwIiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjMmM1OGE0IiBkPSJNMCAwaDcyMHYxNTBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNzhiODJhIiBkPSJNMCAwaDcyMHYxMjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZWZlNTI0IiBkPSJNMCAwaDcyMHY5MEgweiIvPgogIDxwYXRoIGZpbGw9IiNmMjg5MTciIGQ9Ik0wIDBoNzIwdjYwSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2UyMjAxNiIgZD0iTTAgMGg3MjB2MzBIMHoiLz4KICA8cGF0aCBkPSJNNzQgMEgwdjE4MGg3NGw4NC05MHoiLz4KICA8cGF0aCBmaWxsPSIjOTQ1NTE2IiBkPSJNNTcgMEgwdjE4MGg1N2w4My05MHoiLz4KICA8cGF0aCBmaWxsPSIjN2JjY2U1IiBkPSJNNDAgMEgwdjE4MGg0MGw4My05MHoiLz4KICA8cGF0aCBmaWxsPSIjZjRhZWM4IiBkPSJNMjIgMEgwdjE4MGgyMmw4NC05MHoiLz4KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwdjE4MGg1bDgzLTkwTDUgMHoiLz4KICA8cGF0aCBmaWxsPSIjZmRkODE3IiBkPSJtMCAxNjcgNzEtNzdMMCAxM3oiLz4KICA8Y2lyY2xlIGN4PSIyNi4yIiBjeT0iOTAiIHI9IjE4LjkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzY2MzM4YiIgc3Ryb2tlLXdpZHRoPSI0LjUiLz4KPC9zdmc+", history: "Créé en 2018 par Daniel Quasar et mis à jour en 2021 par Valentino Vecchietti, ce drapeau inclut les personnes trans, les communautés racisées, les personnes vivant avec le VIH/SIDA ainsi que les personnes intersexes." }
+            { id: "flag_pride", name: "Pride Progressif", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjNmQyMzgwIiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjMmM1OGE0IiBkPSJNMCAwaDcyMHYxNTBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNzhiODJhIiBkPSJNMCAwaDcyMHYxMjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZWZlNTI0IiBkPSJNMCAwaDcyMHY5MEgweiIvPgogIDxwYXRoIGZpbGw9IiNmMjg5MTcyIiBkPSJNMCAwaDcyMHY2MEgweiIvPgogIDxwYXRoIGZpbGw9IiNlMjIwMTYiIGQ9Ik0wIDBoNzIwdjMwSDB6Ii8+CiAgPHBhdGggZD0iTTc0IDBIMHYxODBofDRsODQtOTB6Ii8+CiAgPHBhdGggZmlsbD0iIzk0NTUxNiIgZD0iTTU3IDBIMHYxODBhaDU3bDgzLTkweiIvPgogIDxwYXRoIGZpbGw9IiM3YmNjZTUiIGQ9Ik00MCAwSDB2MTgwaDQwbDgzLTkweiIvPgogIDxwYXRoIGZpbGw9IiNmNGFlYzgiIGQ9Ik0yMiAwSDB2MTgwaDIybDg0LTkweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDB2MTgwaDVsODMtOTBMNSAwexIvPgogIDxwYXRoIGZpbGw9IiNmZGQ4MTciIGQ9Im0wIDE2NyA3MS03N0wwIDEzeiIvPgogIDxjaXJjbGUgY3g9IjI2LjIiIGN5PSI5MCIIHI9IjE4LjkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzY2MzM4YiIgc3Ryb2tlLXdpZHRoPSI0LjUiLz4KPC9zdmc+", history: "Créé en 2018 par Daniel Quasar et mis à jour en 2021 par Valentino Vecchietti, ce drapeau inclut les personnes trans, les communautés racisées, les personnes vivant avec le VIH/SIDA ainsi que les personnes intersexes." }
         ];
     }
 
@@ -87,20 +80,35 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
     create() {
+        const { width, height } = this.sys.game.config;
+        
+        // Calcul des dimensions de la grille basées sur la taille de l'écran
+        this.gridConfig.brickW = Math.floor((width * 0.9) / this.gridConfig.cols);
+        this.gridConfig.brickH = Math.floor(height * 0.08);
+        this.gridConfig.startY = height * 0.15;
+        this.gridConfig.totalWidth = this.gridConfig.cols * this.gridConfig.brickW;
+        this.gridConfig.totalHeight = this.gridConfig.rows * this.gridConfig.brickH;
+
         this.onGameOverCallback = this.registry.get('onGameOver');
         const fontName = this.registry.get('gameFont');
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
 
         const g = this.make.graphics({ x: 0, y: 0, add: false });
-        g.fillStyle(0xffffff).fillRect(0, 0, 120, 20).generateTexture("paddle", 120, 20);
+        // Paddle dynamique
+        const paddleWidth = Math.max(100, width * 0.15);
+        g.fillStyle(0xffffff).fillRect(0, 0, paddleWidth, 20).generateTexture("paddle", paddleWidth, 20);
         g.clear();
+        
+        // Ball
         for (let r = 9; r > 0; r--) {
             const color = this.rainbowColors[r % this.rainbowColors.length];
             g.fillStyle(color).fillCircle(9, 9, r);
         }
         g.generateTexture("ball", 18, 18);
         g.clear();
+        
+        // Brick
         const bw = this.gridConfig.brickW;
         const bh = this.gridConfig.brickH;
         g.fillStyle(0xbdc3c7, 1); 
@@ -115,27 +123,28 @@ export default class RainbowBreaker extends Phaser.Scene {
         g.fillStyle(0xffffff).fillRect(0, 0, 5, 5).generateTexture("part", 5, 5);
         g.destroy();
 
-        this.physics.world.setBounds(0, 60, this.sys.game.config.width, this.sys.game.config.height - 60);
+        this.physics.world.setBounds(0, 60, width, height - 60);
         this.physics.world.checkCollision.down = false;
 
-        this.bgFlag = this.add.image(this.sys.game.config.width / 2, this.gridConfig.startY, "").setOrigin(0.5, 0).setDepth(0).setAlpha(0);
+        this.bgFlag = this.add.image(width / 2, this.gridConfig.startY, "").setOrigin(0.5, 0).setDepth(0).setAlpha(0);
         this.trailG = this.add.graphics().setDepth(1);
         this.uiGroup = this.add.group();
         this.cursors = this.input.keyboard.createCursorKeys();
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
+        const baseSize = Math.max(14, Math.round(width / 40));
         const textStyle = { 
-            font: `${fontWeight} 18px "${fontName}"`, 
+            font: `${fontWeight} ${baseSize}px "${fontName}"`, 
             fill: mainColor
         };
 
-        this.scoreText = this.add.text(40, 25, "Score: 0", textStyle).setDepth(10).setVisible(false);
-        this.levelText = this.add.text(this.sys.game.config.width / 2, 25, "Niveau: 1", textStyle).setOrigin(0.5, 0).setDepth(10).setVisible(false);
-        this.livesText = this.add.text(this.sys.game.config.width - 40, 25, "Vies: 3", textStyle).setOrigin(1, 0).setDepth(10).setVisible(false);
+        this.scoreText = this.add.text(width * 0.05, height * 0.04, "Score: 0", textStyle).setDepth(10).setVisible(false);
+        this.levelText = this.add.text(width / 2, height * 0.04, "Niveau: 1", textStyle).setOrigin(0.5, 0).setDepth(10).setVisible(false);
+        this.livesText = this.add.text(width * 0.95, height * 0.04, "Vies: 3", textStyle).setOrigin(1, 0).setDepth(10).setVisible(false);
 
-        this.historyText = this.add.text(this.sys.game.config.width / 2, this.gridConfig.startY + this.gridConfig.totalHeight + 30, "", {
-            font: `600 16px "${fontName}"`, fill: mainColor,
-            align: "center", wordWrap: { width: 600 }
+        this.historyText = this.add.text(width / 2, this.gridConfig.startY + this.gridConfig.totalHeight + 30, "", {
+            font: `600 ${Math.max(12, baseSize * 0.8)}px "${fontName}"`, fill: mainColor,
+            align: "center", wordWrap: { width: width * 0.8 }
         }).setOrigin(0.5, 0).setDepth(10).setVisible(false);
 
         this.particles = this.add.particles(0, 0, "part", {
@@ -172,6 +181,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     showStartScreen() {
         this.cleanupGame();
+        const { width, height } = this.sys.game.config;
         this.gameState = "START";
         this.bgFlag.setAlpha(0);
         this.scoreText.setVisible(false);
@@ -183,12 +193,12 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
 
-        const title = this.add.text(this.sys.game.config.width / 2, this.sys.game.config.height / 2 - 40, "🌈 BRICK BREAQUEER", {
-            font: `${fontWeight} 38px "${fontName}"`, fill: mainColor
+        const title = this.add.text(width / 2, height * 0.45, "🌈 BRICK BREAQUEER", {
+            font: `${fontWeight} ${Math.round(width / 18)}px "${fontName}"`, fill: mainColor
         }).setOrigin(0.5);
 
-        const sub = this.add.text(this.sys.game.config.width / 2, title.y + 60, "APPUYEZ SUR ENTRÉE POUR COMMENCER", {
-            font: `${fontWeight} 14px "${fontName}"`, fill: mainColor
+        const sub = this.add.text(width / 2, title.y + (height * 0.1), "APPUYEZ SUR ENTRÉE POUR COMMENCER", {
+            font: `${fontWeight} ${Math.round(width / 45)}px "${fontName}"`, fill: mainColor
         }).setOrigin(0.5);
 
         this.addFloatingEffect(sub);
@@ -208,13 +218,14 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
     createGameObjects() {
+        const { width, height } = this.sys.game.config;
         const mainColor = this.registry.get('gameColor');
         const phaserColor = Phaser.Display.Color.HexStringToColor(mainColor).color;
 
-        this.paddle = this.physics.add.image(this.sys.game.config.width / 2, this.sys.game.config.height - 40, "paddle").setImmovable(true).setTint(phaserColor);
+        this.paddle = this.physics.add.image(width / 2, height - 40, "paddle").setImmovable(true).setTint(phaserColor);
         this.paddle.setCollideWorldBounds(true);
         
-        this.ball = this.physics.add.image(this.sys.game.config.width / 2, this.sys.game.config.height - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
+        this.ball = this.physics.add.image(width / 2, height - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
         this.physics.add.collider(this.ball, this.paddle, (b, p) => {
             let diff = b.x - p.x;
             b.setVelocityX(10 * diff);
@@ -223,6 +234,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
     loadLevel(i) {
+        const { width } = this.sys.game.config;
         this.gameState = "PLAYING";
         this.historyText.setVisible(false);
         this.uiGroup.clear(true, true);
@@ -233,7 +245,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.bgFlag.setDisplaySize(this.gridConfig.totalWidth, this.gridConfig.totalHeight);
         this.bgFlag.setAlpha(1);
 
-        const startX = (this.sys.game.config.width - this.gridConfig.totalWidth) / 2;
+        const startX = (width - this.gridConfig.totalWidth) / 2;
         for (let r = 0; r < this.gridConfig.rows; r++) {
             for (let c = 0; c < this.gridConfig.cols; c++) {
                 const bx = startX + (c * this.gridConfig.brickW) + (this.gridConfig.brickW / 2);
@@ -291,6 +303,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
     revealFlag() {
+        const { width, height } = this.sys.game.config;
         this.gameState = "REVEAL";
         this.ball.setVelocity(0, 0).setVisible(false);
         this.paddle.setVisible(false);
@@ -298,9 +311,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
         const currentFlag = this.FLAGS[this.level % this.FLAGS.length];
+        
         this.historyText.setText(`${currentFlag.name.toUpperCase()}\n\n${currentFlag.history}`).setVisible(true);
 
-        const sub = this.add.text(this.sys.game.config.width / 2, this.sys.game.config.height - 80, "APPUYEZ SUR ENTRÉE POUR CONTINUER", {
+        const sub = this.add.text(width / 2, height - 80, "APPUYEZ SUR ENTRÉE POUR CONTINUER", {
             font: `${fontWeight} 14px "${fontName}"`, fill: mainColor
         }).setOrigin(0.5);
         
@@ -309,12 +323,13 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
     resetBall() {
+        const { width, height } = this.sys.game.config;
         this.comboCount = 0;
         this.trail = [];
         this.trailG.clear();
 
         this.ball.setVelocity(0, 0);
-        this.ball.setPosition(this.sys.game.config.width / 2, this.sys.game.config.height - 150);
+        this.ball.setPosition(width / 2, height - 150);
         this.ball.setAlpha(1);
         this.ball.setVisible(true);
 
@@ -327,16 +342,23 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
     async gameOver() {
+        const { width, height } = this.sys.game.config;
         this.gameState = "WAITING_FOR_CALLBACK";
         if (this.ball) this.ball.setVelocity(0, 0);
         this.historyText.setVisible(false);
+        
         const fontName = this.registry.get('gameFont');
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
 
-        const title = this.add.text(this.sys.game.config.width / 2, 400, "FIN DE LA PARTIE", {
-            font: `${fontWeight} 32px "${fontName}"`, fill: mainColor
+        // On descend le titre à 65% de la hauteur au lieu de 50%
+        const titleY = height * 0.65;
+
+        const title = this.add.text(width / 2, titleY, "FIN DE LA PARTIE", {
+            font: `${fontWeight} ${Math.round(width / 18)}px "${fontName}"`, 
+            fill: mainColor
         }).setOrigin(0.5);
+        
         this.uiGroup.add(title);
         this.livesText.setText(`Vies: 0`);
 
@@ -345,8 +367,11 @@ export default class RainbowBreaker extends Phaser.Scene {
         }
 
         this.gameState = "GAMEOVER";
-        const sub = this.add.text(this.sys.game.config.width / 2, 470, "APPUYEZ SUR ENTRÉE POUR RÉESSAYER", {
-            font: `${fontWeight} 14px "${fontName}"`, fill: mainColor
+        
+        // Le sous-titre suit avec un espacement fixe
+        const sub = this.add.text(width / 2, title.y + 50, "APPUYEZ SUR ENTRÉE POUR RÉESSAYER", {
+            font: `${fontWeight} ${Math.round(width / 40)}px "${fontName}"`, 
+            fill: mainColor
         }).setOrigin(0.5);
         
         this.addFloatingEffect(sub);
@@ -354,6 +379,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
     update() {
+        const { width, height } = this.sys.game.config;
         if (this.gameState === "WAITING_FOR_CALLBACK") return;
 
         if (Phaser.Input.Keyboard.JustDown(this.enterKey)) {
@@ -371,7 +397,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             else if (this.cursors.right.isDown) this.paddle.setVelocityX(750);
             else this.paddle.setVelocityX(0);
 
-            if (this.ball && this.ball.y > this.sys.game.config.height + 20) {
+            if (this.ball && this.ball.y > height + 20) {
                 this.ball.y = -100; 
                 this.lives--;
                 
