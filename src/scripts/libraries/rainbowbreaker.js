@@ -11,7 +11,6 @@ export default class RainbowBreaker extends Phaser.Scene {
             width: settings.width,
             height: settings.height,
             transparent: true,
-            // Désactive le moteur audio pour éviter les erreurs de contexte
             audio: { noAudio: true },
             scale: {
                 mode: Phaser.Scale.FIT,
@@ -31,7 +30,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     constructor() {
         super("RainbowBreaker");
-        
+
         this.paddle = null;
         this.ball = null;
         this.bricks = null;
@@ -39,7 +38,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.enterKey = null;
         this.trail = [];
         this.onGameOverCallback = null;
-        
+
         this.score = 0;
         this.level = 0;
         this.lives = 3;
@@ -48,26 +47,56 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.comboCount = 0;
         this.lastBrickTime = 0;
-        this.comboThreshold = 300; 
+        this.comboThreshold = 300;
         this.comboWords = ["INTOLÉRANCE", "OBSCURANTISME", "AVEUGLEMENT", "BIGOTERIE", "BULLYING", "OFFUSCATION", "CHAUVINISME", "SOPHISME", "XÉNOPHOBIE", "RACISME", "HAINE", "IGNORANCE", "BON DIEUZARD", "PROFANE", "HOSTILITÉ", "HUBRIS", "TÊTE DE COCHON", "ESPRIT DE CLOCHER", "FIEL", "MÉPRIS", "FANATISME", "ACHARNEMENT", "CRUAUTÉ", "MALIGNITÉ", "TIDIO CONNAISSANT", "DUNNING-KRUGER", "PÉDANTE", "MADAME JE-SAIS-TOUT", "PEUR", "ARROGANCE", "CONDESCENDANCE"];
 
         this.gridConfig = {
             cols: 8, rows: 4, brickW: 90, brickH: 45, startY: 100
         };
-        
+
         this.gridConfig.totalWidth = this.gridConfig.cols * this.gridConfig.brickW;
         this.gridConfig.totalHeight = this.gridConfig.rows * this.gridConfig.brickH;
-        this.SYSTEM_FONT = 'system-ui, -apple-system, sans-serif';
-        
-        this.FLAGS = [
-            { id: "flag_trans", name: "Drapeau Transgenre", history: "Dessiné par Monica Helms en 1999. Le bleu pour les garçons, le rose pour les filles et le blanc pour la transition." },
-            { id: "flag_bi", name: "Drapeau Bisexuel", history: "Créé par Michael Page en 1998. Le rose pour l'attirance même sexe, le bleu pour l'autre, et le violet pour le mélange." },
-            { id: "flag_intersex", name: "Drapeau Intersexe", history: "Créé par Morgan Carpenter en 2013. Le fond jaune et le cercle violet évitent les couleurs associées au genre. Le cercle symbolise la complétude." },
-            { id: "flag_lesbian", name: "Drapeau Lesbien", history: "Cette version à 7 bandes représente la non-conformité de genre, l'indépendance, la communauté, l'amour et la féminité." },
-            { id: "flag_pan", name: "Drapeau Pansexuel", history: "Représente l'attirance pour tous les genres : féminin (rose), masculin (bleu) et non-binaire (jaune)." },
-            { id: "flag_pride", name: "Pride Progressif", history: "Créé en 2018 par Daniel Quasar. Il inclut les personnes trans, les communautés racisées et les personnes vivant avec le VIH/SIDA." }
-        ];
         this.rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
+        this.SYSTEM_FONT = 'system-ui, -apple-system, sans-serif';
+
+        this.FLAGS = [
+            {
+                id: "flag_trans",
+                name: "Drapeau Transgenre",
+                data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MDAgNDgwIj4KICA8cGF0aCBmaWxsPSIjNWJjZWZhIiBkPSJNMCAwaDgwMHY0ODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZjVhOWI4IiBkPSJNMCA5Nmg4MDB2Mjg4SDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMTkyaDgwMHY5NkgweiIvPgo8L3N2Zz4=",
+                history: "Dessiné par Monica Helms en 1999. Le bleu pour les garçons, le rose pour les filles et le blanc pour la transition."
+            },
+            {
+                id: "flag_bi",
+                name: "Drapeau Bisexuel",
+                data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNSAxNSI+CiAgPHBhdGggZmlsbD0iIzAwMzhhOCIgZD0iTTAgMGgyNXYxNUgweiIvPgogIDxwYXRoIGZpbGw9IiM5YjRmOTYiIGQ9Ik0wIDBoMjV2OUgweiIvPgogIDxwYXRoIGZpbGw9IiNkNjAyNzAiIGQ9Ik0wIDBoMjV2NkgweiIvPgo8L3N2Zz4=",
+                history: "Créé par Michael Page en 1998. Le rose pour l'attirance même sexe, le bleu pour l'autre, et le violet pour le mélange."
+            },
+            {
+                id: "flag_intersex",
+                name: "Drapeau Intersexe",
+                data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5MDAgNjAwIj4KICA8cGF0aCBmaWxsPSIjZmZkODAwIiBkPSJNMCAwaDkwMHY2MDBIMHoiLz4KICA8Y2lyY2xlIGN4PSI0NTAiIGN5PSIzMDAiIHI9IjE0NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNzkwMmFhIiBzdHJva2Utd2lkdGg9IjUwIi8+Cjwvc3ZnPg==",
+                history: "Créé par Morgan Carpenter en 2013. Le fond jaune et le cercle violet évitent les couleurs associées au genre. Le cercle symbolise la complétude."
+            },
+            {
+                id: "flag_lesbian",
+                name: "Drapeau Lesbien",
+                data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4IDUiPgogIDxwYXRoIGZpbGw9IiNkNDJjMDAiIGQ9Ik0wIDBoOHYxSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZkOTg1NSIgZD0iTTAgMWg4djFIMHoiLz4KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAyaDh2MUgweiIvPgogIDxwYXRoIGZpbGw9IiNkMTYxYTIiIGQ9Ik0wIDNoOHYxSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2EyMDE2MSIgZD0iTTAgNGg4djFIMHoiLz4KPC9zdmc+",
+                history: "Cette version à 7 bandes représente la non-conformité de genre, l'indépendance, la communauté, l'amour et la féminité."
+            },
+            {
+                id: "flag_pan",
+                name: "Drapeau Pansexuel",
+                data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1IDMiPgogIDxwYXRoIGZpbGw9IiMyMWIxZmYiIGQ9Ik0wIDBoNXYzSDAiLz4KICA8cGF0aCBmaWxsPSIjZmZkODAwIiBkPSJNMCAwaDV2MkgwIi8+CiAgPHBhdGggZmlsbD0iI2ZmMjE4YyIgZD0iTTAgMGg1djFIMCIvPgo8L3N2Zz4=",
+                history: "Représente l'attirance pour tous les genres : féminin (rose), masculin (bleu) et non-binaire (jaune)."
+            },
+            {
+                id: "flag_pride",
+                name: "Pride Progressif",
+                data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAwIDM4MTAiPgogIDxwYXRoIGZpbGw9IiM3NTA3ODciIGQ9Ik0wIDBoNjAwMHYzODEwSDB6Ii8+CiAgPHBhdGggZmlsbD0iIzAwNGRmZiIgZD0iTTAgMGg2MDAwdjMxNzVIMHoiLz4KICA8cGF0aCBmaWxsPSIjMDA4MDI2IiBkPSJNMCAwaDYwMDB2MjU0MEgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmVkMDAiIGQ9Ik0wIDBoNjAwMHYxOTA1SDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmOGMwMCIgZD0iTTAgMGg2MDAwdjEyNzBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZTQwMzAzIiBkPSJNMCAwaDYwMDB2NjM1SDB6Ii8+CiAgPHBhdGggZD0ibTAtOTYwIDI4NjQgMjg2NUwwIDQ3NzF6Ii8+CiAgPHBhdGggZmlsbD0iIzYxMzkxNSIgZD0ibTAtNDgwIDIzODQgMjM4NUwwIDQyOTB6Ii8+CiAgPHBhdGggZmlsbD0iIzc0ZDdlZSIgZD0iTTAgMzgxMFYwbDE5MTIgMTkwNXoiLz4KICA8cGF0aCBmaWxsPSIjZmZhZmM4IiBkPSJNMCAzMzMwVjQ4MGwxNDIwIDE0MjV6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0ibTAgOTYwIDk1MSA5NDVMMCAyODUweiIvPgo8L3N2Zz4=",
+                history: "Créé en 2018 par Daniel Quasar. Il inclut les personnes trans, les communautés racisées et les personnes vivant avec le VIH/SIDA."
+            }
+        ];
     }
 
     get gameWidth() { return this.sys.game.config.width; }
@@ -75,7 +104,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     preload() {
         this.FLAGS.forEach(f => {
-            this.load.svg(f.id, `./images/${f.id.replace('flag_', '')}-flag.svg`);
+            this.load.svg(f.id, f.data);
         });
     }
 
@@ -83,11 +112,23 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.onGameOverCallback = this.registry.get('onGameOver');
 
         const g = this.make.graphics({ x: 0, y: 0, add: false });
+
+        // --- PADDLE (Noir Classique) ---
         g.fillStyle(0xffffff).fillRect(0, 0, 120, 20).generateTexture("paddle", 120, 20);
-        g.clear().fillStyle(0xffffff).fillCircle(9, 9, 9).generateTexture("ball", 18, 18);
-        g.clear().fillStyle(0xffffff).fillRect(0, 0, 4, 4).generateTexture("part", 4, 4);
+        g.clear();
+
+        // --- BALLE FUNKY ---
+        for (let r = 9; r > 0; r--) {
+            const color = this.rainbowColors[r % this.rainbowColors.length];
+            g.fillStyle(color).fillCircle(9, 9, r);
+        }
+        g.generateTexture("ball", 18, 18);
+        g.clear();
+
+        // --- AUTRES TEXTURES ---
+        g.fillStyle(0xffffff).fillRect(0, 0, 4, 4).generateTexture("part", 4, 4);
         g.clear().fillStyle(0xeeeeee, 1).fillRect(0, 0, this.gridConfig.brickW, this.gridConfig.brickH);
-        g.lineStyle(2, 0x000000, 0.2).strokeRect(0, 0, this.gridConfig.brickW, this.gridConfig.brickH); 
+        g.lineStyle(2, 0x000000, 0.2).strokeRect(0, 0, this.gridConfig.brickW, this.gridConfig.brickH);
         g.generateTexture("brick_cover", this.gridConfig.brickW, this.gridConfig.brickH);
         g.destroy();
 
@@ -97,7 +138,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.bgFlag = this.add.image(this.gameWidth / 2, this.gridConfig.startY, "").setOrigin(0.5, 0).setDepth(0).setAlpha(0);
         this.trailG = this.add.graphics().setDepth(1);
         this.uiGroup = this.add.group();
-        
+
         this.cursors = this.input.keyboard.createCursorKeys();
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
@@ -105,10 +146,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.scoreText = this.add.text(40, 25, "Score: 0", textStyle).setDepth(10).setVisible(false);
         this.levelText = this.add.text(this.gameWidth / 2, 25, "Niveau: 1", textStyle).setOrigin(0.5, 0).setDepth(10).setVisible(false);
         this.livesText = this.add.text(this.gameWidth - 100, 25, "Vies: 3", textStyle).setDepth(10).setVisible(false);
-        
-        this.historyText = this.add.text(this.gameWidth / 2, this.gridConfig.startY + this.gridConfig.totalHeight + 30, "", { 
-            fontFamily: this.SYSTEM_FONT, fontSize: "18px", color: "#000", 
-            align: "center", fontWeight: "600", wordWrap: { width: 600 } 
+
+        this.historyText = this.add.text(this.gameWidth / 2, this.gridConfig.startY + this.gridConfig.totalHeight + 30, "", {
+            fontFamily: this.SYSTEM_FONT, fontSize: "18px", color: "#000",
+            align: "center", fontWeight: "600", wordWrap: { width: 600 }
         }).setOrigin(0.5, 0).setDepth(10).setVisible(false);
 
         this.particles = this.add.particles(0, 0, "part", {
@@ -160,7 +201,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     createGameObjects() {
         this.paddle = this.physics.add.image(this.gameWidth / 2, this.gameHeight - 40, "paddle").setImmovable(true).setTint(0x000000);
         this.paddle.setCollideWorldBounds(true);
-        this.ball = this.physics.add.image(this.gameWidth / 2, this.gameHeight - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100).setTint(0x000000);
+        this.ball = this.physics.add.image(this.gameWidth / 2, this.gameHeight - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
         this.physics.add.collider(this.ball, this.paddle, this.hitPaddle, null, this);
         this.physics.add.collider(this.ball, this.bricks, this.hitBrick, null, this);
     }
@@ -170,7 +211,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.historyText.setVisible(false);
         this.uiGroup.clear(true, true);
         if (this.bricks) this.bricks.clear(true, true);
-        
+
         const flagIndex = i % this.FLAGS.length;
         const currentFlag = this.FLAGS[flagIndex];
         const { cols, rows, brickW, brickH, startY, totalWidth, totalHeight } = this.gridConfig;
@@ -201,7 +242,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         const currentTime = this.time.now;
         if (currentTime - this.lastBrickTime < this.comboThreshold) {
             this.comboCount++;
-            if (this.comboCount >= 1) { 
+            if (this.comboCount >= 1) {
                 this.spawnComboWord(brick.x, brick.y);
                 this.comboCount = 0;
             }
@@ -212,7 +253,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.particles.setParticleTint(brick.getData('revealColor'));
         this.particles.emitParticleAt(brick.x, brick.y, 10);
-        brick.destroy(); 
+        brick.destroy();
         this.score += 25;
         if (this.bricks.countActive() === 0) this.revealFlag();
     }
@@ -226,7 +267,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.tweens.add({
             targets: txt, y: y - 80, x: x + Phaser.Math.Between(-20, 20), alpha: 0,
-            scale: 1.2, duration: 2500, ease: 'Power1', 
+            scale: 1.2, duration: 2500, ease: 'Power1',
             onComplete: () => txt.destroy()
         });
     }
@@ -237,7 +278,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.paddle.setVisible(false);
         this.trail = [];
         this.trailG.clear();
-        
+
         const currentFlag = this.FLAGS[this.level % this.FLAGS.length];
         this.tweens.add({
             targets: this.bgFlag, scaleX: this.bgFlag.scaleX * 1.05, scaleY: this.bgFlag.scaleY * 1.05,
@@ -271,7 +312,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.lives--;
         this.trail = [];
         this.trailG.clear();
+        
         if (this.lives <= 0) {
+            this.lives = 0; 
+            this.livesText.setText("Vies: 0");
             this.gameOver();
         } else {
             this.ball.setVelocity(0, 0).setPosition(this.gameWidth / 2, this.gameHeight - 150);
@@ -286,11 +330,19 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
     async gameOver() {
-        this.gameState = "WAITING";
-        
+        // État temporaire pour bloquer les inputs pendant le callback
+        this.gameState = "WAITING_FOR_CALLBACK";
+
         if (this.ball) this.ball.setVelocity(0, 0);
         if (this.paddle) this.paddle.setVelocityX(0);
         this.historyText.setVisible(false);
+
+        // 1. Afficher "FIN DE LA PARTIE" immédiatement
+        const displayY = this.gridConfig.startY + this.gridConfig.totalHeight + 60;
+        const title = this.add.text(this.gameWidth / 2, displayY, "FIN DE LA PARTIE", {
+            fontFamily: this.SYSTEM_FONT, fontSize: "42px", color: "#000", fontWeight: "900"
+        }).setOrigin(0.5);
+        this.uiGroup.add(title);
 
         const gameStats = {
             score: this.score,
@@ -298,33 +350,31 @@ export default class RainbowBreaker extends Phaser.Scene {
             timestamp: Date.now()
         };
 
+        // 2. Exécuter le callback (peut être long ou afficher une modale externe)
         if (this.onGameOverCallback) {
             await this.onGameOverCallback(gameStats);
         }
 
+        // 3. Une fois le callback terminé, on affiche l'instruction et on libère l'input
         this.gameState = "GAMEOVER";
-        
-        const displayY = this.gridConfig.startY + this.gridConfig.totalHeight + 60;
-        const title = this.add.text(this.gameWidth / 2, displayY, "FIN DE LA PARTIE", { 
-            fontFamily: this.SYSTEM_FONT, fontSize: "42px", color: "#000", fontWeight: "900" 
+
+        const sub = this.add.text(this.gameWidth / 2, displayY + 70, "APPUYEZ SUR ENTRÉE POUR RÉESSAYER", {
+            fontFamily: this.SYSTEM_FONT, fontSize: "18px", color: "#000", fontWeight: "900"
         }).setOrigin(0.5);
-        
-        const sub = this.add.text(this.gameWidth / 2, displayY + 70, "APPUYEZ SUR ENTRÉE POUR RÉESSAYER", { 
-            fontFamily: this.SYSTEM_FONT, fontSize: "18px", color: "#000", fontWeight: "900" 
-        }).setOrigin(0.5);
-        
-        this.uiGroup.addMultiple([title, sub]);
+
+        this.uiGroup.add(sub);
     }
 
     update() {
-        if (this.gameState === "WAITING") return;
+        // Si on attend le callback, on n'accepte aucune touche
+        if (this.gameState === "WAITING_FOR_CALLBACK") return;
 
         if (Phaser.Input.Keyboard.JustDown(this.enterKey)) {
             if (this.gameState === "START") this.startGame();
             else if (this.gameState === "GAMEOVER") this.showStartScreen();
             else if (this.gameState === "REVEAL") { this.level++; this.loadLevel(this.level); }
         }
-        
+
         if (this.gameState === "PLAYING") {
             this.scoreText.setText(`Score: ${this.score}`);
             this.levelText.setText(`Niveau: ${this.level + 1}`);
