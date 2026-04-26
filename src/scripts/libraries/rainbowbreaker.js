@@ -49,7 +49,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.comboCount = 0;
         this.lastBrickTime = 0;
         this.comboThreshold = 300; 
-        this.comboWords = ["GÉNIAL !", "WOW !", "SUPER !", "SPLENDIDE !", "ARC-EN-CIEL !", "FIERTÉ !", "AMOUR !", "ÉCLATANT !"];
+        this.comboWords = ["INTOLÉRANCE", "OBSCURANTISME", "AVEUGLEMENT", "BIGOTERIE", "BULLYING", "OFFUSCATION", "CHAUVINISME", "SOPHISME", "XÉNOPHOBIE", "RACISME", "HAINE", "IGNORANCE", "BON DIEUZARD", "PROFANE", "HOSTILITÉ", "HUBRIS", "TÊTE DE COCHON", "ESPRIT DE CLOCHER", "FIEL", "MÉPRIS", "FANATISME", "ACHARNEMENT", "CRUAUTÉ", "MALIGNITÉ", "TIDIO CONNAISSANT", "DUNNING-KRUGER", "PÉDANTE", "MADAME JE-SAIS-TOUT", "PEUR", "ARROGANCE", "CONDESCENDANCE"];
 
         this.gridConfig = {
             cols: 8, rows: 4, brickW: 90, brickH: 45, startY: 100
@@ -102,9 +102,9 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
 
         const textStyle = { fontFamily: this.SYSTEM_FONT, fontSize: "20px", color: "#000", fontWeight: "900" };
-        this.scoreText = this.add.text(30, 25, "Score: 0", textStyle).setDepth(10).setVisible(false);
+        this.scoreText = this.add.text(40, 25, "Score: 0", textStyle).setDepth(10).setVisible(false);
         this.levelText = this.add.text(this.gameWidth / 2, 25, "Niveau: 1", textStyle).setOrigin(0.5, 0).setDepth(10).setVisible(false);
-        this.livesText = this.add.text(this.gameWidth - 130, 25, "Vies: 3", textStyle).setDepth(10).setVisible(false);
+        this.livesText = this.add.text(this.gameWidth - 100, 25, "Vies: 3", textStyle).setDepth(10).setVisible(false);
         
         this.historyText = this.add.text(this.gameWidth / 2, this.gridConfig.startY + this.gridConfig.totalHeight + 30, "", { 
             fontFamily: this.SYSTEM_FONT, fontSize: "18px", color: "#000", 
