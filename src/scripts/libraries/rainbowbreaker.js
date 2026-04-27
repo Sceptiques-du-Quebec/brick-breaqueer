@@ -59,7 +59,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.comboThreshold = 450; 
         this.comboWords = ["INTOLÉRANCE", "OBSCURANTISME", "AVEUGLEMENT", "BIGOTERIE", "BULLYING", "OFFUSCATION", "CHAUVINISME", "SOPHISME", "XÉNOPHOBIE", "RACISME", "HAINE", "IGNORANCE", "BON DIEUZARD", "PROFANE", "HOSTILITÉ", "HUBRIS", "TÊTE DE COCHON", "ESPRIT DE CLOCHER", "FIEL", "MÉPRIS", "FANATISME", "ACHARNEMENT", "CRUAUTÉ", "MALIGNITÉ", "TIDIO CONNAISSANT", "DUNNING-KRUGER", "PÉDANTE", "MADAME JE-SAIS-TOUT", "PEUR", "ARROGANCE", "CONDESCENDANCE"];
 
-        // Configuration de la grille (les dimensions de briques seront ajustées dans create)
         this.gridConfig = { cols: 8, rows: 4, brickW: 0, brickH: 0, startY: 0 };
         this.rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
 
@@ -79,14 +78,14 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     preload() {
         this.FLAGS.forEach(f => {
-            this.load.svg(f.id, f.data, { scale: 2 });
+            // Utilisation de load.image pour éviter les erreurs de parsing XML sur Firefox avec Base64
+            this.load.image(f.id, f.data);
         });
     }
 
     create() {
         const { width, height } = this.sys.game.config;
         
-        // Calcul des dimensions de la grille basées sur la taille de l'écran
         this.gridConfig.brickW = Math.floor((width * 0.9) / this.gridConfig.cols);
         this.gridConfig.brickH = Math.floor(height * 0.08);
         this.gridConfig.startY = height * 0.15;
@@ -99,12 +98,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         const mainColor = this.registry.get('gameColor');
 
         const g = this.make.graphics({ x: 0, y: 0, add: false });
-        // Paddle dynamique
         const paddleWidth = Math.max(100, width * 0.15);
         g.fillStyle(0xffffff).fillRect(0, 0, paddleWidth, 20).generateTexture("paddle", paddleWidth, 20);
         g.clear();
         
-        // Ball
         for (let r = 9; r > 0; r--) {
             const color = this.rainbowColors[r % this.rainbowColors.length];
             g.fillStyle(color).fillCircle(9, 9, r);
@@ -112,7 +109,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         g.generateTexture("ball", 18, 18);
         g.clear();
         
-        // Brick
         const bw = this.gridConfig.brickW;
         const bh = this.gridConfig.brickH;
         g.fillStyle(0xbdc3c7, 0.85); 
@@ -355,7 +351,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
 
-        // On descend le titre à 65% de la hauteur au lieu de 50%
         const titleY = height * 0.65;
 
         const title = this.add.text(width / 2, titleY, "FIN DE LA PARTIE", {
@@ -372,7 +367,6 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.gameState = "GAMEOVER";
         
-        // Le sous-titre suit avec un espacement fixe
         const sub = this.add.text(width / 2, title.y + 50, "APPUYEZ SUR ENTRÉE POUR RÉESSAYER", {
             font: `${fontWeight} ${Math.round(width / 40)}px "${fontName}"`, 
             fill: mainColor
