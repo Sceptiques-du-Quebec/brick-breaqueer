@@ -12,6 +12,11 @@ export default class RainbowBreaker extends Phaser.Scene {
             pixelArt: false,
             roundPixels: true,
             audio: { noAudio: true },
+            render: {
+                premultipliedAlpha: false,
+                batchSize: 512,
+                powerPreference: 'high-performance'
+            },
             scale: {
                 mode: Phaser.Scale.FIT,
                 autoCenter: Phaser.Scale.CENTER_BOTH
@@ -19,6 +24,10 @@ export default class RainbowBreaker extends Phaser.Scene {
             physics: {
                 default: "arcade",
                 arcade: { gravity: { y: 0 } }
+            },
+            gl: {
+                unpackFlipY: false,
+                premultipliedAlpha: false
             },
             scene: [RainbowBreaker]
         };
@@ -53,6 +62,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.lives = 3;
         this.baseSpeed = 320;
         this.MAX_SPEED = 800;
+        
+        // Gestion hybride
+        this.lastInputMethod = "keyboard"; 
+        this.lastMouseX = 0;
 
         this.comboCount = 0;
         this.lastBrickTime = 0;
@@ -66,8 +79,8 @@ export default class RainbowBreaker extends Phaser.Scene {
             { id: "flag_trans", name: "Drapeau Transgenre", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjNWJjZWZhIiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZjVhOWI4IiBkPSJNMCAzNmg3MjB2MTA4SDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgNzJoNzIwdjM2SDB6Ii8+Cjwvc3ZnPgo=", history: "Dessiné par Monica Helms en 1999. Le bleu pour les garçons, le rose pour les filles et le blanc pour la transition." },
             { id: "flag_bi", name: "Drapeau Bisexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjMDAzOGE4IiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjOWI0Zjk2IiBkPSJNMCAwaDcyMHYxMDhIMHoiLz4KICA8cGF0aCBmaWxsPSIjZDYwMjcwIiBkPSJNMCAwaDcyMHY3MkgweiIvPgo8L3N2Zz4K", history: "Créé par Michael Page en 1998. Le rose pour l'attirance même sexe, le bleu pour l'autre, et le violet pour le mélange." },
             { id: "flag_asexual", name: "Drapeau Asexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4NCiAgPHBhdGggZD0iTTAgMGg3MjB2NDVIMHoiLz4NCiAgPHBhdGggZmlsbD0iI2EzYTNhMyIgZD0iTTAgNDVoNzIwdjQ1SDB6Ii8+DQogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDkwaDcyMHY0NUgweiIvPg0KICA8cGF0aCBmaWxsPSJwdXJwbGUiIGQ9Ik0wIDEzNWg3MjB2NDVIMHoiLz4NCjwvc3ZnPg==", history: "Créé par le réseau AVEN en 2010. Le noir pour l'asexualité, le gris pour la zone grise entre sexualité et asexualité, le blanc pour les partenaires et alliés, et le violet pour la communauté." },
-            { id: "flag_queer", name: "Drapeau Queer", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBkPSJNMCAwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiM5OWQ5ZWEiIGQ9Ik0wIDIwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiMwMGEyZTgiIGQ9Ik0wIDQwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiNiNWU2MWQiIGQ9Ik0wIDYwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDgwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmM5MGUiIGQ9Ik0wIDEwMGg3MjB2MjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZmQ2NjY2IiBkPSJNMCAxMjBoNzIwdjIwSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmYWVjOSIgZD0iTTAgMTQwaDcyMHYyMEgweiIvPgogIDxwYXRoIGQ9Ik0wIDE2MGg3MjB2MjBIMHoiLz4KPC9zdmc+", history: "Créé par l'utilisateur Tumblr @vampirestepdad en 2014. Le jaune symbolise l'amitié, le rose l'affection, et les autres bandes la diversité des relations situées entre l'amitié et la romance." },
-            { id: "flag_gay", name: "Drapeau Gay", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjM2QxYTc4IiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNTA0OWNjIiBkPSJNMCAwaDcyMHYxNTRIMHoiLz4KICA8cGF0aCBmaWxsPSIjN2JhZGUyIiBkPSJNMCAwaDcyMHYxMjlIMHoiLz4KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDcyMHYxMDNIMHoiLz4KICA8cGF0aCBmaWxsPSIjOThlOGMxIiBkPSJNMCAwaDcyMHY3N0gweiIvPgogIDxwYXRoIGZpbGw9IiMyNmNlYWEiIGQ9Ik0wIDBoNzIwdjUxSDB6Ii8+CiAgPHBhdGggZmlsbD0iIzA3OGQ3MCIgZD0iTTAgMGg3MjB2MjZIMHoiLz4KPC9zdmc+", history: "Créé par l'utilisateur Tumblr @gayflagblog en 2019. Les verts pour la communauté, le bleu pour la joie et le blanc pour l'inclusion des hommes trans et non-binaires." },            
+            { id: "flag_queer", name: "Drapeau Queer", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBkPSJNMCAwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiM5OWQ5ZWEiIGQ9Ik0wIDIwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiMwMGEyZTgiIGQ9Ik0wIDQwaDcyMHYyMEgvPgogIDxwYXRoIGZpbGw9IiNiNWU2MWQiIGQ9Ik0wIDYwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDgwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmM5MGUiIGQ9Ik0wIDEwMGg3MjB2MjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZmQ2NjY2IiBkPSJNMCAxMjBoNzIwdjIwSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmYWVjOSIgZD0iTTAgMTQwaDcyMHYyMEgweiIvPgogIDxwYXRoIGQ9Ik0wIDE2MGg3MjB2MjBIMHoiLz4KPC9zdmc+", history: "Créé par l'utilisateur Tumblr @vampirestepdad en 2014. Le jaune symbolise l'amitié, le rose l'affection, et les autres bandes la diversité des relations situées entre l'amitié et la romance." },
+            { id: "flag_gay", name: "Drapeau Gay", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjM2QxYTc4IiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNTA0OWNjIiBkPSJNMCAwaDcyMHYxNTRIMHoiLz4KICA8cGF0aCBmaWxsPSIjN2JhZGUyIiBkPSJNMCAwaDcyMHYxMjlIMHoiLz4KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDcyMHYxMDNIMHoiLz4KICA8cGF0aCBmaWxsPSIjOThlOGMxIiBkPSJNMCAwaDcyMHY3N0gweiIvPgogIDxwYXRoIGZpbGw9IiwyNmNlYWEiIGQ9Ik0wIDBoNzIwdjUxSDB6Ii8+CiAgPHBhdGggZmlsbD0iIzA3OGQ3MCIgZD0iTTAgMGg3MjB2MjZIMHoiLz4KPC9zdmc+", history: "Créé par l'utilisateur Tumblr @gayflagblog en 2019. Les verts pour la communauté, le bleu pour la joie et le blanc pour l'inclusion des hommes trans et non-binaires." },            
             { id: "flag_intersex", name: "Drapeau Intersexe", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAwIDYwMCI+CiAgPHBhdGggZmlsbD0iI2ZmZDgwMCIgZD0iTTAgMGgyNDAwdjYwMEgweiIvPgogIDxjaXJjbGUgY3g9IjEyMDAiIGN5PSIzMDAiIHI9IjE0NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNzkwMmFhIiBzdHJva2Utd2lkdGg9IjUwIi8+Cjwvc3ZnPg==", history: "Créé par Morgan Carpenter en 2013. Le fond jaune et le cercle violet évitent les couleurs associées au genre. Le cercle symbolise la complétude." },
             { id: "flag_lesbian", name: "Drapeau Lesbien", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjZDQyYzAwIiBkPSJNMCAwaDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZDk4NTUiIGQ9Ik0wIDM2aDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDcyaDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNkMTYxYTIiIGQ9Ik0wIDEwOGg3MjB2MzZIMHoiLz4KICA8cGF0aCBmaWxsPSIjYTIwMTYxIiBkPSJNMCAxNDRoNzIwdjM2SDB6Ii8+Cjwvc3ZnPgo=", history: "Cette version à 7 bandes représente la non-conformité de genre, l'indépendance, la communauté, l'amour et la féminité." },
             { id: "flag_pan", name: "Drapeau Pansexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjMjFiMWZmIiBkPSJNMCAwaDcyMHYxODBIMCIvPgogIDxwYXRoIGZpbGw9IiNmZmQ4MDAiIGQ9Ik0wIDBoNzIwdjEyMEgwIi8+CiAgPHBhdGggZmlsbD0iI2ZmMjE4YyIgZD0iTTAgMGg3MjB2NjBIMCIvPgo8L3N2Zz4K", history: "Représente l'attirance pour tous les genres : féminin (rose), masculin (bleu) et non-binaire (jaune)." },
@@ -78,8 +91,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     preload() {
         this.FLAGS.forEach(f => {
-            // Utilisation de load.image pour éviter les erreurs de parsing XML sur Firefox avec Base64
-            this.load.image(f.id, f.data);
+            this.load.image(f.id, f.data, { scale: 2 });
         });
     }
 
@@ -197,7 +209,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             font: `${fontWeight} ${Math.round(width / 18)}px "${fontName}"`, fill: mainColor
         }).setOrigin(0.5);
 
-        const sub = this.add.text(width / 2, title.y + (height * 0.1), "APPUYEZ SUR ENTRÉE POUR COMMENCER", {
+        const sub = this.add.text(width / 2, title.y + (height * 0.1), "CLIQUEZ OU APPUYEZ SUR ENTRÉE", {
             font: `${fontWeight} ${Math.round(width / 45)}px "${fontName}"`, fill: mainColor
         }).setOrigin(0.5);
 
@@ -261,7 +273,6 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     hitBrick(ball, brick) {
         const currentTime = this.time.now;
-        
         if (currentTime - this.lastBrickTime < this.comboThreshold) {
             this.comboCount++;
             const comboBonus = 100 + ((this.comboCount - 1) * 50);
@@ -271,7 +282,6 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.comboCount = 0;
             this.score += 25;
         }
-        
         this.lastBrickTime = currentTime;
 
         for (let i = 0; i < 20; i++) {
@@ -279,7 +289,6 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.particles.setParticleTint(color);
             this.particles.emitParticleAt(brick.x, brick.y, 1);
         }
-
         brick.destroy();
         if (this.bricks.countActive() === 0) this.revealFlag();
     }
@@ -314,7 +323,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         
         this.historyText.setText(`${currentFlag.name.toUpperCase()}\n\n${currentFlag.history}`).setVisible(true);
 
-        const sub = this.add.text(width / 2, height - 80, "APPUYEZ SUR ENTRÉE POUR CONTINUER", {
+        const sub = this.add.text(width / 2, height - 80, "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR CONTINUER", {
             font: `${fontWeight} 14px "${fontName}"`, fill: mainColor
         }).setOrigin(0.5);
         
@@ -327,7 +336,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.comboCount = 0;
         this.trail = [];
         this.trailG.clear();
-
         this.ball.setVelocity(0, 0);
         this.ball.setPosition(width / 2, height - 150);
         this.ball.setAlpha(1);
@@ -335,7 +343,6 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.time.delayedCall(1000, () => {
             if (this.gameState !== "PLAYING" || !this.ball.active) return;
-            
             const speed = Math.min(this.baseSpeed + (this.level * 20), this.MAX_SPEED);
             this.ball.setVelocity(Phaser.Math.Between(-80, 80), -speed);
         });
@@ -351,11 +358,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
 
-        const titleY = height * 0.65;
-
-        const title = this.add.text(width / 2, titleY, "FIN DE LA PARTIE", {
-            font: `${fontWeight} ${Math.round(width / 18)}px "${fontName}"`, 
-            fill: mainColor
+        const title = this.add.text(width / 2, height * 0.65, "FIN DE LA PARTIE", {
+            font: `${fontWeight} ${Math.round(width / 18)}px "${fontName}"`, fill: mainColor
         }).setOrigin(0.5);
         
         this.uiGroup.add(title);
@@ -366,10 +370,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         }
 
         this.gameState = "GAMEOVER";
-        
-        const sub = this.add.text(width / 2, title.y + 50, "APPUYEZ SUR ENTRÉE POUR RÉESSAYER", {
-            font: `${fontWeight} ${Math.round(width / 40)}px "${fontName}"`, 
-            fill: mainColor
+        const sub = this.add.text(width / 2, title.y + 50, "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR RÉESSAYER", {
+            font: `${fontWeight} ${Math.round(width / 40)}px "${fontName}"`, fill: mainColor
         }).setOrigin(0.5);
         
         this.addFloatingEffect(sub);
@@ -380,7 +382,12 @@ export default class RainbowBreaker extends Phaser.Scene {
         const { width, height } = this.sys.game.config;
         if (this.gameState === "WAITING_FOR_CALLBACK") return;
 
-        if (Phaser.Input.Keyboard.JustDown(this.enterKey)) {
+        const pointer = this.input.activePointer;
+        // Gestion du clic globale (n'importe où)
+        const isClicked = pointer.primaryDown && pointer.downElement === this.game.canvas;
+        const actionInput = Phaser.Input.Keyboard.JustDown(this.enterKey) || isClicked;
+
+        if (actionInput) {
             if (this.gameState === "START") this.startGame();
             else if (this.gameState === "GAMEOVER") this.showStartScreen();
             else if (this.gameState === "REVEAL") { this.level++; this.loadLevel(this.level); }
@@ -391,19 +398,31 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.levelText.setText(`Niveau: ${this.level + 1}`);
             this.livesText.setText(`Vies: ${this.lives}`);
 
-            if (this.cursors.left.isDown) this.paddle.setVelocityX(-750);
-            else if (this.cursors.right.isDown) this.paddle.setVelocityX(750);
-            else this.paddle.setVelocityX(0);
+            // Détection du mouvement réel
+            const moved = Math.abs(pointer.x - this.lastMouseX) > 1;
+            this.lastMouseX = pointer.x;
+
+            if (this.cursors.left.isDown || this.cursors.right.isDown) {
+                this.lastInputMethod = "keyboard";
+            } else if (moved) {
+                this.lastInputMethod = "mouse";
+            }
+
+            if (this.lastInputMethod === "keyboard") {
+                if (this.cursors.left.isDown) this.paddle.setVelocityX(-750);
+                else if (this.cursors.right.isDown) this.paddle.setVelocityX(750);
+                else this.paddle.setVelocityX(0);
+            } else {
+                // Mode souris
+                const distance = pointer.x - this.paddle.x;
+                this.paddle.setVelocityX(distance * 15);
+            }
 
             if (this.ball && this.ball.y > height + 20) {
                 this.ball.y = -100; 
                 this.lives--;
-                
-                if (this.lives <= 0) {
-                    this.gameOver();
-                } else {
-                    this.resetBall();
-                }
+                if (this.lives <= 0) this.gameOver();
+                else this.resetBall();
             }
 
             if (this.ball && this.ball.active && this.ball.visible && (this.ball.body.velocity.x !== 0 || this.ball.body.velocity.y !== 0)) {
