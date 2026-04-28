@@ -1,6 +1,26 @@
 import RainbowBreaker from "./libraries/rainbowbreaker";
 
 
+
+// self.loadScript = function(endpoint, params = {}, isAsync = false) {
+//     return new Promise((resolve, reject) => {
+//         const url = new URL(endpoint);
+//         Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+
+//         const script = document.createElement('script');
+//         script.src = url.toString();
+//         script.async = isAsync;
+
+//         // Succès : le script est chargé et exécuté
+//         script.onload = () => resolve(script);
+
+//         // Erreur : problème de réseau ou URL invalide
+//         script.onerror = () => reject(new Error(`Échec du chargement du script : ${url}`));
+
+//         document.head.appendChild(script);
+//     });
+// };
+
 document.fonts.load('10pt "Unbounded"').then(() => {
     const gameSettings = {
         parent: "game-container",
