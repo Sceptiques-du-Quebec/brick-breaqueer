@@ -13,7 +13,7 @@ const loadScript = function(endpoint, params = {}, isAsync = true) {
 
 
 (async () => {
-    await loadScript(new URL('./scripts/brickbreaqueer.core.min.js', window.location.origin).href);
+    await loadScript(new URL('scripts/brickbreaqueer.core.min.js', window.location.origin).href);
     BrickBreaqueer({
         parent: "game-container",
         width: 664,
