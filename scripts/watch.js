@@ -12,7 +12,13 @@ const { close } = createWatchers(
 				console.log("[js] batch", events.length, events.map(e => e.file));
 				const entry = path.resolve(__dirname, "../src/scripts/brickbreaker.core.js");
 				const outfile = path.resolve(__dirname, "../src/scripts/brickbreaker.core.min.js");
+
+
+				const loaderentry = path.resolve(__dirname, "../src/scripts/brickbreaqueer.core.js");
+				const loaderoutfile = path.resolve(__dirname, "../src/scripts/brickbreaqueer.core.min.js");
+
 				await buildJS(entry, outfile);
+				await buildJS(loaderentry, loaderoutfile);
 				console.log("");
 			},
 		},
