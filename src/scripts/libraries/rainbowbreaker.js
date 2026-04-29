@@ -142,6 +142,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.uiGroup = this.add.group();
         this.cursors = this.input.keyboard.createCursorKeys();
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this.input.mouse.preventDefaultWheel = false;
+        this.input.mouse.capture = false;
 
         const baseSize = Math.max(14, Math.round(width / 40));
         const textStyle = { font: `${fontWeight} ${baseSize}px "${fontName}"`, fill: mainColor };
