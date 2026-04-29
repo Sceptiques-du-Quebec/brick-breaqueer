@@ -498,7 +498,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.livesGroup.clear(true, true);
         }
 
-        if (this.onGameOverCallback) await this.onGameOverCallback({ score: this.score, levelReached: this.level });
+        if (this.onGameOverCallback) await this.onGameOverCallback({ score: this.score, levelReached: this.level + 1 });
         this.gameState = "GAMEOVER";
         const sub = this.add.text(width / 2, title.y + 50, "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR RÉESSAYER", { font: `${fontWeight} ${Math.round(width / 40)}px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
         this.addFloatingEffect(sub);
