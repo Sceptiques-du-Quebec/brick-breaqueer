@@ -17,8 +17,8 @@ const { close } = createWatchers(
 				const loaderentry = path.resolve(__dirname, "../src/scripts/brickbreaqueer.core.js");
 				const loaderoutfile = path.resolve(__dirname, "../src/scripts/brickbreaqueer.core.min.js");
 
-				await buildJS(entry, outfile);
-				await buildJS(loaderentry, loaderoutfile);
+				await buildJS(entry, outfile, { loader: { '.json': 'json' } });
+				await buildJS(loaderentry, loaderoutfile, { loader: { '.json': 'json' } });
 				console.log("");
 			},
 		},
