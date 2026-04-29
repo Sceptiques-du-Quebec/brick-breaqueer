@@ -457,7 +457,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.pauseText = this.add.text(width / 2, height * 0.65, "PAUSE", {
                 font: `${fontWeight} ${Math.round(width / 15)}px "${fontName}"`, fill: mainColor
             }).setOrigin(0.5).setResolution(2).setDepth(100);
-            this.pauseSubText = this.add.text(width / 2, this.pauseText.y + (height * 0.1), "APPUYEZ SUR ENTRÉE POUR CONTINUER", {
+            this.pauseSubText = this.add.text(width / 2, this.pauseText.y + (height * 0.1), "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR CONTINUER", {
                 font: `${fontWeight} ${Math.round(width / 45)}px "${fontName}"`, fill: mainColor
             }).setOrigin(0.5).setResolution(2).setDepth(100);
 
