@@ -67,11 +67,13 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
         this.comboWords = [];
         this.FLAGS = [];
+        this.levelOrder = []; // Stocke l'ordre aléatoire des indices
     }
 
 
     preload() {
-        this.FLAGS.forEach((flag, index) => {
+        this.FLAGS = this.registry.get('gameFlags') || [];
+        this.FLAGS.forEach((flag) => {
             const base64Data = flag.data.split(',')[1];
             const binaryData = atob(base64Data);
             const arrayBuffer = new Uint8Array(binaryData.length);
@@ -85,7 +87,6 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     create() {
         const { width, height } = this.sys.game.config;
-        this.FLAGS = this.registry.get('gameFlags') || [];
         this.comboWords = this.registry.get('gameWords') || ["BRAVO"];
 
         this.pauseText = null;
@@ -207,6 +208,16 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.levelText.setVisible(true);
         this.livesText.setVisible(true);
         this.score = 0; this.level = 0; this.lives = 5;
+
+        // Génération de l'ordre : index 0 puis le reste mélangé
+        const totalFlags = this.FLAGS.length;
+        let others = Array.from({length: totalFlags - 1}, (_, i) => i + 1);
+        for (let i = others.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [others[i], others[j]] = [others[j], others[i]];
+        }
+        this.levelOrder = [0, ...others];
+
         this.bricks = this.physics.add.staticGroup();
         this.createGameObjects();
         this.loadLevel(this.level);
@@ -230,14 +241,22 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     async loadLevel(i) {
+        // Arrêt après 10 niveaux
+        if (i >= 10) {
+            this.gameOver();
+            return;
+        }
+
         const { width } = this.sys.game.config;
         this.gameState = "PLAYING";
         this.historyText.setVisible(false);
         this.uiGroup.clear(true, true);
         if (this.bricks) this.bricks.clear(true, true);
 
-        const currentFlag = this.FLAGS[i % this.FLAGS.length];
-        const textureKey = "flag_sharp_" + i;
+        // Utilisation de l'index dans l'ordre prédéfini
+        const flagIndex = this.levelOrder[i % this.levelOrder.length];
+        const currentFlag = this.FLAGS[flagIndex];
+        const textureKey = "flag_sharp_" + flagIndex;
         const targetW = this.gridConfig.cols * this.gridConfig.brickW;
         const targetH = this.gridConfig.rows * this.gridConfig.brickH;
 
@@ -249,7 +268,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         const startX = Math.floor((width - targetW) / 2);
         this.bgFlag.setPosition(startX, this.gridConfig.startY);
         this.bgFlag.setOrigin(0, 0);
-        this.bgFlag.setDisplaySize(targetW, targetH);
         this.bgFlag.setAlpha(1);
 
         for (let r = 0; r < this.gridConfig.rows; r++) {
@@ -325,7 +343,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontName = this.registry.get('gameFont');
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
-        const currentFlag = this.FLAGS[this.level % this.FLAGS.length];
+        
+        const flagIndex = this.levelOrder[this.level % this.levelOrder.length];
+        const currentFlag = this.FLAGS[flagIndex];
+        
         this.historyText.setText(`${currentFlag.name.toUpperCase()}\n\n${currentFlag.history}`).setVisible(true);
         const sub = this.add.text(width / 2, height - 80, "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR CONTINUER", { font: `${fontWeight} 14px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
         this.addFloatingEffect(sub);
@@ -392,10 +413,14 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontName = this.registry.get('gameFont');
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
-        const title = this.add.text(width / 2, height * 0.65, "FIN DE LA PARTIE", { font: `${fontWeight} ${Math.round(width / 18)}px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
+        
+        const titleText = (this.level >= 10) ? "VICTOIRE !" : "FIN DE LA PARTIE";
+        const title = this.add.text(width / 2, height * 0.65, titleText, { font: `${fontWeight} ${Math.round(width / 18)}px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
         this.uiGroup.add(title);
-        this.livesText.setText(`Vies: 0`);
-        if (this.onGameOverCallback) await this.onGameOverCallback({ score: this.score, levelReached: this.level + 1 });
+        
+        if (this.lives < 0) this.livesText.setText(`Vies: 0`);
+        
+        if (this.onGameOverCallback) await this.onGameOverCallback({ score: this.score, levelReached: this.level });
         this.gameState = "GAMEOVER";
         const sub = this.add.text(width / 2, title.y + 50, "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR RÉESSAYER", { font: `${fontWeight} ${Math.round(width / 40)}px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
         this.addFloatingEffect(sub);
@@ -440,10 +465,12 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.scoreText.setText(`Score: ${this.score}`);
             this.levelText.setText(`Niveau: ${this.level + 1}`);
             this.livesText.setText(`Vies: ${this.lives}`);
+            
             const moved = Math.abs(pointer.x - this.lastMouseX) > 1;
             this.lastMouseX = pointer.x;
             if (this.cursors.left.isDown || this.cursors.right.isDown) this.lastInputMethod = "keyboard";
             else if (moved) this.lastInputMethod = "mouse";
+            
             if (this.lastInputMethod === "keyboard") {
                 if (this.cursors.left.isDown) this.paddle.setVelocityX(-750);
                 else if (this.cursors.right.isDown) this.paddle.setVelocityX(750);
@@ -451,11 +478,13 @@ export default class RainbowBreaker extends Phaser.Scene {
             } else {
                 this.paddle.setVelocityX((pointer.x - this.paddle.x) * 15);
             }
+            
             if (this.ball && this.ball.y > height + 20) {
                 this.ball.y = -100; this.lives--;
                 if (this.lives <= 0) this.gameOver();
                 else this.resetBall();
             }
+            
             if (this.ball && this.ball.active && this.ball.visible && (this.ball.body.velocity.x !== 0 || this.ball.body.velocity.y !== 0)) {
                 this.trail.push({ x: this.ball.x, y: this.ball.y });
                 if (this.trail.length > 12) this.trail.shift();
@@ -473,6 +502,4 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.trailG.fillCircle(p.x, p.y, 4 + (ratio * 5));
         });
     }
-
-    
 }
