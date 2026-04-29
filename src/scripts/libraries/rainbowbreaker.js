@@ -319,19 +319,12 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     async loadLevel(i) {
-        // Arrêt après 10 niveaux
-        if (i >= 10) {
-            this.gameOver();
-            return;
-        }
-
         const { width } = this.sys.game.config;
         this.gameState = "PLAYING";
         this.historyText.setVisible(false);
         this.uiGroup.clear(true, true);
         if (this.bricks) this.bricks.clear(true, true);
 
-        // Utilisation de l'index dans l'ordre prédéfini
         const flagIndex = this.levelOrder[i % this.levelOrder.length];
         const currentFlag = this.FLAGS[flagIndex];
         const textureKey = "flag_sharp_" + flagIndex;
@@ -497,19 +490,13 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.uiGroup.add(title);
 
         if (this.lives < 0) this.livesText.setText(`Vies: 0`);
-
-
-        // Forcer l'affichage à 0
         if (this.livesText) {
             this.livesText.setText(`Vies : 0`);
-            this.livesText.setVisible(true); // On le garde visible pour que le joueur voie qu'il est à 0
+            this.livesText.setVisible(true);
         }
-
-        // Nettoyer les icônes (coeurs/drapeaux) car on est à zéro
         if (this.livesGroup) {
             this.livesGroup.clear(true, true);
         }
-
 
         if (this.onGameOverCallback) await this.onGameOverCallback({ score: this.score, levelReached: this.level });
         this.gameState = "GAMEOVER";
