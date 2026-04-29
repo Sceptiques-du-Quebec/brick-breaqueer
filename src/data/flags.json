@@ -55,8 +55,44 @@
 	},
 	{
 		"id": "flag_pride",
-		"name": "Pride Progressif",
+		"name": "Drapeau de la Fierté",
 		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iIzZkMjM4MCIgZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiMyYzU4YTQiIGQ9Ik0wIDBoMTE4NHYyNjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNzhiODJhIiBkPSJNMCAwaDExODR2MjA4SDB6Ii8+CiAgPHBhdGggZmlsbD0iI2VmZTUyNCIgZD0iTTAgMGgxMTg0djE1NkgweiIvPgogIDxwYXRoIGZpbGw9IiNmMjg5MTciIGQ9Ik0wIDBoMTE4NHYxMDRIMHoiLz4KICA8cGF0aCBmaWxsPSIjZTIyMDE2IiBkPSJNMCAwaDExODR2NTJIMHoiLz4KICA8cGF0aCBkPSJNMTI5IDBIMHYzMTJoMTI5bDE0NC0xNTZ6Ii8+CiAgPHBhdGggZmlsbD0iIzk0NTUxNiIgZD0iTTk4IDBIMHYzMTJoOThsMTQ1LTE1NnoiLz4KICA8cGF0aCBmaWxsPSIjN2JjY2U1IiBkPSJNNjggMEgwdjMxMmg2OGwxNDUtMTU2eiIvPgogIDxwYXRoIGZpbGw9IiNmNGFlYzgiIGQ9Ik0zOCAwSDB2MzEyaDM4bDE0NS0xNTZ6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMHYzMTJoOWwxNDQtMTU2TDkgMHoiLz4KICA8cGF0aCBmaWxsPSIjZmRkODE3IiBkPSJtMCAyODkgMTIzLTEzM0wwIDIzeiIvPgogIDxjaXJjbGUgY3g9IjQ1IiBjeT0iMTU2IiByPSIzMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjYzMzhiIiBzdHJva2Utd2lkdGg9IjgiLz4KPC9zdmc+Cg==",
 		"history": "Créé en 2018 par Daniel Quasar et mis à jour en 2021 par Valentino Vecchietti, ce drapeau inclut les personnes trans, les communautés racisées, les personnes vivant avec le VIH/SIDA ainsi que les personnes intersexes."
+	},
+	{
+		"id": "flag_nonbinary",
+		"name": "Drapeau Non-binaire",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iIzJkMmQyZCIgZD0iTTAgMGgxMTg0djMxMkgwIi8+CiAgPHBhdGggZmlsbD0iIzliNTlkMCIgZD0iTTAgMGgxMTg0djIzNEgwIi8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGgxMTg0djE1NkgwIi8+CiAgPHBhdGggZmlsbD0iI2ZmZjQzMyIgZD0iTTAgMGgxMTg0djc4SDAiLz4KPC9zdmc+",
+		"history": "Créé en 2014 par Kye Rowan, il se compose de quatre bandes (jaune, blanc, violet, noir). Il représente les personnes dont l'identité ne s'inscrit pas dans la binarité homme/femme."
+	},
+	{
+		"id": "flag_genderfluid",
+		"name": "Drapeau Genderfluid",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+DQogIDxwYXRoIGZpbGw9IiNmZjc1YTIiIGQ9Ik0wIDBoMTE4NHY2Mi40SDB6Ii8+DQogIDxwYXRoIGZpbGw9IiNmNWY1ZjUiIGQ9Ik0wIDYyLjRoMTE4NHY2Mi40SDB6Ii8+DQogIDxwYXRoIGZpbGw9IiNiZTE4ZDYiIGQ9Ik0wIDEyNC44aDExODR2NjIuNEgweiIvPg0KICA8cGF0aCBmaWxsPSIjMmMyYzJjIiBkPSJNMCAxODcuMmgxMTg0djYyLjRIMHoiLz4NCiAgPHBhdGggZmlsbD0iIzMzM2ViZCIgZD0iTTAgMjQ5LjZoMTE4NFYzMTJIMHoiLz4NCjwvc3ZnPg==",
+		"history": "Conçu par Serena Dyer en 2012, ce drapeau à cinq bandes (rose, blanc, violet, noir, bleu) symbolise les personnes dont l'identité de genre varie au fil du temps."
+	},
+	{
+		"id": "flag_agender",
+		"name": "Drapeau Agenre",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiNiOWI5YjkiIGQ9Ik0wIDQ1aDExODR2MjIzSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgODloMTE4NHYxMzRIMHoiLz4KICA8cGF0aCBmaWxsPSIjYjhmNDgzIiBkPSJNMCAxMzRoMTE4NHY0NUgweiIvPgo8L3N2Zz4=",
+		"history": "Créé en 2014 par Salem X, il utilise des bandes noires, grises, blanches et une bande centrale verte pour représenter l'absence de genre ou une identité de genre neutre."
+	},
+	{
+		"id": "flag_polysexual",
+		"name": "Drapeau Polysexuel",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+DQogIDxwYXRoIGZpbGw9IiMxYzkyZjYiIGQ9Ik0wIDBoMTE4NHYzMTJIMHoiLz4NCiAgPHBhdGggZmlsbD0iIzA3ZDU2OSIgZD0iTTAgMGgxMTg0djIwOEgweiIvPg0KICA8cGF0aCBmaWxsPSIjZjYxY2I5IiBkPSJNMCAwaDExODR2MTA0SDB6Ii8+DQo8L3N2Zz4=",
+		"history": "Souvent confondu avec la pansexualité, ce drapeau (rose, vert, bleu) représente l'attirance pour plusieurs genres, mais pas nécessairement tous."
+	},
+	{
+		"id": "flag_aromantic",
+		"name": "Drapeau Aromantique",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+DQogIDxwYXRoIGQ9Ik0wIDBoMTE4NHYzMTJIMHoiLz4NCiAgPHBhdGggZmlsbD0iI2E5YTlhOSIgZD0iTTAgMGgxMTg0djI1MEgweiIvPg0KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDExODR2MTg3SDB6Ii8+DQogIDxwYXRoIGZpbGw9IiNhN2QzNzkiIGQ9Ik0wIDBoMTE4NHYxMjVIMHoiLz4NCiAgPHBhdGggZmlsbD0iIzNkYTU0MiIgZD0iTTAgMGgxMTg0djYySDB6Ii8+DQo8L3N2Zz4=",
+		"history": "Utilisant des nuances de vert, de blanc, de gris et de noir, il représente les personnes qui ressentent peu ou pas d'attirance romantique."
+	},
+	{
+		"id": "flag_omnisexual",
+		"name": "Drapeau Omnisexuel",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iIzhjYTVmZiIgZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiM2NzVmZmYiIGQ9Ik0wIDBoMTE4NHYyNTBIMHoiLz4KICA8cGF0aCBmaWxsPSIjMjUwMDQ2IiBkPSJNMCAwaDExODR2MTg3SDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmNTNiZSIgZD0iTTAgMGgxMTg0djEyNUgweiIvPgogIDxwYXRoIGZpbGw9IiNmZjliY2QiIGQ9Ik0wIDBoMTE4NHY2MkgweiIvPgo8L3N2Zz4=",
+		"history": "Proche du drapeau pansexuel mais avec des nuances de bleu et de rose plus marquées, il désigne l'attirance pour tous les genres, où le genre joue un rôle dans l'attirance (contrairement à la pansexualité qui est souvent décrite comme \"aveugle au genre\")."
 	}
 ]

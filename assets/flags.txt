@@ -1,23 +1,98 @@
-        this.FLAGS = [
-            { id: "flag_trans", name: "Drapeau Transgenre", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjNWJjZWZhIiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZjVhOWI4IiBkPSJNMCAzNmg3MjB2MTA4SDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgNzJoNzIwdjM2SDB6Ii8+Cjwvc3ZnPgo=", history: "Dessiné par Monica Helms en 1999. Le bleu pour les garçons, le rose pour les filles et le blanc pour la transition." },
-            { id: "flag_bi", name: "Drapeau Bisexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjMDAzOGE4IiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjOWI0Zjk2IiBkPSJNMCAwaDcyMHYxMDhIMHoiLz4KICA8cGF0aCBmaWxsPSIjZDYwMjcwIiBkPSJNMCAwaDcyMHY3MkgweiIvPgo8L3N2Zz4K", history: "Créé par Michael Page en 1998. Le rose pour l'attirance même sexe, le bleu pour l'autre, et le violet pour le mélange." },
-            { id: "flag_intersex", name: "Drapeau Intersexe", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAwIDYwMCI+CiAgPHBhdGggZmlsbD0iI2ZmZDgwMCIgZD0iTTAgMGgyNDAwdjYwMEgweiIvPgogIDxjaXJjbGUgY3g9IjEyMDAiIGN5PSIzMDAiIHI9IjE0NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNzkwMmFhIiBzdHJva2Utd2lkdGg9IjUwIi8+Cjwvc3ZnPg==", history: "Créé par Morgan Carpenter en 2013. Le fond jaune et le cercle violet évitent les couleurs associées au genre. Le cercle symbolise la complétude." },
-            { id: "flag_lesbian", name: "Drapeau Lesbien", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjZDQyYzAwIiBkPSJNMCAwaDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZDk4NTUiIGQ9Ik0wIDM2aDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDcyaDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNkMTYxYTIiIGQ9Ik0wIDEwOGg3MjB2MzZIMHoiLz4KICA8cGF0aCBmaWxsPSIjYTIwMTYxIiBkPSJNMCAxNDRoNzIwdjM2SDB6Ii8+Cjwvc3ZnPgo=", history: "Cette version à 7 bandes représente la non-conformité de genre, l'indépendance, la communauté, l'amour et la féminité." },
-            { id: "flag_pan", name: "Drapeau Pansexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjMjFiMWZmIiBkPSJNMCAwaDcyMHYxODBIMCIvPgogIDxwYXRoIGZpbGw9IiNmZmQ4MDAiIGQ9Ik0wIDBoNzIwdjEyMEgwIi8+CiAgPHBhdGggZmlsbD0iI2ZmMjE4YyIgZD0iTTAgMGg3MjB2NjBIMCIvPgo8L3N2Zz4K", history: "Représente l'attirance pour tous les genres : féminin (rose), masculin (bleu) et non-binaire (jaune)." },
-            { id: "flag_pride", name: "Pride Progressif", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjNmQyMzgwIiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjMmM1OGE0IiBkPSJNMCAwaDcyMHYxNTBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNzhiODJhIiBkPSJNMCAwaDcyMHYxMjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZWZlNTI0IiBkPSJNMCAwaDcyMHY5MEgweiIvPgogIDxwYXRoIGZpbGw9IiNmMjg5MTciIGQ9Ik0wIDBoNzIwdjYwSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2UyMjAxNiIgZD0iTTAgMGg3MjB2MzBIMHoiLz4KICA8cGF0aCBkPSJNNzQgMEgwdjE4MGg3NGw4NC05MHoiLz4KICA8cGF0aCBmaWxsPSIjOTQ1NTE2IiBkPSJNNTcgMEgwdjE4MGg1N2w4My05MHoiLz4KICA8cGF0aCBmaWxsPSIjN2JjY2U1IiBkPSJNNDAgMEgwdjE4MGg0MGw4My05MHoiLz4KICA8cGF0aCBmaWxsPSIjZjRhZWM4IiBkPSJNMjIgMEgwdjE4MGgyMmw4NC05MHoiLz4KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwdjE4MGg1bDgzLTkwTDUgMHoiLz4KICA8Y2lyY2xlIGN4PSIyNi4yIiBjeT0iOTAiIHI9IjE4LjkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzY2MzM4YiIgc3Ryb2tlLXdpZHRoPSI0LjUiLz4KPC9zdmc+", history: "Créé en 2018 par Daniel Quasar et mis à jour en 2021 par Valentino Vecchietti, ce drapeau inclut les personnes trans, les communautés racisées, les personnes vivant avec le VIH/SIDA ainsi que les personnes intersexes." }
-        ];
-
-
-
-        this.FLAGS = [
-            // { id: "flag_trans", name: "Drapeau Transgenre", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjNWJjZWZhIiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZjVhOWI4IiBkPSJNMCAzNmg3MjB2MTA4SDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgNzJoNzIwdjM2SDB6Ii8+Cjwvc3ZnPgo=", history: "Dessiné par Monica Helms en 1999."},
-            // { id: "flag_bi", name: "Drapeau Bisexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjMDAzOGE4IiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjOWI0Zjk2IiBkPSJNMCAwaDcyMHYxMDhIMHoiLz4KICA8cGF0aCBmaWxsPSIjZDYwMjcwIiBkPSJNMCAwaDcyMHY3MkgweiIvPgo8L3N2Zz4K", history: "Créé par Michael Page en 1998."},
-            // { id: "flag_asexual", name: "Drapeau Asexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4NCiAgPHBhdGggZD0iTTAgMGg3MjB2NDVIMHoiLz4NCiAgPHBhdGggZmlsbD0iI2EzYTNhMyIgZD0iTTAgNDVoNzIwdjQ1SDB6Ii8+DQogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDkwaDcyMHY0NUgweiIvPgogIDxwYXRoIGZpbGw9InB1cnBsZSIgZD0iTTAgMTM1aDcyMHY0NUgweiIvPg0KPC9zdmc+", history: "Créé par le réseau AVEN en 2010."},
-            // { id: "flag_queer", name: "Drapeau Queer", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBkPSJNMCAwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiM5OWQ5ZWEiIGQ9Ik0wIDIwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiMwMGEyZTgiIGQ9Ik0wIDQwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiNiNWU2MWQiIGQ9Ik0wIDYwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDgwSDA3MjB2MjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZmZjOTBlIiBkPSJNMCAxMDBoNzIwdjIwSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZkNjY2NiIgZD0iTTAgMTIwaDcyMHYyMEgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmFlYzkiIGQ9Ik0wIDE0MGg3MjB2MjBIMHoiLz4KICA8cGF0aCBkPSJNMCAxNjBoNzIwdjIwSDB6Ii8+Cjwvc3ZnPg==", history: "Créé par l'utilisateur Tumblr @vampirestepdad en 2014."},
-            // { id: "flag_gay", name: "Drapeau Gay", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjM2QxYTc4IiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNTA0OWNjIiBkPSJNMCAwaDcyMHYxNTRIMHoiLz4KICA8cGF0aCBmaWxsPSIjN2JhZGUyIiBkPSJNMCAwaDcyMHYxMjlIMHoiLz4KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDcyMHYxMDNIMHoiLz4KICA8cGF0aCBmaWxsPSIjOThlOGMxIiBkPSJNMCAwaDcyMHY3N0gweiIvPgogIDxwYXRoIGZpbGw9IiwyNmNlYWEiIGQ9Ik0wIDBoNzIwdjUxSDB6Ii8+CiAgPHBhdGggZmlsbD0iIzA3OGQ3MCIgZD0iTTAgMGg3MjB2MjZIMHoiLz4KPC9zdmc+", history: "Créé par l'utilisateur Tumblr @gayflagblog en 2019."},            
-            // { id: "flag_intersex", name: "Drapeau Intersexe", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNDAwIDYwMCI+CiAgPHBhdGggZmlsbD0iI2ZmZDgwMCIgZD0iTTAgMGgyNDAwdjYwMEgweiIvPgogIDxjaXJjbGUgY3g9IjEyMDAiIGN5PSIzMDAiIHI9IjE0NyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNzkwMmFhIiBzdHJva2Utd2lkdGg9IjUwIi8+Cjwvc3ZnPg==", history: "Créé par Morgan Carpenter en 2013."},
-            // { id: "flag_lesbian", name: "Drapeau Lesbien", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjZDQyYzAwIiBkPSJNMCAwaDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZDk4NTUiIGQ9Ik0wIDM2aDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDcyaDcyMHYzNkgweiIvPgogIDxwYXRoIGZpbGw9IiNkMTYxYTIiIGQ9Ik0wIDEwOGg3MjB2MzZIMHoiLz4KICA8cGF0aCBmaWxsPSIjYTIwMTYxIiBkPSJNMCAxNDRoNzIwdjM2SDB6Ii8+Cjwvc3ZnPgo=", history: "Cette version à 7 bandes représente la non-conformité de genre."},
-            // { id: "flag_pan", name: "Drapeau Pansexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjMjFiMWZmIiBkPSJNMCAwaDcyMHYxODBIMCIvPgogIDxwYXRoIGZpbGw9IiNmZmQ4MDAiIGQ9Ik0wIDBoNzIwdjEyMEgwIi8+CiAgPHBhdGggZmlsbD0iI2ZmMjE4YyIgZD0iTTAgMGg3MjB2NjBIMCIvPgo8L3N2Zz4K", history: "Représente l'attirance pour tous les genres."},
-            // { id: "flag_demisexual", name: "Drapeau Demisexuel", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjZDJkMmQyIiBkPSJNMCAxMDVoNzIwdjc1SDB6Ii8+CiAgPHBhdGggZmlsbD0iIzZlMDA3MCIgZD0iTTAgNzVsNzIwdjMwSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGg3MjB2NzVIMHoiLz4KICA8cGF0aCBkPSJtMCAwIDExNSA5MEwwIDE4MFoiLz4KPC9zdmc+", history: "Apparu vers 2010."},
-            { id: "flag_pride", name: "Pride Progressif", data: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA3MjAgMTgwIj4KICA8cGF0aCBmaWxsPSIjNmQyMzgwIiBkPSJNMCAwaDcyMHYxODBIMHoiLz4KICA8cGF0aCBmaWxsPSIjMmM1OGE0IiBkPSJNMCAwaDcyMHYxNTBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNzhiODJhIiBkPSJNMCAwaDcyMHYxMjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjZWZlNTI0IiBkPSJNMCAwaDcyMHY5MEgweiIvPgogIDxwYXRoIGZpbGw9IiNmMjg5MTciIGQ9Ik0wIDBoNzIwdjYwSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2UyMjAxNiIgZD0iTTAgMGg3MjB2MzBIMHoiLz4KICA8cGF0aCBkPSJNNzQgMEgwdjE4MGg3NGw4NC05MHoiLz4KICA8cGF0aCBmaWxsPSIjOTQ1NTE2IiBkPSJNNTcgMEgwdjE4MGg1N2w4My05MHoiLz4KICA8cGF0aCBmaWxsPSIjN2JjY2U1IiBkPSJNNDAgMEgwdjE4MGg0MGw4My05MHoiLz4KICA8cGF0aCBmaWxsPSIjZjRhZWM4IiBkPSJNMjIgMEgwdjE4MGgyMmw4NC05MHoiLz4KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwdjE4MGg1bDgzLTkwTDUgMHoiLz4KICA8cGF0aCBmaWxsPSIjZmRkODE3IiBkPSJtMCAxNjcgNzEtNzdMMCAxM3oiLz4KICA8Y2lyY2xlIGN4PSIyNi4yIiBjeT0iOTAiIHI9IjE4LjkiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzY2MzM4YiIgc3Ryb2tlLXdpZHRoPSI0LjUiLz4KPC9zdmc+", history: "Créé en 2018 par Daniel Quasar."}
-        ];
+[
+	{
+		"id": "flag_trans",
+		"name": "Drapeau Transgenre",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iIzViY2VmYSIgZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiNmNWE5YjgiIGQ9Ik0wIDYyLjRoMTE4NHYxODcuMkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDEyNC44aDExODR2NjIuNEgweiIvPgo8L3N2Zz4K",
+		"history": "Créé en 1999 par la femme transgenre Monica Helms, ce drapeau déploie des bandes bleu ciel et roses pour représenter les couleurs traditionnelles associées aux garçons et aux filles, entourant une bande blanche centrale qui symbolise les personnes non-binaires, intersexes ou en transition."
+	},
+	{
+		"id": "flag_bi",
+		"name": "Drapeau Bisexuel",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iIzAwMzhhOCIgZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiM5YjRmOTYiIGQ9Ik0wIDBoMTE4NHYxODcuMkgweiIvPgogIDxwYXRoIGZpbGw9IiNkNjAyNzAiIGQ9Ik0wIDBoMTE4NHYxMjQuOEgweiIvPgo8L3N2Zz4K",
+		"history": "Conçu par Michael Page en 1998 pour accroître la visibilité des personnes bisexuelles au sein de la communauté et de la société, ce drapeau superpose le rose pour l'attirance envers le même sexe et le bleu pour l'attirance envers le sexe opposé, créant au centre une bande violette qui symbolise la fusion et la fluidité de ces attirances."
+	},
+	{
+		"id": "flag_asexual",
+		"name": "Drapeau Asexuel",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+DQogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoMTE4NHYzMTJIMHoiLz4NCiAgPHBhdGggZD0iTTAgMGgxMTg0djc4SDB6Ii8+DQogIDxwYXRoIGZpbGw9InB1cnBsZSIgZD0iTTAgMjM0aDExODR2NzhIMHoiLz4NCiAgPHBhdGggZmlsbD0iI2EzYTNhMyIgZD0iTTAgNzhoMTE4NHY3OEgweiIvPg0KPC9zdmc+DQo=",
+		"history": "Sélectionné par un vote communautaire sur le site de l'AVEN en 2010, ce drapeau décline le noir, le gris, le blanc et le mauve pour représenter l'asexualité, la zone grise entre l'attirance et l'absence de désir, les alliés ainsi que la communauté dans son ensemble."
+	},
+	{
+		"id": "flag_queer",
+		"name": "Drapeau Queer",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZD0iTTAgMGgxMTg0djMxMkgweiIgY2xhc3M9InMwIi8+CiAgPHBhdGggZmlsbD0iIzk5ZDllYSIgZD0iTTAgMzQuNjdoMTE4NHYyNzcuMzNIMHoiLz4KICA8cGF0aCBmaWxsPSIjMDBhMmU4IiBkPSJNMCA2OS4zM2gxMTg0djI0Mi42N0gweiIvPgogIDxwYXRoIGZpbGw9IiNiNWU2MWQiIGQ9Ik0wIDEwNGgxMTg0djIwOEgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDEzOC42N2gxMTg0djE3My4zM0gweiIvPgogIDxwYXRoIGZpbGw9IiNmZmM5MGUiIGQ9Ik0wIDE3My4zM2gxMTg0djEzOC42N0gweiIvPgogIDxwYXRoIGZpbGw9IiNmZDY2NjYiIGQ9Ik0wIDIwOGgxMTg0djEwNEgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmFlYzkiIGQ9Ik0wIDI0Mi42N2gxMTg0djY5LjMzSDB6Ii8+CiAgPHBhdGggZD0iTTAgMjc3LjMzaDExODR2MzQuNjdIMHoiIGNsYXNzPSJzMCIvPgo8L3N2Zz4K",
+		"history": "Créé par l'artiste Pastel_Baby vers 2017, ce drapeau à neuf bandes colorées célèbre la diversité et la fluidité de la communauté queer à travers un large spectre chromatique qui s'éloigne des codes traditionnels pour inclure toutes les nuances d'identités et d'expressions."
+	},
+	{
+		"id": "flag_gay",
+		"name": "Drapeau Gay",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiIgd2lkdGg9IjExODQiPgogIDxwYXRoIGZpbGw9IiMzZDFhNzgiIGQ9Ik0wIDBoMTE4NHYzMTJIMHoiLz4KICA8cGF0aCBmaWxsPSIjNTA0OWNjIiBkPSJNMCAwaDExODR2MjY3LjQzSDB6Ii8+CiAgPHBhdGggZmlsbD0iIzdiYWRlMiIgZD0iTTAgMGgxMTg0djIyMi44NkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoMTE4NHYxNzguMjlIMHoiLz4KICA8cGF0aCBmaWxsPSIjOThlOGMxIiBkPSJNMCAwaDExODR2MTMzLjcySDB6Ii8+CiAgPHBhdGggZmlsbD0iIzI2Y2VhYSIgZD0iTTAgMGgxMTg0djg5LjE1SDB6Ii8+CiAgPHBhdGggZmlsbD0iIzA3OGQ3MCIgZD0iTTAgMGgxMTg0djQ0LjU4SDB6Ii8+Cjwvc3ZnPgo=",
+		"history": "Inspiré par le drapeau lesbien, ce drapeau à sept bandes a été conçu vers 2019 pour offrir une représentation spécifique aux hommes gais et aux personnes non-binaires se reconnaissant dans la masculinité, utilisant un dégradé de vert et de bleu pour symboliser la nature, la joie et la diversité des expressions de genre."
+	},
+	{
+		"id": "flag_intersex",
+		"name": "Drapeau Intersexe",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iI2ZmZDgwMCIgZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxjaXJjbGUgY3g9IjU5MiIgY3k9IjE1NiIgcj0iOTUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzc5MDJhYSIgc3Ryb2tlLXdpZHRoPSIzMiIvPgo8L3N2Zz4K",
+		"history": "Créé en 2013 par Morgan Carpenter d'Intersex Human Rights Australia, ce drapeau utilise le jaune et le violet pour éviter toute connotation de genre binaire (bleu ou rose), tandis que son cercle central symbolise l'intégrité et la plénitude des personnes nées avec des variations des caractéristiques sexuelles."
+	},
+	{
+		"id": "flag_lesbian",
+		"name": "Drapeau Lesbien",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iI2EzMDI2MiIgZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiNkMzYyYTQiIGQ9Ik0wIDBoMTE4NHYyNDkuNkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmYiIGQ9Ik0wIDBoMTE4NHYxODcuMkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZjlhNTYiIGQ9Ik0wIDBoMTE4NHYxMjQuOEgweiIvPgogIDxwYXRoIGZpbGw9IiNkNTJkMDAiIGQ9Ik0wIDBoMTE4NHY2Mi40SDB6Ii8+Cjwvc3ZnPgo=",
+		"history": "Apparu sur le web en 2018 pour remplacer les versions plus anciennes, ce drapeau à cinq bandes décline des nuances d'orange et de rose séparées par du blanc pour représenter la diversité des identités lesbiennes, allant de l'expression de genre à la sérénité et à la communauté."
+	},
+	{
+		"id": "flag_pan",
+		"name": "Drapeau Pansexuel",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iIzIxYjFmZiIgZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiNmZmQ4MDAiIGQ9Ik0wIDBoMTE4NHYyMDhIMHoiLz4KICA8cGF0aCBmaWxsPSIjZmYyMThjIiBkPSJNMCAwaDExODR2MTA0SDB6Ii8+Cjwvc3ZnPgo=",
+		"history": "Créé en 2010 par Jasper V. pour offrir une identité propre à la communauté, ce drapeau arbore trois bandes (rose, jaune et bleu) symbolisant l'attirance envers une personne indépendamment de son sexe ou de son identité de genre."
+	},
+	{
+		"id": "flag_demisexual",
+		"name": "Drapeau Demisexuel",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iI2QyZDJkMiIgZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiM2ZTAwNzAiIGQ9Ik0wIDBoMTE4NHYxODJIMHoiLz4KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDExODR2MTMwSDB6Ii8+CiAgPHBhdGggZD0iTTAgMGwxOTkgMTU2TDAgMzEyeiIvPgo8L3N2Zz4K",
+		"history": "Apparu peu après 2010, le drapeau demisexuel reprend les couleurs de l'asexualité — le noir, le gris, le blanc et le violet — mais les réorganise avec un triangle distinctif pour représenter les personnes qui ne ressentent d'attirance sexuelle qu'après avoir forgé un lien émotionnel fort."
+	},
+	{
+		"id": "flag_pride",
+		"name": "Drapeau de la Fierté",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iIzZkMjM4MCIgZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiMyYzU4YTQiIGQ9Ik0wIDBoMTE4NHYyNjBIMHoiLz4KICA8cGF0aCBmaWxsPSIjNzhiODJhIiBkPSJNMCAwaDExODR2MjA4SDB6Ii8+CiAgPHBhdGggZmlsbD0iI2VmZTUyNCIgZD0iTTAgMGgxMTg0djE1NkgweiIvPgogIDxwYXRoIGZpbGw9IiNmMjg5MTciIGQ9Ik0wIDBoMTE4NHYxMDRIMHoiLz4KICA8cGF0aCBmaWxsPSIjZTIyMDE2IiBkPSJNMCAwaDExODR2NTJIMHoiLz4KICA8cGF0aCBkPSJNMTI5IDBIMHYzMTJoMTI5bDE0NC0xNTZ6Ii8+CiAgPHBhdGggZmlsbD0iIzk0NTUxNiIgZD0iTTk4IDBIMHYzMTJoOThsMTQ1LTE1NnoiLz4KICA8cGF0aCBmaWxsPSIjN2JjY2U1IiBkPSJNNjggMEgwdjMxMmg2OGwxNDUtMTU2eiIvPgogIDxwYXRoIGZpbGw9IiNmNGFlYzgiIGQ9Ik0zOCAwSDB2MzEyaDM4bDE0NS0xNTZ6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMHYzMTJoOWwxNDQtMTU2TDkgMHoiLz4KICA8cGF0aCBmaWxsPSIjZmRkODE3IiBkPSJtMCAyODkgMTIzLTEzM0wwIDIzeiIvPgogIDxjaXJjbGUgY3g9IjQ1IiBjeT0iMTU2IiByPSIzMiIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNjYzMzhiIiBzdHJva2Utd2lkdGg9IjgiLz4KPC9zdmc+Cg==",
+		"history": "Créé en 2018 par Daniel Quasar et mis à jour en 2021 par Valentino Vecchietti, ce drapeau inclut les personnes trans, les communautés racisées, les personnes vivant avec le VIH/SIDA ainsi que les personnes intersexes."
+	},
+	{
+		"id": "flag_nonbinary",
+		"name": "Drapeau Non-binaire",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iIzJkMmQyZCIgZD0iTTAgMGgxMTg0djMxMkgwIi8+CiAgPHBhdGggZmlsbD0iIzliNTlkMCIgZD0iTTAgMGgxMTg0djIzNEgwIi8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgMGgxMTg0djE1NkgwIi8+CiAgPHBhdGggZmlsbD0iI2ZmZjQzMyIgZD0iTTAgMGgxMTg0djc4SDAiLz4KPC9zdmc+",
+		"history": "Créé en 2014 par Kye Rowan, il se compose de quatre bandes (jaune, blanc, violet, noir). Il représente les personnes dont l'identité ne s'inscrit pas dans la binarité homme/femme."
+	},
+	{
+		"id": "flag_genderfluid",
+		"name": "Drapeau Genderfluid",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+DQogIDxwYXRoIGZpbGw9IiNmZjc1YTIiIGQ9Ik0wIDBoMTE4NHY2Mi40SDB6Ii8+DQogIDxwYXRoIGZpbGw9IiNmNWY1ZjUiIGQ9Ik0wIDYyLjRoMTE4NHY2Mi40SDB6Ii8+DQogIDxwYXRoIGZpbGw9IiNiZTE4ZDYiIGQ9Ik0wIDEyNC44aDExODR2NjIuNEgweiIvPg0KICA8cGF0aCBmaWxsPSIjMmMyYzJjIiBkPSJNMCAxODcuMmgxMTg0djYyLjRIMHoiLz4NCiAgPHBhdGggZmlsbD0iIzMzM2ViZCIgZD0iTTAgMjQ5LjZoMTE4NFYzMTJIMHoiLz4NCjwvc3ZnPg==",
+		"history": "Conçu par Serena Dyer en 2012, ce drapeau à cinq bandes (rose, blanc, violet, noir, bleu) symbolise les personnes dont l'identité de genre varie au fil du temps."
+	},
+	{
+		"id": "flag_agender",
+		"name": "Drapeau Agenre",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiNiOWI5YjkiIGQ9Ik0wIDQ1aDExODR2MjIzSDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmZiIgZD0iTTAgODloMTE4NHYxMzRIMHoiLz4KICA8cGF0aCBmaWxsPSIjYjhmNDgzIiBkPSJNMCAxMzRoMTE4NHY0NUgweiIvPgo8L3N2Zz4=",
+		"history": "Créé en 2014 par Salem X, il utilise des bandes noires, grises, blanches et une bande centrale verte pour représenter l'absence de genre ou une identité de genre neutre."
+	},
+	{
+		"id": "flag_polysexual",
+		"name": "Drapeau Polysexuel",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+DQogIDxwYXRoIGZpbGw9IiMxYzkyZjYiIGQ9Ik0wIDBoMTE4NHYzMTJIMHoiLz4NCiAgPHBhdGggZmlsbD0iIzA3ZDU2OSIgZD0iTTAgMGgxMTg0djIwOEgweiIvPg0KICA8cGF0aCBmaWxsPSIjZjYxY2I5IiBkPSJNMCAwaDExODR2MTA0SDB6Ii8+DQo8L3N2Zz4=",
+		"history": "Souvent confondu avec la pansexualité, ce drapeau (rose, vert, bleu) représente l'attirance pour plusieurs genres, mais pas nécessairement tous."
+	},
+	{
+		"id": "flag_aromantic",
+		"name": "Drapeau Aromantique",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+DQogIDxwYXRoIGQ9Ik0wIDBoMTE4NHYzMTJIMHoiLz4NCiAgPHBhdGggZmlsbD0iI2E5YTlhOSIgZD0iTTAgMGgxMTg0djI1MEgweiIvPg0KICA8cGF0aCBmaWxsPSIjZmZmIiBkPSJNMCAwaDExODR2MTg3SDB6Ii8+DQogIDxwYXRoIGZpbGw9IiNhN2QzNzkiIGQ9Ik0wIDBoMTE4NHYxMjVIMHoiLz4NCiAgPHBhdGggZmlsbD0iIzNkYTU0MiIgZD0iTTAgMGgxMTg0djYySDB6Ii8+DQo8L3N2Zz4=",
+		"history": "Utilisant des nuances de vert, de blanc, de gris et de noir, il représente les personnes qui ressentent peu ou pas d'attirance romantique."
+	},
+	{
+		"id": "flag_omnisexual",
+		"name": "Drapeau Omnisexuel",
+		"data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMTg0IDMxMiI+CiAgPHBhdGggZmlsbD0iIzhjYTVmZiIgZD0iTTAgMGgxMTg0djMxMkgweiIvPgogIDxwYXRoIGZpbGw9IiM2NzVmZmYiIGQ9Ik0wIDBoMTE4NHYyNTBIMHoiLz4KICA8cGF0aCBmaWxsPSIjMjUwMDQ2IiBkPSJNMCAwaDExODR2MTg3SDB6Ii8+CiAgPHBhdGggZmlsbD0iI2ZmNTNiZSIgZD0iTTAgMGgxMTg0djEyNUgweiIvPgogIDxwYXRoIGZpbGw9IiNmZjliY2QiIGQ9Ik0wIDBoMTE4NHY2MkgweiIvPgo8L3N2Zz4=",
+		"history": "Proche du drapeau pansexuel mais avec des nuances de bleu et de rose plus marquées, il désigne l'attirance pour tous les genres, où le genre joue un rôle dans l'attirance (contrairement à la pansexualité qui est souvent décrite comme \"aveugle au genre\")."
+	}
+]
