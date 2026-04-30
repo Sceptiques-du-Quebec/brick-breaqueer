@@ -479,7 +479,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
 
-        const titleText = (this.level >= 10) ? "VICTOIRE !" : "FIN DE LA PARTIE";
+        const titleText = "FIN DE LA PARTIE";
         const title = this.add.text(width / 2, height * 0.65, titleText, { font: `${fontWeight} ${Math.round(width / 18)}px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
         this.uiGroup.add(title);
 
