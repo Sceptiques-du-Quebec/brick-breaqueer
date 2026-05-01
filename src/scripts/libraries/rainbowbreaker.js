@@ -429,7 +429,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.particles.emitParticleAt(brick.x, brick.y, 20);
         brick.destroy();
         if (this.bricks.countActive() === 0) {
-            this.score += 300;
+            this.score += 500;
             this.revealFlag();
         }
     }
