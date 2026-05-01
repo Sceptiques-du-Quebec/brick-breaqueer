@@ -18,6 +18,10 @@ export default class RainbowBreaker extends Phaser.Scene {
     comboCount = 0;
     lastBrickTime = 0;
     lastPointerX = 0;
+    lastPauseTime = 0;
+    lastPauseToggleTime = 0;
+    lastMultiTouchTime = 0;
+    isTogglingPause = false;
     comboThreshold = DATA.config.comboThreshold;
     launchTimer = null;
     countdownText = null;
@@ -136,6 +140,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.input.mouse.preventDefaultWheel = false;
+        this.input.addPointer(1);
 
         const baseSize = Math.max(14, Math.round(width / 40));
         const textStyle = { font: `${fontWeight} ${baseSize}px "${fontName}"`, fill: mainColor };
@@ -169,9 +174,23 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.createLogoTexture('game_logo', DATA.images.logo);
         this.showStartScreen();
-        this.input.on('pointerup', () => {
+
+        this.input.on('pointerdown', (pointer) => {
+            if (this.input.pointer1.active && this.input.pointer2.active) {
+                this.lastMultiTouchTime = this.time.now;
+                if (this.gameState === "PLAYING") {
+                    this.setPause(true);
+                } else if (this.gameState === "PAUSED") {
+                    this.setPause(false);
+                }
+            }
+        }, this);
+
+        this.input.on('pointerup', (pointer) => {
+            if (this.time.now - this.lastMultiTouchTime < 500) return;
             this.handleGlobalAction(false);
         }, this);
+
     }
 
 
@@ -432,7 +451,28 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         const flagIndex = this.levelOrder[this.level % this.levelOrder.length];
         const currentFlag = this.FLAGS[flagIndex];
+
         this.historyText.setText(`${currentFlag.name.toUpperCase()}\n\n${currentFlag.history}`).setVisible(true);
+
+        this.bgFlag.setScale(1);
+        this.bgFlag.setOrigin(0.5, 0.5);
+
+        const targetW = this.gridConfig.cols * this.gridConfig.brickW;
+        const centerX = Math.floor((width - targetW) / 2) + (targetW / 2);
+        const centerY = this.gridConfig.startY + (this.gridConfig.totalHeight / 2);
+        this.bgFlag.setPosition(centerX, centerY);
+
+        this.tweens.add({
+            targets: this.bgFlag,
+            scaleX: 1.1,
+            scaleY: 1.1,
+            duration: 100,
+            yoyo: true,
+            ease: 'Cubic.easeOut',
+            onComplete: () => {
+                this.bgFlag.setScale(1);
+            }
+        });
 
         this.time.delayedCall(3000, () => {
             this.canContinue = true;
