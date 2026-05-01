@@ -410,6 +410,8 @@ export default class RainbowBreaker extends Phaser.Scene {
     revealFlag() {
         const { width, height } = this.sys.game.config;
         this.gameState = "REVEAL";
+        this.trail = [];
+        this.trailG.clear();
         this.ball.setVelocity(0, 0).setVisible(false);
         this.paddle.setVisible(false);
         const fontName = this.registry.get('gameFont');
