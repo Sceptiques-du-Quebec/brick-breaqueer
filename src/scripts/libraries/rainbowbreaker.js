@@ -408,10 +408,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontName = this.registry.get('gameFont');
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
-
         const flagIndex = this.levelOrder[this.level % this.levelOrder.length];
         const currentFlag = this.FLAGS[flagIndex];
-
         this.historyText.setText(`${currentFlag.name.toUpperCase()}\n\n${currentFlag.history}`).setVisible(true);
         const sub = this.add.text(width / 2, height - 80, "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR CONTINUER", { font: `${fontWeight} 14px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
         this.addFloatingEffect(sub);
@@ -424,16 +422,58 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.comboCount = 0;
         this.trail = [];
         this.trailG.clear();
+        this.ball.setVelocity(0, 0)
+                .setPosition(width / 2, height - 150)
+                .setVisible(false);
+        this.startCountdown();
+    }
 
-        this.ball.setVelocity(0, 0).setPosition(width / 2, height - 150).setAlpha(1).setVisible(true);
-        if (this.launchTimer) this.launchTimer.remove();
+    
+    startCountdown() {
+        const { width, height } = this.sys.game.config;
+        const fontName = this.registry.get('gameFont');
+        const mainColor = this.registry.get('gameColor');
+        const fontWeight = this.registry.get('gameWeight');
 
-        this.launchTimer = this.time.delayedCall(1000, () => {
-            if (this.gameState !== "PLAYING" || !this.ball.active) return;
-            const speed = Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
-            this.ball.setVelocity(Phaser.Math.Between(-80, 80), -speed);
-            this.launchTimer = null;
+        this.ball.setVisible(false);
+        const bottomOfBricks = this.gridConfig.startY + (this.gridConfig.rows * this.gridConfig.brickH);
+        const centerY = bottomOfBricks + (this.paddle.y - bottomOfBricks) / 2;
+        const countdownValues = ['3', '2', '1'];
+        let index = 0;
+
+        const countdownText = this.add.text(width / 2, centerY, '', {
+            font: `${fontWeight} ${Math.round(width / 10)}px "${fontName}"`,
+            fill: mainColor
+        }).setOrigin(0.5).setDepth(100).setResolution(2);
+
+        const timer = this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                if (index < countdownValues.length) {
+                    countdownText.setText(countdownValues[index]);
+                    countdownText.setScale(0.5);
+                    this.tweens.add({
+                        targets: countdownText,
+                        scale: 1,
+                        duration: 150,
+                        ease: 'Back.easeOut'
+                    });
+                    index++;
+                } else {
+                    countdownText.destroy();
+                    this.launchBall(); 
+                }
+            },
+            repeat: countdownValues.length
         });
+    }
+
+
+    launchBall() {
+        if (this.gameState !== "PLAYING" || !this.ball.active) return;
+        this.ball.setVisible(true).setAlpha(1);
+        const speed = Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
+        this.ball.setVelocity(Phaser.Math.Between(-80, 80), -speed);
     }
 
 
@@ -502,7 +542,6 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     handleGlobalAction(isKeyboard = false) {
         if (this.gameState === "WAITING_FOR_CALLBACK") return;
-
         switch (this.gameState) {
             case "START":
                 this.startGame();
