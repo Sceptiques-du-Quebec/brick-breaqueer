@@ -464,8 +464,8 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.tweens.add({
             targets: this.bgFlag,
-            scaleX: 1.1,
-            scaleY: 1.1,
+            scaleX: 1.05,
+            scaleY: 1.05,
             duration: 100,
             yoyo: true,
             ease: 'Cubic.easeOut',
