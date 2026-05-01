@@ -6,7 +6,7 @@ const { close } = createWatchers(
 	[
 		{
 			name: "js",
-			patterns: ["src/scripts/**/*.js"],
+			patterns: ["src/scripts/**/*.js", "src/scripts/**/*.json"],
 			ignored: ["**/*.min.js"],
 			callback: async (events) => {
 				console.log("[js] batch", events.length, events.map(e => e.file));
@@ -17,8 +17,8 @@ const { close } = createWatchers(
 				const loaderentry = path.resolve(__dirname, "../src/scripts/brickbreaqueer.core.js");
 				const loaderoutfile = path.resolve(__dirname, "../src/scripts/brickbreaqueer.core.min.js");
 
-				await buildJS(entry, outfile, { loader: { '.json': 'json' } });
-				await buildJS(loaderentry, loaderoutfile, { loader: { '.json': 'json' } });
+				await buildJS(entry, outfile);
+				await buildJS(loaderentry, loaderoutfile);
 				console.log("");
 			},
 		},

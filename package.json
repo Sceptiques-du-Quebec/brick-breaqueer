@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "chokibasic": "^1.1.10",
+    "chokibasic": "^1.1.11",
     "phaser": "^4.1.0"
   },
   "scripts": {
