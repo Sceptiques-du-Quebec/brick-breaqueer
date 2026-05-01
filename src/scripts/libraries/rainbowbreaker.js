@@ -19,6 +19,8 @@ export default class RainbowBreaker extends Phaser.Scene {
     comboCount = 0;
     lastBrickTime = 0;
     comboThreshold = 450;
+    launchTimer = null;
+    countdownText = null;
     gridConfig = { cols: 8, rows: 4, brickW: 0, brickH: 0, startY: 0 };
     rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
     comboWords = [];
@@ -443,27 +445,29 @@ export default class RainbowBreaker extends Phaser.Scene {
         const countdownValues = ['3', '2', '1'];
         let index = 0;
 
-        const countdownText = this.add.text(width / 2, centerY, '', {
+        this.countdownText = this.add.text(width / 2, centerY, '', {
             font: `${fontWeight} ${Math.round(width / 10)}px "${fontName}"`,
             fill: mainColor
         }).setOrigin(0.5).setDepth(100).setResolution(2);
 
-        const timer = this.time.addEvent({
+        this.launchTimer = this.time.addEvent({
             delay: 1000,
             callback: () => {
                 if (index < countdownValues.length) {
-                    countdownText.setText(countdownValues[index]);
-                    countdownText.setScale(0.5);
+                    this.countdownText.setText(countdownValues[index]);
+                    this.countdownText.setScale(0.5);
                     this.tweens.add({
-                        targets: countdownText,
+                        targets: this.countdownText,
                         scale: 1,
                         duration: 150,
                         ease: 'Back.easeOut'
                     });
                     index++;
                 } else {
-                    countdownText.destroy();
-                    this.launchBall(); 
+                    this.countdownText.destroy();
+                    this.countdownText = null;
+                    this.launchTimer = null;
+                    this.launchBall();
                 }
             },
             repeat: countdownValues.length
@@ -489,11 +493,18 @@ export default class RainbowBreaker extends Phaser.Scene {
         if (isPaused) {
             this.gameState = "PAUSED";
             this.physics.world.pause();
-            if (this.launchTimer) this.launchTimer.paused = true;
+            
+            if (this.launchTimer) {
+                this.launchTimer.paused = true;
+                if (this.countdownText) {
+                    this.countdownText.setVisible(false);
+                }
+            }
 
             this.pauseText = this.add.text(width / 2, height * 0.65, "PAUSE", {
                 font: `${fontWeight} ${Math.round(width / 15)}px "${fontName}"`, fill: mainColor
             }).setOrigin(0.5).setResolution(2).setDepth(100);
+            
             this.pauseSubText = this.add.text(width / 2, this.pauseText.y + (height * 0.1), "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR CONTINUER", {
                 font: `${fontWeight} ${Math.round(width / 45)}px "${fontName}"`, fill: mainColor
             }).setOrigin(0.5).setResolution(2).setDepth(100);
@@ -502,11 +513,17 @@ export default class RainbowBreaker extends Phaser.Scene {
         } else {
             this.gameState = "PLAYING";
             this.physics.world.resume();
+
             if (this.launchTimer) {
                 this.launchTimer.paused = false;
-            } else if (this.ball.body.velocity.x === 0 && this.ball.body.velocity.y === 0) {
+                if (this.countdownText) {
+                    this.countdownText.setVisible(true);
+                }
+            } 
+            else if (this.ball.body.velocity.x === 0 && this.ball.body.velocity.y === 0) {
                 this.resetBall();
             }
+            
             if (this.pauseText) this.pauseText.destroy();
             if (this.pauseSubText) this.pauseSubText.destroy();
         }
