@@ -21,6 +21,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     comboThreshold = DATA.config.comboThreshold;
     launchTimer = null;
     countdownText = null;
+    canContinue = true;
     gridConfig = { cols: DATA.config.gridCols, rows: DATA.config.gridRows, brickW: 0, brickH: 0, startY: 0 };
     rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
     comboWords = [];
@@ -418,19 +419,30 @@ export default class RainbowBreaker extends Phaser.Scene {
     revealFlag() {
         const { width, height } = this.sys.game.config;
         this.gameState = "REVEAL";
+        this.canContinue = false;
+
         this.trail = [];
         this.trailG.clear();
         this.ball.setVelocity(0, 0).setVisible(false);
         this.paddle.setVisible(false);
+
         const fontName = this.registry.get('gameFont');
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
+
         const flagIndex = this.levelOrder[this.level % this.levelOrder.length];
         const currentFlag = this.FLAGS[flagIndex];
         this.historyText.setText(`${currentFlag.name.toUpperCase()}\n\n${currentFlag.history}`).setVisible(true);
-        const sub = this.add.text(width / 2, height - 80, "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR CONTINUER", { font: `${fontWeight} 14px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
-        this.addFloatingEffect(sub);
-        this.uiGroup.add(sub);
+
+        this.time.delayedCall(3000, () => {
+            this.canContinue = true;
+            const sub = this.add.text(width / 2, height - 80, "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR CONTINUER", {
+                font: `${fontWeight} 14px "${fontName}"`,
+                fill: mainColor
+            }).setOrigin(0.5).setResolution(2);
+            this.addFloatingEffect(sub);
+            this.uiGroup.add(sub);
+        });
     }
 
 
@@ -583,6 +595,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                 this.showStartScreen();
                 break;
             case "REVEAL":
+                if (!this.canContinue) return;
                 this.level++;
                 this.loadLevel(this.level);
                 break;
