@@ -311,6 +311,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.ball = this.physics.add.image(width / 2, height - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
         this.ball.setVisible(0);
         this.physics.add.collider(this.ball, this.paddle, (b, p) => {
+            this.comboCount = 0;
             let diff = b.x - p.x;
             b.setVelocityX(10 * diff);
         });
@@ -612,7 +613,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                 else if (this.cursors.right.isDown) this.paddle.setVelocityX(750);
                 else this.paddle.setVelocityX(0);
             } else {
-                this.paddle.setVelocityX((pointer.x - this.paddle.x) * 15);
+                this.paddle.setVelocityX((pointer.x - this.paddle.x) * 20);
             }
 
             if (this.ball && this.ball.y > height + 20) {
@@ -623,7 +624,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
             if (this.ball && this.ball.active && this.ball.visible && (this.ball.body.velocity.x !== 0 || this.ball.body.velocity.y !== 0)) {
                 this.trail.push({ x: this.ball.x, y: this.ball.y });
-                if (this.trail.length > 12) this.trail.shift();
+                if (this.trail.length > 20) this.trail.shift();
                 this.drawTrail();
             } else this.trailG.clear();
         }
@@ -634,8 +635,13 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.trailG.clear();
         this.trail.forEach((p, i) => {
             const ratio = i / this.trail.length;
-            this.trailG.fillStyle(this.rainbowColors[i % this.rainbowColors.length], ratio * 0.4);
-            this.trailG.fillCircle(p.x, p.y, 4 + (ratio * 5));
+            const color = this.rainbowColors[i % this.rainbowColors.length];
+            const radius = 2 + (ratio * 7); 
+            this.trailG.fillStyle(color, ratio * 0.2);
+            this.trailG.fillCircle(p.x, p.y, radius);
+            this.trailG.fillStyle(color, ratio * 0.4);
+            this.trailG.fillCircle(p.x, p.y, radius * 0.6);
         });
     }
+    
 }
