@@ -18,7 +18,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     maxSpeed = 800;
     comboCount = 0;
     lastBrickTime = 0;
-    comboThreshold = 450;
+    comboThreshold = 800;
     launchTimer = null;
     countdownText = null;
     gridConfig = { cols: 8, rows: 4, brickW: 0, brickH: 0, startY: 0 };
