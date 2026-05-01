@@ -128,11 +128,13 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.physics.world.checkCollision.down = false;
 
         this.bgFlag = this.add.image(0, 0, "").setOrigin(0, 0).setDepth(0).setAlpha(0);
+
         this.trailG = this.add.graphics().setDepth(1);
         this.uiGroup = this.add.group();
         this.cursors = this.input.keyboard.createCursorKeys();
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.input.mouse.preventDefaultWheel = false;
 
         const baseSize = Math.max(14, Math.round(width / 40));
         const textStyle = { font: `${fontWeight} ${baseSize}px "${fontName}"`, fill: mainColor };
@@ -147,21 +149,22 @@ export default class RainbowBreaker extends Phaser.Scene {
         }).setOrigin(0.5, 0).setResolution(2).setDepth(10).setVisible(false);
 
         this.particles = this.add.particles(0, 0, "part", {
-            speed: { min: 100, max: 400 },
-            angle: { min: 0, max: 360 },
-            scale: { start: 2, end: 0 },
-            lifespan: 800,
-            gravityY: 300,
-            emitting: false,
+            speed: { min: 100, max: 400 }, angle: { min: 0, max: 360 },
+            scale: { start: 2, end: 0 }, lifespan: 800, gravityY: 300, emitting: false,
             tint: () => Phaser.Utils.Array.GetRandom(this.rainbowColors)
         }).setDepth(5);
 
         this.lastPointerX = width / 2;
         window.addEventListener('pointermove', (event) => {
             const canvas = this.sys.game.canvas;
+            if (!canvas) return;
             const rect = canvas.getBoundingClientRect();
-            this.lastPointerX = (event.clientX - rect.left) * (canvas.width / rect.width);
-        });
+            const x = (event.clientX - rect.left) * (canvas.width / rect.width);
+
+            if (this.gameState === "PLAYING") {
+                this.lastPointerX = x;
+            }
+        }, { passive: true });
 
         this.createLogoTexture('game_logo', DATA.images.logo);
         this.showStartScreen();
@@ -622,7 +625,12 @@ export default class RainbowBreaker extends Phaser.Scene {
                 else if (this.cursors.right.isDown) this.paddle.setVelocityX(750);
                 else this.paddle.setVelocityX(0);
             } else {
-                this.paddle.setVelocityX((this.lastPointerX - this.paddle.x) * 20);
+                const isTouch = pointer.wasTouch;
+                if (!isTouch || (isTouch && pointer.isDown)) {
+                    this.paddle.setVelocityX((this.lastPointerX - this.paddle.x) * 20);
+                } else {
+                    this.paddle.setVelocityX(0);
+                }
             }
 
             if (this.ball && this.ball.y > height + 20) {
