@@ -28,7 +28,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     static init(settings) {
-        const config = {
+        const game = new Phaser.Game({
             type: Phaser.AUTO,
             parent: settings.parent || DATA.config.parent,
             width: settings.width || DATA.config.width,
@@ -55,20 +55,13 @@ export default class RainbowBreaker extends Phaser.Scene {
                 arcade: { gravity: { y: 0 } }
             },
             scene: [RainbowBreaker]
-        };
-
-        const game = new Phaser.Game(config);
-        const cleanFont = (settings.fontFamily || DATA.config.fontFamily).replace(/['"]/g, '');
-        const weight = settings.fontWeight || DATA.config.fontWeight;
-        const mainColor = settings.color || DATA.config.color;
-
+        });
         game.registry.set('onGameOver', settings.onGameOver);
-        game.registry.set('gameFont', cleanFont);
-        game.registry.set('gameWeight', weight);
-        game.registry.set('gameColor', mainColor);
+        game.registry.set('gameFont', (settings.fontFamily || DATA.config.fontFamily).replace(/['"]/g, ''));
+        game.registry.set('gameWeight', settings.fontWeight || DATA.config.fontWeight);
+        game.registry.set('gameColor', settings.color || DATA.config.color);
         game.registry.set('gameFlags', DATA.flags)
         game.registry.set('gameWords', DATA.words);
-
         return game;
     }
 
@@ -96,9 +89,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.pauseSubText = null;
 
         this.gridConfig.brickW = Math.floor((width * 0.9) / this.gridConfig.cols);
-        const totalGridHeight = height * 0.32; 
-        this.gridConfig.brickH = Math.floor(totalGridHeight / this.gridConfig.rows);
-
+        this.gridConfig.brickH = Math.floor((height * 0.32) / this.gridConfig.rows);
         this.gridConfig.startY = Math.floor(height * 0.15);
         this.gridConfig.totalWidth = this.gridConfig.cols * this.gridConfig.brickW;
         this.gridConfig.totalHeight = this.gridConfig.rows * this.gridConfig.brickH;
@@ -157,8 +148,13 @@ export default class RainbowBreaker extends Phaser.Scene {
         }).setOrigin(0.5, 0).setResolution(2).setDepth(10).setVisible(false);
 
         this.particles = this.add.particles(0, 0, "part", {
-            speed: { min: 100, max: 400 }, angle: { min: 0, max: 360 },
-            scale: { start: 2, end: 0 }, lifespan: 800, gravityY: 300, emitting: false
+            speed: { min: 100, max: 400 },
+            angle: { min: 0, max: 360 },
+            scale: { start: 2, end: 0 },
+            lifespan: 800,
+            gravityY: 300,
+            emitting: false,
+            tint: () => Phaser.Utils.Array.GetRandom(this.rainbowColors) 
         }).setDepth(5);
 
         this.createLogoTexture('game_logo', DATA.images.logo);
@@ -390,6 +386,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         if (typeof this.spawnComboWord === 'function') {
             this.spawnComboWord(brick.x, brick.y, totalPoints, this.comboCount);
         }
+        this.particles.emitParticleAt(brick.x, brick.y, 20);
         brick.destroy();
         if (this.bricks.countActive() === 0) {
             this.revealFlag();
@@ -643,5 +640,5 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.trailG.fillCircle(p.x, p.y, radius * 0.6);
         });
     }
-    
+
 }
