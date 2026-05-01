@@ -306,6 +306,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.paddle = this.physics.add.image(width / 2, height - 40, "paddle").setImmovable(true).setTint(phaserColor);
         this.paddle.setCollideWorldBounds(true);
         this.ball = this.physics.add.image(width / 2, height - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
+        this.ball.setVisible(0);
         this.physics.add.collider(this.ball, this.paddle, (b, p) => {
             let diff = b.x - p.x;
             b.setVelocityX(10 * diff);
