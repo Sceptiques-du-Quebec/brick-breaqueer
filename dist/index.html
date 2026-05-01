@@ -7,7 +7,7 @@
     ██████╔╝╚██████╔╝╚██████╔╝   ██║   ███████╗╚██████╔╝██╔╝ ██╗
     ╚═════╝  ╚═════╝  ╚═════╝    ╚═╝   ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
 
-    Généré: Vendredi le 1 mai 2026 à 5 h 15
+    Généré: Vendredi le 1 mai 2026 à 5 h 32
     Auteur: Maxime Larrivée-Roy <mlarriveeroy@gmail.com>
     Github: https://github.com/Sceptiques-du-Quebec/brick-breaqueer
 
@@ -15,24 +15,45 @@
 <!DOCTYPE html>
 <html lang="fr-CA">
 <head>
-  <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta property="og:locale" content="fr_CA">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Brick Breaqueer 🌈">
-    <meta property="og:description" content="Jeu de briques ludique, éducatif et inclusif.">
-    <meta property="og:url" content="https://sceptiques-du-quebec.github.io/brick-breaqueer/">
-    <meta property="og:image" content="https://sceptiques-du-quebec.github.io/brick-breaqueer//images/ogimage.webp">
-  <link rel="icon" type="image/x-icon" href="./favicon.ico">
-  <link rel="stylesheet" href="./styles/brickbreaker.core.min.css">
-  <title>Brick Breaqueer 🌈</title>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<meta property="og:locale" content="fr_CA">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Brick Breaqueer 🌈">
+	<meta property="og:description" content="Jeu de briques ludique, éducatif et inclusif.">
+	<meta property="og:url" content="https://sceptiquesduquebec.com/brick-breaqueer/">
+	<meta property="og:image" content="https://sceptiquesduquebec.com/brick-breaqueer//images/ogimage.webp">
+	<link rel="icon" type="image/x-icon" href="./favicon.ico">
+	<link rel="stylesheet" href="./styles/brickbreaqueer.core.min.css">
+	<title>Brick Breaqueer 🌈</title>
 </head>
 <body>
-
-<div id="game-container"></div>
-
-<script type="module" src="./scripts/brickbreaker.core.min.js"></script>
-
+	<div id="game-container"></div>
+	<script>
+        const script = document.createElement('script');
+        script.src = new URL('scripts/brickbreaqueer.core.min.js', window.location).href;
+        script.async = true;
+        script.onload = () => {
+			BrickBreaqueer({
+				parent: "game-container",
+				width: 664,
+				height: 498,
+				fontFamily: "Unbounded",
+				fontWeight: 500,
+				color: '#161616',
+				onGameOver: async (stats) => {
+					console.log("Stats de fin de partie :", stats);
+					return new Promise((resolve) => {
+						setTimeout(() => {
+							console.log("Modal fermé");
+							resolve();
+						}, 2000);
+					});
+				}
+			});
+		};
+		document.head.appendChild(script);
+	</script>
 </body>
 </html>

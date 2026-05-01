@@ -10,14 +10,8 @@ const { close } = createWatchers(
 			ignored: ["**/*.min.js"],
 			callback: async (events) => {
 				console.log("[js] batch", events.length, events.map(e => e.file));
-				const entry = path.resolve(__dirname, "../src/scripts/brickbreaker.core.js");
-				const outfile = path.resolve(__dirname, "../src/scripts/brickbreaker.core.min.js");
-
-
 				const loaderentry = path.resolve(__dirname, "../src/scripts/brickbreaqueer.core.js");
 				const loaderoutfile = path.resolve(__dirname, "../src/scripts/brickbreaqueer.core.min.js");
-
-				await buildJS(entry, outfile);
 				await buildJS(loaderentry, loaderoutfile);
 				console.log("");
 			},
@@ -27,8 +21,8 @@ const { close } = createWatchers(
 			patterns: ["src/styles/**/*.scss"],
 			callback: async (events) => {
 				console.log("[scss] batch", events.length, events.map(e => e.file));
-				const inputScss = path.resolve(__dirname, "../src/styles/brickbreaker.core.scss");
-				const outCssMin = path.resolve(__dirname, "../src/styles/brickbreaker.core.min.css");
+				const inputScss = path.resolve(__dirname, "../src/styles/brickbreaqueer.core.scss");
+				const outCssMin = path.resolve(__dirname, "../src/styles/brickbreaqueer.core.min.css");
 				await buildCSS(inputScss, outCssMin);
 				console.log("");
 			},
