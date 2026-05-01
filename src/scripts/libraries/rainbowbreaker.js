@@ -138,6 +138,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.uiGroup = this.add.group();
         this.cursors = this.input.keyboard.createCursorKeys();
         this.enterKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         this.input.mouse.preventDefaultWheel = false;
         this.input.mouse.capture = false;
 
@@ -588,7 +589,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         const pointer = this.input.activePointer;
 
         if (this.gameState === "WAITING_FOR_CALLBACK") return;
-        if (Phaser.Input.Keyboard.JustDown(this.enterKey)) {
+        if (Phaser.Input.Keyboard.JustDown(this.enterKey) || Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             this.handleGlobalAction(true);
         }
 
