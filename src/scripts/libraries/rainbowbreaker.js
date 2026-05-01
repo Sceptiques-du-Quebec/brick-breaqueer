@@ -281,7 +281,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.livesText.setVisible(true);
         this.score = 0; this.level = 0; this.lives = 5;
 
-        // Génération de l'ordre : index 0 puis le reste mélangé
         const totalFlags = this.FLAGS.length;
         let others = Array.from({ length: totalFlags - 1 }, (_, i) => i + 1);
         for (let i = others.length - 1; i > 0; i--) {
@@ -366,24 +365,27 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     hitBrick(ball, brick) {
         const currentTime = this.time.now;
-        if (currentTime - this.lastBrickTime < this.comboThreshold) {
+        const timeSinceLastHit = currentTime - this.lastBrickTime;
+        if (timeSinceLastHit <= this.comboThreshold) {
             this.comboCount++;
-            const comboBonus = 100 + ((this.comboCount - 1) * 50);
-            this.score += comboBonus;
-            this.spawnComboWord(brick.x, brick.y, comboBonus);
         } else {
-            this.comboCount = 0;
-            this.score += 25;
-            this.spawnComboWord(brick.x, brick.y, 25);
+            this.comboCount = 1;
         }
         this.lastBrickTime = currentTime;
-        for (let i = 0; i < 20; i++) {
-            const color = (Math.random() > 0.5) ? 0xffffff : Phaser.Utils.Array.GetRandom(this.rainbowColors);
-            this.particles.setParticleTint(color);
-            this.particles.emitParticleAt(brick.x, brick.y, 1);
+        let totalPoints;
+        if (this.comboCount === 1) {
+            totalPoints = 25;
+        } else {
+            totalPoints = this.comboCount * 50;
+        }
+        this.score += totalPoints;
+        if (typeof this.spawnComboWord === 'function') {
+            this.spawnComboWord(brick.x, brick.y, totalPoints, this.comboCount);
         }
         brick.destroy();
-        if (this.bricks.countActive() === 0) this.revealFlag();
+        if (this.bricks.countActive() === 0) {
+            this.revealFlag();
+        }
     }
 
 
@@ -470,8 +472,9 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     launchBall() {
-        if (this.gameState !== "PLAYING" || !this.ball.active) return;
-        this.ball.setVisible(true).setAlpha(1);
+        this.ball.setVisible(true);
+        this.comboCount = 0;
+        this.lastBrickTime = 0;
         const speed = Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
         this.ball.setVelocity(Phaser.Math.Between(-80, 80), -speed);
     }
