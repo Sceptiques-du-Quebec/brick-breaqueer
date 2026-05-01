@@ -18,6 +18,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     comboCount = 0;
     lastBrickTime = 0;
     lastPointerX = 0;
+    lastClickTime = 0;
     lastPauseTime = 0;
     lastPauseToggleTime = 0;
     lastMultiTouchTime = 0;
@@ -178,19 +179,30 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.input.on('pointerdown', (pointer) => {
             if (this.input.pointer1.active && this.input.pointer2.active) {
                 this.lastMultiTouchTime = this.time.now;
-                if (this.gameState === "PLAYING") {
-                    this.setPause(true);
-                } else if (this.gameState === "PAUSED") {
-                    this.setPause(false);
-                }
+                this.handleTogglePause();
+                return;
             }
-        }, this);
+            const currentTime = this.time.now;
+            const diff = currentTime - this.lastClickTime;
+            this.lastClickTime = currentTime;
+            if (diff < 250 && diff > 0) {
+                if (this.gameState === "PLAYING" || this.gameState === "PAUSED") {
+                    this.handleTogglePause();
+                    pointer.ignoreNextUp = true;
+                }
+            } else {
+                pointer.ignoreNextUp = false;
+            }
+        });
 
         this.input.on('pointerup', (pointer) => {
+            if (pointer.ignoreNextUp) {
+                pointer.ignoreNextUp = false;
+                return;
+            }
             if (this.time.now - this.lastMultiTouchTime < 500) return;
             this.handleGlobalAction(false);
-        }, this);
-
+        });
     }
 
 
@@ -546,6 +558,24 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.lastBrickTime = 0;
         const speed = Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
         this.ball.setVelocity(Phaser.Math.Between(-80, 80), -speed);
+    }
+
+
+    togglePause() {
+        if (this.gameState === "PLAYING") {
+            this.setPause(true);
+        } else if (this.gameState === "PAUSED") {
+            this.setPause(false);
+        }
+    }
+
+
+    handleTogglePause() {
+        if (this.gameState === "PLAYING") {
+            this.setPause(true);
+        } else if (this.gameState === "PAUSED") {
+            this.setPause(false);
+        }
     }
 
 
