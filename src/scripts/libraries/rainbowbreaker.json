@@ -6,6 +6,7 @@
 		"baseSpeed": 320,
 		"maxSpeed": 800,
 		"comboThreshold": 800,
+		"bonusChance": 16,
 		"gridCols": 8,
 		"gridRows": 4,
 		"fontFamily": "Arial",

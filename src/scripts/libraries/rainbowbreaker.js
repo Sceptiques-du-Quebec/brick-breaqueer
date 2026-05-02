@@ -25,6 +25,8 @@ export default class RainbowBreaker extends Phaser.Scene {
     isTogglingPause = false;
     comboThreshold = DATA.config.comboThreshold;
     lifeBonuses = 0;
+    isSlowed = false;
+    slowTimer = null;
     launchTimer = null;
     countdownText = null;
     canContinue = true;
@@ -216,7 +218,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         if (this.bricks) { this.bricks.clear(true, true); this.bricks.destroy(); this.bricks = null; }
         if (this.paddle) { this.paddle.destroy(); this.paddle = null; }
         if (this.ball) { this.ball.destroy(); this.ball = null; }
-        if (this.lifeBonuses) { this.lifeBonuses.clear(true, true); } // Nettoyer les vies en suspens
+        if (this.lifeBonuses) { this.lifeBonuses.clear(true, true); }
         this.trail = [];
         this.trailG.clear();
         this.uiGroup.clear(true, true);
@@ -351,10 +353,16 @@ export default class RainbowBreaker extends Phaser.Scene {
         }
         this.ball = this.physics.add.image(width / 2, height - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
         this.ball.setVisible(0);
-        this.physics.add.collider(this.ball, this.paddle, (b, p) => {
+        this.physics.add.collider(this.ball, this.paddle, (ball, paddle) => {
             this.comboCount = 0;
-            let diff = b.x - p.x;
-            b.setVelocityX(10 * diff);
+            
+            let diff = ball.x - paddle.x;
+            
+            ball.setVelocityX(12 * diff); 
+
+            if (Math.abs(ball.body.velocity.y) < 200) {
+                ball.setVelocityY(-300);
+            }
         });
         this.physics.add.collider(this.ball, this.bricks, this.hitBrick, null, this);
         this.physics.add.overlap(this.paddle, this.lifeBonuses, this.collectLife, null, this);
@@ -433,13 +441,15 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.spawnComboWord(brick.x, brick.y, totalPoints, this.comboCount);
         this.particles.emitParticleAt(brick.x, brick.y, 20);
 
-        const CHANCE_X = 10;
-        if (Phaser.Math.Between(1, CHANCE_X) === 1) {
+        if (Phaser.Math.Between(1, DATA.config.bonusChance) === 1) {
             this.spawnLifeBonus(brick.x, brick.y);
         }
 
         brick.destroy();
+
+
         if (this.bricks.countActive() === 0) {
+            if (this.lifeBonuses) this.lifeBonuses.clear(true, true);
             this.score += 500;
             this.particles.emitParticleAt(this.scoreText.x + 50, this.scoreText.y + 10, 40);
             this.tweens.add({
@@ -447,7 +457,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                 scale: 1.1,
                 duration: 100,
                 yoyo: true,
-                ease: 'Back.easeOut'
+                ease: 'Cubic.easeInOut'
             });
             this.update();
             this.revealFlag();
@@ -469,31 +479,85 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     spawnLifeBonus(x, y) {
-        const life = this.lifeBonuses.create(x, y, "ball"); 
-        life.setTint(0xff69b4);
-        life.setScale(0.8);
-        life.setVelocityY(200); 
+        const types = [
+            { char: '💗', type: 'LIFE' },
+            { char: '🌈', type: 'SLOW' },
+            { char: '🦄', type: 'POINTS' }
+        ];
+        const selected = Phaser.Utils.Array.GetRandom(types);
+        const bonus = this.add.text(x, y, selected.char, { fontSize: '28px', padding: { x: 10, y: 10 }}).setOrigin(0.5);
+        this.physics.add.existing(bonus);
+        this.lifeBonuses.add(bonus);
+        bonus.setData('type', selected.type);
+        bonus.body.setVelocityY(200);
+        bonus.body.setCollideWorldBounds(false); 
         this.tweens.add({
-            targets: life,
-            angle: 360,
-            duration: 1000,
+            targets: bonus,
+            scale: 1.1,
+            duration: 500,
+            yoyo: true,
             loop: -1
         });
     }
 
 
-    collectLife(paddle, lifeBonus) {
-        if (!lifeBonus || !lifeBonus.active) return;
-        lifeBonus.destroy();
-        this.lives++;
-        this.tweens.add({
-            targets: this.livesText,
-            scale: 1.5,
-            duration: 100,
-            yoyo: true,
-            ease: 'Power1'
-        });
+    collectLife(paddle, bonus) {
+        if (!bonus || !bonus.active) return;
+        const type = bonus.getData('type');
+        bonus.destroy();
+        if (type === 'LIFE') {
+            this.lives++;
+            this.tweens.add({
+                targets: this.livesText,
+                scale: 1.1,
+                duration: 100,
+                yoyo: true,
+                ease: 'Cubic.easeInOut'
+            });
+            this.particles.emitParticleAt(this.livesText.x - 40, this.livesText.y + 10, 15);
+        } 
+        else if (type === 'POINTS') {
+            this.score += 1000;
+            this.tweens.add({
+                targets: this.scoreText,
+                scale: 1.1,
+                duration: 100,
+                yoyo: true,
+                ease: 'Cubic.easeInOut'
+            });
+            this.particles.emitParticleAt(this.scoreText.x + 50, this.scoreText.y + 10, 15);
+        } 
+        else if (type === 'SLOW') {
+            this.applySlowMotion(10000);
+        }
         this.particles.emitParticleAt(paddle.x, paddle.y, 10);
+    }
+
+
+    applySlowMotion(duration) {
+        if (!this.ball || !this.ball.body) return;
+        if (this.slowTimer) this.slowTimer.destroy();
+
+        if (!this.isSlowed) {
+            this.isSlowed = true;
+            this.ball.body.velocity.scale(0.5);
+            this.ball.setTint(0x00ffff);
+        }
+
+        this.slowTimer = this.time.delayedCall(duration, () => {
+            if (this.ball && this.ball.body && this.gameState === "PLAYING") {
+                this.isSlowed = false;
+                this.ball.clearTint();
+                const targetSpeed = Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
+
+                this.ball.body.velocity.normalize().scale(targetSpeed);
+                
+                this.slowTimer = null;
+            }
+        });
+        if (this.gameState === "PAUSED") {
+            this.slowTimer.paused = true;
+        }
     }
 
 
@@ -501,6 +565,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         const { width, height } = this.sys.game.config;
         this.gameState = "REVEAL";
         this.canContinue = false;
+
+        if (this.lifeBonuses) {
+            this.lifeBonuses.clear(true, true);
+        }
 
         this.trail = [];
         this.trailG.clear();
@@ -606,7 +674,14 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.ball.setVisible(true);
         this.comboCount = 0;
         this.lastBrickTime = 0;
-        const speed = Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
+        
+        let speed = Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
+        
+        if (this.isSlowed) {
+            speed = speed * 0.5;
+            this.ball.setTint(0x00ffff);
+        }
+
         this.ball.setVelocity(Phaser.Math.Between(-80, 80), -speed);
     }
 
@@ -639,6 +714,10 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.gameState = "PAUSED";
             this.physics.world.pause();
 
+            if (this.slowTimer) {
+                this.slowTimer.paused = true;
+            }
+
             if (this.launchTimer) {
                 this.launchTimer.paused = true;
                 if (this.countdownText) {
@@ -658,6 +737,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         } else {
             this.gameState = "PLAYING";
             this.physics.world.resume();
+
+            if (this.slowTimer) {
+                this.slowTimer.paused = false;
+            }
 
             if (this.launchTimer) {
                 this.launchTimer.paused = false;
@@ -736,7 +819,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         if (this.gameState === "WAITING_FOR_CALLBACK") return;
 
         if (!this.paddle || !this.paddle.body || !this.ball || !this.ball.body) return;
-
         if (Phaser.Input.Keyboard.JustDown(this.enterKey) || Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             this.handleGlobalAction(true);
         }
@@ -773,6 +855,23 @@ export default class RainbowBreaker extends Phaser.Scene {
                 this.lives--;
                 if (this.lives <= 0) this.gameOver();
                 else this.resetBall();
+            }
+
+
+
+            if (this.ball && this.ball.body) {
+                if (Math.abs(this.ball.body.velocity.y) < 100 && Math.abs(this.ball.body.velocity.x) > 10) {
+                    const direction = this.ball.body.velocity.y > 0 ? 1 : -1;
+                    this.ball.body.setVelocityY(direction * 150);
+                }
+
+                const currentSpeed = this.isSlowed ? 
+                    Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed) * 0.5 : 
+                    Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
+
+                if (Math.abs(this.ball.body.velocity.length() - currentSpeed) > 1) {
+                    this.ball.body.velocity.normalize().scale(currentSpeed);
+                }
             }
 
             if (this.ball && this.ball.active && this.ball.visible && (this.ball.body.velocity.x !== 0 || this.ball.body.velocity.y !== 0)) {
