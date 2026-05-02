@@ -518,7 +518,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.particles.emitParticleAt(this.livesText.x - 40, this.livesText.y + 10, 15);
         } 
         else if (type === 'POINTS') {
-            this.score += 1000;
+            this.score += 500;
             this.tweens.add({
                 targets: this.scoreText,
                 scale: 1.1,
