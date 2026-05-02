@@ -24,6 +24,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     lastMultiTouchTime = 0;
     isTogglingPause = false;
     comboThreshold = DATA.config.comboThreshold;
+    lifeBonuses = 0;
     launchTimer = null;
     countdownText = null;
     canContinue = true;
@@ -213,8 +214,9 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     cleanupGame() {
         if (this.bricks) { this.bricks.clear(true, true); this.bricks.destroy(); this.bricks = null; }
-        if (this.paddle) this.paddle.destroy();
-        if (this.ball) this.ball.destroy();
+        if (this.paddle) { this.paddle.destroy(); this.paddle = null; }
+        if (this.ball) { this.ball.destroy(); this.ball = null; }
+        if (this.lifeBonuses) { this.lifeBonuses.clear(true, true); } // Nettoyer les vies en suspens
         this.trail = [];
         this.trailG.clear();
         this.uiGroup.clear(true, true);
@@ -344,6 +346,9 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.paddle = this.physics.add.image(width / 2, height - 40, "paddle").setImmovable(true).setTint(phaserColor);
         this.paddle.setCollideWorldBounds(true);
+        if (!this.lifeBonuses) {
+            this.lifeBonuses = this.physics.add.group();
+        }
         this.ball = this.physics.add.image(width / 2, height - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
         this.ball.setVisible(0);
         this.physics.add.collider(this.ball, this.paddle, (b, p) => {
@@ -352,6 +357,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             b.setVelocityX(10 * diff);
         });
         this.physics.add.collider(this.ball, this.bricks, this.hitBrick, null, this);
+        this.physics.add.overlap(this.paddle, this.lifeBonuses, this.collectLife, null, this);
     }
 
 
@@ -408,6 +414,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     hitBrick(ball, brick) {
+        if (!brick || !brick.active) return;
         const currentTime = this.time.now;
         const timeSinceLastHit = currentTime - this.lastBrickTime;
         if (timeSinceLastHit <= this.comboThreshold) {
@@ -425,6 +432,12 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.score += totalPoints;
         this.spawnComboWord(brick.x, brick.y, totalPoints, this.comboCount);
         this.particles.emitParticleAt(brick.x, brick.y, 20);
+
+        const CHANCE_X = 10;
+        if (Phaser.Math.Between(1, CHANCE_X) === 1) {
+            this.spawnLifeBonus(brick.x, brick.y);
+        }
+
         brick.destroy();
         if (this.bricks.countActive() === 0) {
             this.score += 500;
@@ -452,6 +465,35 @@ export default class RainbowBreaker extends Phaser.Scene {
             stroke: "#FFF", strokeThickness: 4, align: "center"
         }).setOrigin(0.5).setDepth(20).setResolution(2);
         this.tweens.add({ targets: txt, y: y - 100, alpha: 0, scale: 1.3, duration: 2200, ease: 'Cubic.easeOut', onComplete: () => txt.destroy() });
+    }
+
+
+    spawnLifeBonus(x, y) {
+        const life = this.lifeBonuses.create(x, y, "ball"); 
+        life.setTint(0xff69b4);
+        life.setScale(0.8);
+        life.setVelocityY(200); 
+        this.tweens.add({
+            targets: life,
+            angle: 360,
+            duration: 1000,
+            loop: -1
+        });
+    }
+
+
+    collectLife(paddle, lifeBonus) {
+        if (!lifeBonus || !lifeBonus.active) return;
+        lifeBonus.destroy();
+        this.lives++;
+        this.tweens.add({
+            targets: this.livesText,
+            scale: 1.5,
+            duration: 100,
+            yoyo: true,
+            ease: 'Power1'
+        });
+        this.particles.emitParticleAt(paddle.x, paddle.y, 10);
     }
 
 
@@ -692,6 +734,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         const pointer = this.input.activePointer;
 
         if (this.gameState === "WAITING_FOR_CALLBACK") return;
+
+        if (!this.paddle || !this.paddle.body || !this.ball || !this.ball.body) return;
 
         if (Phaser.Input.Keyboard.JustDown(this.enterKey) || Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             this.handleGlobalAction(true);
