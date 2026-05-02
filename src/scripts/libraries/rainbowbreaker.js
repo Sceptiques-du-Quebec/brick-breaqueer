@@ -451,7 +451,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         if (this.bricks.countActive() === 0) {
             if (this.lifeBonuses) this.lifeBonuses.clear(true, true);
-            this.score += 500;
+            this.score += 1000;
             this.particles.emitParticleAt(this.scoreText.x + 50, this.scoreText.y + 10, 40);
             this.tweens.add({
                 targets: this.scoreText,
