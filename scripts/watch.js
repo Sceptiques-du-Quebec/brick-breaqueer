@@ -16,17 +16,6 @@ const { close } = createWatchers(
 				console.log("");
 			},
 		},
-		{
-			name: "scss",
-			patterns: ["src/styles/**/*.scss"],
-			callback: async (events) => {
-				console.log("[scss] batch", events.length, events.map(e => e.file));
-				const inputScss = path.resolve(__dirname, "../src/styles/brickbreaqueer.core.scss");
-				const outCssMin = path.resolve(__dirname, "../src/styles/brickbreaqueer.core.min.css");
-				await buildCSS(inputScss, outCssMin);
-				console.log("");
-			},
-		},
 	],
 	{
 		cwd: process.cwd(),

@@ -11,12 +11,50 @@
 	<meta property="og:url" content="https://sceptiquesduquebec.com/brick-breaqueer/">
 	<meta property="og:image" content="https://sceptiquesduquebec.com/brick-breaqueer//images/ogimage.webp">
 	<link rel="icon" type="image/x-icon" href="./favicon.ico">
-	<link rel="stylesheet" href="./styles/brickbreaqueer.core.min.css">
 	<title>Brick Breaqueer 🌈</title>
+	<style>
+		@import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@200..900&display=block');
+
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+		}
+
+		body {
+			background: yellow;
+		}
+
+		canvas {
+			image-rendering: auto;
+			display: block;
+			margin: auto;
+		}
+
+		#game-container {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			aspect-ratio: 16 / 9;
+			width: 100%;
+			max-width: 887px;
+			border-radius: 2rem;
+			box-shadow:
+				0 0 0.25rem 0.05rem red,
+				0 0 0.5rem 0.1rem orange,
+				0 0 0.75rem 0.15rem yellow,
+				0 0 1rem 0.2rem lime,
+				0 0 1.25rem 0.25rem cyan,
+				0 0 1.5rem 0.3rem blue,
+				0 0 1.75rem 0.35rem violet;
+		}
+	</style>
 </head>
 <body>
 	<div id="game-container"></div>
-	<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
 	<script>
         const script = document.createElement('script');
         script.src = new URL('scripts/brickbreaqueer.core.min.js', window.location).href;
