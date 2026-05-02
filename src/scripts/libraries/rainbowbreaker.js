@@ -159,9 +159,29 @@ export default class RainbowBreaker extends Phaser.Scene {
         }).setOrigin(0.5, 0).setResolution(2).setDepth(10).setVisible(false);
 
         this.particles = this.add.particles(0, 0, "part", {
-            speed: { min: 100, max: 400 }, angle: { min: 0, max: 360 },
-            scale: { start: 2, end: 0 }, lifespan: 800, gravityY: 300, emitting: false,
-            tint: () => Phaser.Utils.Array.GetRandom(this.rainbowColors)
+            speed: { min: 100, max: 400 },
+            angle: { min: 0, max: 360 },
+            lifespan: 800,
+            gravityY: 300,
+            emitting: false,
+
+            alpha: { start: 1, end: 0.7 },
+            scale: { start: 1.8, end: 0 },
+
+            tint: () => {
+                const base = Phaser.Display.Color.ValueToColor(
+                    Phaser.Utils.Array.GetRandom(this.rainbowColors)
+                );
+
+                const washed = Phaser.Display.Color.Interpolate.ColorWithColor(
+                    base,
+                    new Phaser.Display.Color(255, 255, 255),
+                    100,
+                    40
+                );
+
+                return Phaser.Display.Color.GetColor(washed.r, washed.g, washed.b);
+            }
         }).setDepth(5);
 
         this.lastPointerX = width / 2;
