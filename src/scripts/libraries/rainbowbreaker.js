@@ -80,15 +80,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     preload() {
         this.load.image('game_logo', DATA.images.logo);
         this.FLAGS = this.registry.get('gameFlags') || [];
-        this.FLAGS.forEach((flag) => {
-            const base64Data = flag.data.split(',')[1];
-            const binaryData = atob(base64Data);
-            const arrayBuffer = new Uint8Array(binaryData.length);
-            for (let j = 0; j < binaryData.length; j++) arrayBuffer[j] = binaryData.charCodeAt(j);
-            const blob = new Blob([arrayBuffer], { type: 'image/svg+xml' });
-            const blobUrl = URL.createObjectURL(blob);
-            this.load.image(flag.id, blobUrl);
-        });
+        this.FLAGS.forEach(flag => this.load.image(flag.id, flag.data));
     }
 
 
@@ -889,8 +881,6 @@ export default class RainbowBreaker extends Phaser.Scene {
                 if (this.lives <= 0) this.gameOver();
                 else this.resetBall();
             }
-
-
 
             if (this.ball && this.ball.body) {
                 if (Math.abs(this.ball.body.velocity.y) < 100 && Math.abs(this.ball.body.velocity.x) > 10) {
