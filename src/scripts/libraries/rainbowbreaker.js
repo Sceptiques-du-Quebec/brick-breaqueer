@@ -423,13 +423,19 @@ export default class RainbowBreaker extends Phaser.Scene {
             totalPoints = this.comboCount * 50;
         }
         this.score += totalPoints;
-        if (typeof this.spawnComboWord === 'function') {
-            this.spawnComboWord(brick.x, brick.y, totalPoints, this.comboCount);
-        }
+        this.spawnComboWord(brick.x, brick.y, totalPoints, this.comboCount);
         this.particles.emitParticleAt(brick.x, brick.y, 20);
         brick.destroy();
         if (this.bricks.countActive() === 0) {
             this.score += 500;
+            this.particles.emitParticleAt(this.scoreText.x + 50, this.scoreText.y + 10, 40);
+            this.tweens.add({
+                targets: this.scoreText,
+                scale: 1.1,
+                duration: 100,
+                yoyo: true,
+                ease: 'Back.easeOut'
+            });
             this.update();
             this.revealFlag();
         }
