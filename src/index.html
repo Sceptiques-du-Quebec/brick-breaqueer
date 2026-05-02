@@ -67,14 +67,14 @@
 				fontFamily: "Unbounded",
 				fontWeight: 500,
 				color: '#161616',
+				onLoadComplete: async () => {
+					await new Promise(resolve => setTimeout(resolve, 1000));
+					console.log("Interface externe masquée");
+				},
 				onGameOver: async (stats) => {
 					console.log("Stats de fin de partie :", stats);
-					return new Promise((resolve) => {
-						setTimeout(() => {
-							console.log("Modal fermé");
-							resolve();
-						}, 2000);
-					});
+					await new Promise(resolve => setTimeout(resolve, 2000));
+					console.log("Modal fermé");
 				}
 			});
 		};

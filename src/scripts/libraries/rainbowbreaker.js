@@ -68,6 +68,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             scene: [RainbowBreaker]
         });
         game.registry.set('onGameOver', settings.onGameOver);
+        game.registry.set('onLoadComplete', settings.onLoadComplete);
         game.registry.set('gameFont', (settings.fontFamily || DATA.config.fontFamily).replace(/['"]/g, ''));
         game.registry.set('gameWeight', settings.fontWeight || DATA.config.fontWeight);
         game.registry.set('gameColor', settings.color || DATA.config.color);
@@ -84,7 +85,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
 
-    create() {
+    async create() {
         const { width, height } = this.sys.game.config;
         this.comboWords = this.registry.get('gameWords') || ["BRAVO"];
 
@@ -189,6 +190,19 @@ export default class RainbowBreaker extends Phaser.Scene {
         }, { passive: true });
 
         this.createLogoTexture('game_logo', DATA.images.logo);
+
+
+        const onLoadComplete = this.registry.get('onLoadComplete');
+        if (onLoadComplete && typeof onLoadComplete === 'function') {
+            try {
+                // On utilise await pour attendre la résolution du callback[cite: 1]
+                await onLoadComplete();
+            } catch (error) {
+                console.error("Erreur dans le callback onLoadComplete:", error);
+            }
+        }
+
+
         this.showStartScreen();
 
         this.input.on('pointerdown', (pointer) => {
