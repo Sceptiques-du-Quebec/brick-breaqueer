@@ -215,6 +215,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     cleanupGame() {
+        this.cancelSlowMotion();
         if (this.bricks) { this.bricks.clear(true, true); this.bricks.destroy(); this.bricks = null; }
         if (this.paddle) { this.paddle.destroy(); this.paddle = null; }
         if (this.ball) { this.ball.destroy(); this.ball = null; }
@@ -565,7 +566,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         const { width, height } = this.sys.game.config;
         this.gameState = "REVEAL";
         this.canContinue = false;
-
+        this.cancelSlowMotion();
+        
         if (this.lifeBonuses) {
             this.lifeBonuses.clear(true, true);
         }
@@ -613,6 +615,18 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.addFloatingEffect(sub);
             this.uiGroup.add(sub);
         });
+    }
+
+
+    cancelSlowMotion() {
+        this.isSlowed = false;
+        if (this.slowTimer) {
+            this.slowTimer.destroy();
+            this.slowTimer = null;
+        }
+        if (this.ball) {
+            this.ball.clearTint();
+        }
     }
 
 
