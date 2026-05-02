@@ -434,7 +434,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.lastBrickTime = currentTime;
         let totalPoints;
         if (this.comboCount === 1) {
-            totalPoints = 25;
+            totalPoints = 50;
         } else {
             totalPoints = this.comboCount * 50;
         }
@@ -447,7 +447,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         }
 
         brick.destroy();
-
 
         if (this.bricks.countActive() === 0) {
             if (this.lifeBonuses) this.lifeBonuses.clear(true, true);
