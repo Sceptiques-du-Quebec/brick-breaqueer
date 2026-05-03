@@ -25,6 +25,7 @@
 
 		body {
 			background: yellow;
+			color: #161616;
 		}
 
 		canvas {
@@ -51,6 +52,23 @@
 				0 0 1.5rem 0.3rem blue,
 				0 0 1.75rem 0.35rem violet;
 		}
+
+		#game-container::before {
+			content: "CHARGEMENT...";
+			position: absolute;
+			inset: 0;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			text-align: center;
+			font-family: Unbounded;
+			font-size: 2rem;
+			font-weight: 900;
+		}
+
+		#game-container.loaded::before {
+			display: none;
+		}
 	</style>
 </head>
 <body>
@@ -69,6 +87,7 @@
 				color: '#161616',
 				onLoadComplete: async () => {
 					await new Promise(resolve => setTimeout(resolve, 1000));
+					document.querySelector('#game-container').classList.add('loaded');
 					console.log("Interface externe masquée");
 				},
 				onGameOver: async (stats) => {

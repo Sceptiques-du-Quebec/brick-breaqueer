@@ -1,0 +1,264 @@
+config:
+  width: 800
+  height: 600
+  lives: 5
+  baseSpeed: 320
+  maxSpeed: 1000
+  comboThreshold: 800
+  bonusChance: 16
+  gridCols: 8
+  gridRows: 4
+  fontFamily: Arial
+  fontWeight: 900
+  color: #161616
+  parent: rainbowbreaker-container
+words:
+  - INTOLÉRANCE
+  - OBSCURANTISME
+  - AVEUGLEMENT
+  - BIGOTERIE
+  - BULLYING
+  - OFFUSCATION
+  - CHAUVINISME
+  - SOPHISME
+  - XÉNOPHOBIE
+  - RACISME
+  - HAINE
+  - IGNORANCE
+  - BON DIEUZARD
+  - PROFANE
+  - HOSTILITÉ
+  - HUBRIS
+  - TÊTE DE COCHON
+  - ESPRIT DE CLOCHER
+  - FIEL
+  - MÉPRIS
+  - FANATISME
+  - ACHARNEMENT
+  - CRUAUTÉ
+  - MALIGNITÉ
+  - TI-JOE CONNAISSANT
+  - DUNNING-KRUGER
+  - PÉDANTE
+  - MADAME JE-SAIS-TOUT
+  - PEUR
+  - ARROGANCE
+  - CONDESCENDANCE
+images:
+  logo: /assets/logos/logo_brickbreaqueer.svg
+flags:
+
+  # Drapeau Transgenre
+  - id: flag_trans
+    name: Drapeau Transgenre
+    data: /assets/flags/trans_flag.svg
+    history: Créé en 1999 par la femme transgenre Monica Helms, ce drapeau déploie
+      des bandes bleu ciel et roses pour représenter les couleurs
+      traditionnelles associées aux garçons et aux filles, entourant une bande
+      blanche centrale qui symbolise les personnes non-binaires, intersexes ou
+      en transition.
+
+  # Drapeau Bisexuel
+  - id: flag_bi
+    name: Drapeau Bisexuel
+    data: /assets/flags/bisexual_flag.svg
+    history: Conçu par Michael Page en 1998 pour accroître la visibilité des
+      personnes bisexuelles au sein de la communauté et de la société, ce
+      drapeau superpose le rose pour l'attirance envers le même sexe et le bleu
+      pour l'attirance envers le sexe opposé, créant au centre une bande
+      violette qui symbolise la fusion et la fluidité de ces attirances.
+
+  # Drapeau Asexuel
+  - id: flag_asexual
+    name: Drapeau Asexuel
+    data: /assets/flags/asexual_flag.svg
+    history: Sélectionné par un vote communautaire sur le site de l'AVEN en 2010, ce
+      drapeau décline le noir, le gris, le blanc et le mauve pour représenter
+      l'asexualité, la zone grise entre l'attirance et l'absence de désir, les
+      alliés ainsi que la communauté dans son ensemble.
+
+  # Drapeau Queer
+  - id: flag_queer
+    name: Drapeau Queer
+    data: /assets/flags/queer_flag.svg
+    history: Créé par l'artiste Pastel_Baby vers 2017, ce drapeau à neuf bandes
+      colorées célèbre la diversité et la fluidité de la communauté queer à
+      travers un large spectre chromatique qui s'éloigne des codes traditionnels
+      pour inclure toutes les nuances d'identités et d'expressions.
+
+  # Drapeau Gay
+  - id: flag_gay
+    name: Drapeau Gay
+    data: /assets/flags/gay_flag.svg
+    history: Inspiré par le drapeau lesbien, ce drapeau à sept bandes a été conçu
+      vers 2019 pour offrir une représentation spécifique aux hommes gais et aux
+      personnes non-binaires se reconnaissant dans la masculinité, utilisant un
+      dégradé de vert et de bleu pour symboliser la nature, la joie et la
+      diversité des expressions de genre.
+
+  # Drapeau Intersexe
+  - id: flag_intersex
+    name: Drapeau Intersexe
+    data: /assets/flags/intersex_flag.svg
+    history: Créé en 2013 par Morgan Carpenter d'Intersex Human Rights Australia, ce
+      drapeau utilise le jaune et le violet pour éviter toute connotation de
+      genre binaire (bleu ou rose), tandis que son cercle central symbolise
+      l'intégrité et la plénitude des personnes nées avec des variations des
+      caractéristiques sexuelles.
+
+  # Drapeau Lesbien
+  - id: flag_lesbian
+    name: Drapeau Lesbien
+    data: /assets/flags/lesbian_flag.svg
+    history: Apparu sur le web en 2018 pour remplacer les versions plus anciennes,
+      ce drapeau à cinq bandes décline des nuances d'orange et de rose séparées
+      par du blanc pour représenter la diversité des identités lesbiennes,
+      allant de l'expression de genre à la sérénité et à la communauté.
+
+  # Drapeau Pansexuel
+  - id: flag_pan
+    name: Drapeau Pansexuel
+    data: /assets/flags/pansexual_flag.svg
+    history: Créé en 2010 par Jasper V. pour offrir une identité propre à la
+      communauté, ce drapeau arbore trois bandes (rose, jaune et bleu)
+      symbolisant l'attirance envers une personne indépendamment de son sexe ou
+      de son identité de genre.
+
+  # Drapeau Demisexuel
+  - id: flag_demisexual
+    name: Drapeau Demisexuel
+    data: /assets/flags/demisexual_flag.svg
+    history: Apparu peu après 2010, le drapeau demisexuel reprend les couleurs de
+      l'asexualité — le noir, le gris, le blanc et le violet — mais les
+      réorganise avec un triangle distinctif pour représenter les personnes qui
+      ne ressentent d'attirance sexuelle qu'après avoir forgé un lien émotionnel
+      fort.
+
+  # Drapeau de la Fierté
+  - id: flag_pride
+    name: Drapeau de la Fierté
+    data: /assets/flags/pride_flag.svg
+    history: Créé en 2018 par Daniel Quasar et mis à jour en 2021 par Valentino
+      Vecchietti, ce drapeau inclut les personnes trans, les communautés
+      racisées, les personnes vivant avec le VIH/SIDA ainsi que les personnes
+      intersexes.
+
+  # Drapeau Non-binaire
+  - id: flag_nonbinary
+    name: Drapeau Non-binaire
+    data: /assets/flags/nonbinary_flag.svg
+    history: Créé en 2014 par Kye Rowan, il se compose de quatre bandes (jaune,
+      blanc, violet, noir). Il représente les personnes dont l'identité ne
+      s'inscrit pas dans la binarité homme/femme.
+
+  # Drapeau Genderfluid
+  - id: flag_genderfluid
+    name: Drapeau Genderfluid
+    data: /assets/flags/genderfluid_flag.svg
+    history: Conçu par Serena Dyer en 2012, ce drapeau à cinq bandes (rose, blanc,
+      violet, noir, bleu) symbolise les personnes dont l'identité de genre varie
+      au fil du temps.
+
+  # Drapeau Agenre
+  - id: flag_agender
+    name: Drapeau Agenre
+    data: /assets/flags/agender_flag.svg
+    history: Créé en 2014 par Salem X, il utilise des bandes noires, grises,
+      blanches et une bande centrale verte pour représenter l'absence de genre
+      ou une identité de genre neutre.
+
+  # Drapeau Polysexuel
+  - id: flag_polysexual
+    name: Drapeau Polysexuel
+    data: /assets/flags/polysexual_flag.svg
+    history: Souvent confondu avec la pansexualité, ce drapeau (rose, vert, bleu)
+      représente l'attirance pour plusieurs genres, mais pas nécessairement
+      tous.
+
+  # Drapeau Aromantique
+  - id: flag_aromantic
+    name: Drapeau Aromantique
+    data: /assets/flags/aromantic_flag.svg
+    history: Utilisant des nuances de vert, de blanc, de gris et de noir, il
+      représente les personnes qui ressentent peu ou pas d'attirance romantique.
+
+  # Drapeau Omnisexuel
+  - id: flag_omnisexual
+    name: Drapeau Omnisexuel
+    data: /assets/flags/omnisexual_flag.svg
+    history: Proche du drapeau pansexuel mais avec des nuances de bleu et de rose
+      plus marquées, il désigne l'attirance pour tous les genres, où le genre
+      joue un rôle dans l'attirance (contrairement à la pansexualité qui est
+      souvent décrite comme "aveugle au genre").
+
+  # Drapeau Two-Spirits
+  - id: flag_twospirits
+    name: Drapeau Two-Spirits
+    data: /assets/flags/twospirit_flag.svg
+    history: Adopté en 1990 à Winnipeg, le terme Two-Spirit s'illustre par un
+      drapeau unissant l'arc-en-ciel à deux plumes symboliques, honorant
+      l'équilibre sacré entre masculin et féminin propre aux identités
+      spirituelles autochtones nord-américaines précoloniales.
+
+  # Drapeau Genderqueer
+  - id: flag_genderqueer
+    name: Drapeau Genderqueer
+    data: /assets/flags/genderqueer_flag.svg
+    history: Créé en 2011 par Marilyn Roxie, ce drapeau arbore des bandes lavande,
+      blanche et vert chartreuse pour représenter respectivement l'androgynie,
+      l'identité neutre et les identités non-binaires, offrant ainsi un symbole
+      de visibilité à ceux qui rejettent les catégories de genre
+      traditionnelles.
+
+  # Drapeau Bigenre
+  - id: flag_bigender
+    name: Drapeau Bigenre
+    data: /assets/flags/bigender_flag.svg
+    history: Apparu vers 2010, ce drapeau décline des nuances de rose, de bleu, de
+      lavande et de blanc afin de symboliser la coexistence des identités
+      masculines, féminines et neutres au sein d'une même fluidité de genre.
+
+  # Drapeau Neutrois
+  - id: flag_neutrois
+    name: Drapeau Neutrois
+    data: /assets/flags/neutrois_flag.svg
+    history: Apparu vers 2010, ce drapeau arbore trois bandes horizontales blanche,
+      verte et noire afin de représenter respectivement la neutralité de genre,
+      le rejet de la binarité et les identités agenres ou dépourvues de genre.
+
+  # Drapeau Gris asexuel
+  - id: flag_greyasexual
+    name: Drapeau Gris asexuel
+    data: /assets/flags/greyasexuality_flag.svg
+    history: Créé en 2010 dans la lignée du drapeau asexuel, ce drapeau utilise des
+      bandes violette, grise et blanche pour représenter la « zone grise » de
+      l'attirance sexuelle, symbolisant ainsi les personnes qui ne ressentent
+      cette attirance que de manière rare, faible ou sous des conditions très
+      spécifiques.
+
+  # Drapeau Lithromantique
+  - id: flag_lithromantic
+    name: Drapeau Lithromantique
+    data: /assets/flags/lithromantic_flag.svg
+    history: Créé vers 2014, ce drapeau décline des bandes de couleur rouge, orange,
+      jaune, blanche et noire pour représenter les personnes qui ressentent une
+      attirance romantique mais ne souhaitent pas qu'elle soit réciproque ou
+      voient leur désir s'estomper si tel est le cas.
+
+  # Drapeau Apothisexuel
+  - id: flag_apothisexual
+    name: Drapeau Apothisexuel
+    data: /assets/flags/apothisexual_flag.svg
+    history: Créée vers 2014, utilise des bandes violette, blanche et noire
+      surmontées d'un « X » noir central pour symboliser la répulsion envers le
+      sexe, tout en conservant les couleurs de la communauté asexuelle afin
+      d'affirmer cette identité au sein du spectre.
+
+  # Drapeau Polyamoureux
+  - id: flag_polyamory
+    name: Drapeau Polyamoureux
+    data: /assets/flags/polyamory_flag.svg
+    history: Créé en 1995 par Jim Evans, ce drapeau arbore des bandes bleue, rouge
+      et noire avec la lettre grecque « π » (pi) jaune au centre, symbolisant
+      par cette constante mathématique infinie la possibilité d'aimer plusieurs
+      personnes simultanément avec honnêteté et loyauté.
