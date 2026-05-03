@@ -85,6 +85,8 @@
 				fontFamily: "Unbounded",
 				fontWeight: 500,
 				color: '#161616',
+				effets: false,
+				music: true,
 				onLoadComplete: async () => {
 					await new Promise(resolve => setTimeout(resolve, 1000));
 					document.querySelector('#game-container').classList.add('loaded');

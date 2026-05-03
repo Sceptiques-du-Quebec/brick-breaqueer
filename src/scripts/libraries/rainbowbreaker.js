@@ -4,6 +4,10 @@ import DATA from "./rainbowbreaker.json";
 
 export default class RainbowBreaker extends Phaser.Scene {
 
+    musicOn = false;
+    effectsOn = true;
+    musicBtn = null;
+    effectsBtn = null;
     score = 0;
     level = 0;
     lives = DATA.config.lives;
@@ -47,7 +51,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             antialias: true,
             pixelArt: false,
             roundPixels: false,
-            audio: { noAudio: true },
+            audio: { noAudio: false },
             input: { windowEvents: true },
             render: {
                 antialias: true,
@@ -72,8 +76,11 @@ export default class RainbowBreaker extends Phaser.Scene {
         game.registry.set('gameFont', (settings.fontFamily || DATA.config.fontFamily).replace(/['"]/g, ''));
         game.registry.set('gameWeight', settings.fontWeight || DATA.config.fontWeight);
         game.registry.set('gameColor', settings.color || DATA.config.color);
+        game.registry.set('gameEffects', settings.effets || DATA.config.effets);
+        game.registry.set('gameMusic', settings.music || DATA.config.music);
         game.registry.set('gameFlags', DATA.flags)
         game.registry.set('gameWords', DATA.words);
+
         return game;
     }
 
@@ -82,6 +89,16 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.load.image('game_logo', DATA.images.logo);
         this.FLAGS = this.registry.get('gameFlags') || [];
         this.FLAGS.forEach(flag => this.load.image(flag.id, flag.data));
+
+        this.load.audio('sfx_song', DATA.audio.song);
+        this.load.audio('sfx_paddle', DATA.audio.paddle);
+        this.load.audio('sfx_brick', DATA.audio.brick);
+        this.load.audio('sfx_points', DATA.audio.points);
+        this.load.audio('sfx_slow', DATA.audio.slow);
+        this.load.audio('sfx_lifeup', DATA.audio.lifeup);
+        this.load.audio('sfx_lifedown', DATA.audio.lifedown);
+        this.load.audio('sfx_levelup', DATA.audio.levelup);
+        this.load.audio('sfx_gameover', DATA.audio.gameover);
     }
 
 
@@ -143,10 +160,79 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         const baseSize = Math.max(14, Math.round(width / 40));
         const textStyle = { font: `${fontWeight} ${baseSize}px "${fontName}"`, fill: mainColor };
+        const iconStyle = { font: `${baseSize * 1.2}px "${fontName}"`, fill: mainColor };
 
-        this.scoreText = this.add.text(width * 0.055, height * 0.04, "Score: 0", textStyle).setResolution(2).setDepth(10).setVisible(false);
-        this.levelText = this.add.text(width / 2, height * 0.04, "Niveau: 1", textStyle).setResolution(2).setOrigin(0.5, 0).setDepth(10).setVisible(false);
-        this.livesText = this.add.text(width * 0.945, height * 0.04, "Vies: " + DATA.config.lives, textStyle).setResolution(2).setOrigin(1, 0).setDepth(10).setVisible(false);
+        this.scoreText = this.add.text(width * 0.055, height * 0.04, "Score: 0", textStyle)
+            .setResolution(2).setDepth(10).setVisible(false);
+
+        this.musicBtn = this.add.text(width * 0.35, height * 0.04, DATA.sounds.music, iconStyle)
+            .setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(10).setVisible(false);
+
+        this.levelText = this.add.text(width / 2, height * 0.04, "Niveau: 1", textStyle)
+            .setResolution(2).setOrigin(0.5, 0).setDepth(10).setVisible(false);
+
+        this.effectsBtn = this.add.text(width * 0.65, height * 0.04, DATA.sounds.effets, iconStyle)
+            .setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(10).setVisible(false);
+
+        this.livesText = this.add.text(width * 0.945, height * 0.04, "Vies: " + DATA.config.lives, textStyle)
+            .setResolution(2).setOrigin(1, 0).setDepth(10).setVisible(false);
+
+        this.musicOn = this.registry.get('gameMusic');
+        const musicStore = localStorage.getItem('gameMusic');
+        if(musicStore) this.musicOn = musicStore === 'yes' ? true : false;
+
+        this.backgroundMusic = this.sound.add('sfx_song', { loop: true, volume: 0.05 });
+        
+        this.effectsOn = this.registry.get('gameEffets');
+        const effetsStore = localStorage.getItem('gameEffets');
+        if(effetsStore) this.effectsOn = effetsStore === 'yes' ? true : false;
+
+        if (!this.musicOn) {
+            this.musicBtn.setAlpha(0.3);
+            this.musicBtn.setTint(0x808080);
+        }
+
+        if (!this.effectsOn) {
+            this.effectsBtn.setAlpha(0.3);
+            this.effectsBtn.setTint(0x808080);
+        }
+
+        this.musicBtn.on('pointerdown', (pointer) => {
+            pointer.event.stopPropagation();
+            this.musicOn = !this.musicOn;
+
+            if (this.musicOn) {
+                this.musicBtn.setAlpha(1);
+                this.musicBtn.clearTint();
+                localStorage.setItem('gameMusic', 'yes');
+
+                if (!this.backgroundMusic.isPlaying) {
+                    this.backgroundMusic.play();
+                }
+            } else {
+                this.musicBtn.setAlpha(0.3);
+                this.musicBtn.setTint(0x808080);
+                localStorage.setItem('gameMusic', 'no');
+
+                this.backgroundMusic.stop();
+            }
+        });
+
+        this.effectsBtn.on('pointerdown', (pointer) => {
+            pointer.event.stopPropagation();
+            this.effectsOn = !this.effectsOn;
+
+            if (this.effectsOn) {
+                this.effectsBtn.setAlpha(1);
+                this.effectsBtn.clearTint();
+                localStorage.setItem('gameEffets', 'yes');
+            } else {
+                this.effectsBtn.setAlpha(0.3);
+                this.effectsBtn.setTint(0x808080);
+                localStorage.setItem('gameEffets', 'no');
+            }
+        });
+
 
         this.historyText = this.add.text(width / 2, this.gridConfig.startY + this.gridConfig.totalHeight + 30, "", {
             font: `600 ${Math.max(12, baseSize * 0.8)}px "${fontName}"`, fill: mainColor,
@@ -218,6 +304,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                 pointer.ignoreNextUp = false;
                 return;
             }
+            if (this.input.hitTestPointer(pointer).length > 0) return;
             if (this.time.now - this.lastMultiTouchTime < 500) return;
             this.handleGlobalAction(false);
         });
@@ -266,7 +353,9 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.comboText,
             this.statsText,
             this.livesText,
-            this.highScoreText
+            this.highScoreText,
+            this.musicBtn,
+            this.effectsBtn
         ];
 
         uiElements.forEach(element => {
@@ -297,6 +386,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.scoreText.setVisible(true);
         this.levelText.setVisible(true);
         this.livesText.setVisible(true);
+        this.musicBtn.setVisible(true);
+        this.effectsBtn.setVisible(true);
         this.score = 0; this.level = 0; this.lives = DATA.config.lives;
 
         const totalFlags = this.FLAGS.length;
@@ -310,6 +401,9 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.bricks = this.physics.add.staticGroup();
         this.createGameObjects();
         this.loadLevel(this.level);
+        if (this.musicOn) {
+            this.backgroundMusic.play();
+        }
     }
 
 
@@ -326,6 +420,9 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.ball = this.physics.add.image(width / 2, height - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
         this.ball.setVisible(0);
         this.physics.add.collider(this.ball, this.paddle, (ball, paddle) => {
+
+                this.playSoundEffet('sfx_paddle');
+
             this.comboCount = 0;
 
             let diff = ball.x - paddle.x;
@@ -338,6 +435,13 @@ export default class RainbowBreaker extends Phaser.Scene {
         });
         this.physics.add.collider(this.ball, this.bricks, this.hitBrick, null, this);
         this.physics.add.overlap(this.paddle, this.lifeBonuses, this.collectLife, null, this);
+    }
+
+
+    async playSoundEffet(id) {
+        if (this.effectsOn) {
+            this.sound.play(id, { volume: 0.1 });
+        }
     }
 
 
@@ -400,16 +504,19 @@ export default class RainbowBreaker extends Phaser.Scene {
         if (Phaser.Math.Between(1, DATA.config.bonusChance) === 1) {
             this.spawnLifeBonus(brick.x, brick.y);
         }
-
+        
         brick.destroy();
 
         if (this.bricks.countActive() === 0) {
             if (this.lifeBonuses) this.lifeBonuses.clear(true, true);
             this.score += 1000;
+            this.playSoundEffet('sfx_levelup');
             this.particles.emitParticleAt(this.scoreText.x + 50, this.scoreText.y + 10, 40);
             this.flashTextEffect(this.scoreText, 0x00ff00);
             this.update();
             this.revealFlag();
+        } else {
+            this.playSoundEffet('sfx_brick');
         }
     }
 
@@ -476,15 +583,18 @@ export default class RainbowBreaker extends Phaser.Scene {
         bonus.destroy();
         if (type === 'LIFE') {
             this.lives++;
+            this.playSoundEffet('sfx_lifeup');
             this.flashTextEffect(this.livesText, 0x00ff00);
             this.particles.emitParticleAt(this.livesText.x - 40, this.livesText.y + 10, 15);
         }
         else if (type === 'POINTS') {
             this.score += 500;
+            this.playSoundEffet('sfx_points');
             this.flashTextEffect(this.scoreText, 0x00ff00);
             this.particles.emitParticleAt(this.scoreText.x + 50, this.scoreText.y + 10, 15);
         }
         else if (type === 'SLOW') {
+            this.playSoundEffet('sfx_slow');
             this.applySlowMotion(10000);
         }
         this.particles.emitParticleAt(paddle.x, paddle.y, 10);
@@ -687,6 +797,10 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.gameState = "PAUSED";
             this.physics.world.pause();
 
+            if (this.musicOn && this.backgroundMusic) {
+                this.backgroundMusic.pause();
+            }
+
             if (this.slowTimer) {
                 this.slowTimer.paused = true;
             }
@@ -710,6 +824,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         } else {
             this.gameState = "PLAYING";
             this.physics.world.resume();
+
+            if (this.musicOn && this.backgroundMusic) {
+                this.backgroundMusic.resume();
+            }
 
             if (this.slowTimer) {
                 this.slowTimer.paused = false;
@@ -797,7 +915,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         }
 
         if (this.gameState === "PLAYING") {
-            this.scoreText.setText(`Score: ${this.score}`);
+            this.scoreText.setText(`Score: ${this.score.toLocaleString()}`);
             this.levelText.setText(`Niveau: ${this.level + 1}`);
             this.livesText.setText(`Vies: ${this.lives}`);
 
@@ -826,9 +944,17 @@ export default class RainbowBreaker extends Phaser.Scene {
             if (this.ball && this.ball.y > height + 20) {
                 this.ball.y = -100;
                 this.lives--;
+                
                 this.flashTextEffect(this.livesText, 0xff0000);
-                if (this.lives <= 0) this.gameOver();
-                else this.resetBall();
+                if (this.lives <= 0) {
+
+                    this.playSoundEffet('sfx_gameover');    
+                    this.gameOver();
+                }
+                else {
+                    this.playSoundEffet('sfx_lifedown');    
+                    this.resetBall();
+                }
             }
 
             if (this.ball && this.ball.body) {

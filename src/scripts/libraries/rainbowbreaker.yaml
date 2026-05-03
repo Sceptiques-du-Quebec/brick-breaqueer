@@ -12,6 +12,8 @@ config:
   fontFamily: Arial
   fontWeight: 900
   color: #161616
+  music: false
+  effets: false
   parent: rainbowbreaker-container
 
 # Caractères de Bonus
@@ -24,6 +26,18 @@ bonus:
 sounds:
   effets: 🔊
   music: 🎵
+
+# Fichiers audio
+audio:
+  song: /assets/sounds/iwillsurvive.mp3
+  paddle: /assets/sounds/ball-paddle.mp3
+  brick: /assets/sounds/glass-break.mp3
+  points: /assets/sounds/points.mp3
+  slow: /assets/sounds/slow.mp3
+  lifeup: /assets/sounds/lifeup.mp3
+  lifedown: /assets/sounds/lifedown.mp3
+  levelup: /assets/sounds/levelup.mp3
+  gameover: /assets/sounds/gameover.mp3
 
 # Mots de brique
 words:

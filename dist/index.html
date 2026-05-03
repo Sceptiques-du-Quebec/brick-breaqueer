@@ -7,7 +7,7 @@
     ██████╔╝╚██████╔╝╚██████╔╝   ██║   ███████╗╚██████╔╝██╔╝ ██╗
     ╚═════╝  ╚═════╝  ╚═════╝    ╚═╝   ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
 
-    Généré: Dimanche le 3 mai 2026 à 6 h 07
+    Généré: Dimanche le 3 mai 2026 à 19 h 33
     Auteur: Maxime Larrivée-Roy <mlarriveeroy@gmail.com>
     Github: https://github.com/Sceptiques-du-Quebec/brick-breaqueer
 
@@ -99,6 +99,8 @@
 				fontFamily: "Unbounded",
 				fontWeight: 500,
 				color: '#161616',
+				effets: false,
+				music: true,
 				onLoadComplete: async () => {
 					await new Promise(resolve => setTimeout(resolve, 1000));
 					document.querySelector('#game-container').classList.add('loaded');
