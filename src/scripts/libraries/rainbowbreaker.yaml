@@ -1,3 +1,4 @@
+# Configurations de base
 config:
   width: 800
   height: 600
@@ -12,6 +13,19 @@ config:
   fontWeight: 900
   color: #161616
   parent: rainbowbreaker-container
+
+# Caractères de Bonus
+bonus:
+  life: 💗
+  slow: 🌈
+  points: 🦄
+
+# Caractères de son
+sounds:
+  effets: 🔊
+  music: 🎵
+
+# Mots de brique
 words:
   - INTOLÉRANCE
   - OBSCURANTISME
@@ -44,8 +58,13 @@ words:
   - PEUR
   - ARROGANCE
   - CONDESCENDANCE
+
+# Images vectorielles
 images:
   logo: /assets/logos/logo_brickbreaqueer.svg
+
+
+# Liste des drapeaux
 flags:
 
   # Drapeau Transgenre

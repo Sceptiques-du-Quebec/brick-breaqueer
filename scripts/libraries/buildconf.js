@@ -4,7 +4,6 @@ import yaml from 'js-yaml';
 import { JSDOM } from 'jsdom';
 
 const ROOT = process.cwd();
-const SRCCONF = path.join(ROOT, 'assets/conf/rainbowbreaker.yaml');
 
 
 function miniEncodeSvg(svgString) {
@@ -23,9 +22,7 @@ async function processSvgToUri(absolutePath, maxwidth) {
 	const rawSvg = await fs.readFile(absolutePath, 'utf8');
 	const dom = new JSDOM(rawSvg, { contentType: "image/svg+xml" });
 	const svgElement = dom.window.document.querySelector("svg");
-
 	if (!svgElement) throw new Error(`SVG invalide: ${absolutePath}`);
-
 	const viewBox = svgElement.getAttribute("viewBox");
 	if (viewBox) {
 		const [, , w, h] = viewBox.split(/\s+/);
@@ -33,37 +30,29 @@ async function processSvgToUri(absolutePath, maxwidth) {
 		svgElement.setAttribute("width", maxwidth);
 		svgElement.setAttribute("height", newHeight);
 	}
-
 	return `data:image/svg+xml;charset=utf-8,${miniEncodeSvg(svgElement.outerHTML)}`;
 }
 
 
 async function walkAndTransform(node, callback) {
-	if (Array.isArray(node)) {
-		return await Promise.all(node.map(item => walkAndTransform(item, callback)));
-	}
+	if (Array.isArray(node)) return await Promise.all(node.map(item => walkAndTransform(item, callback)));
 	if (typeof node === 'object' && node !== null) {
 		const newNode = {};
-		for (const [key, value] of Object.entries(node)) {
-			newNode[key] = await walkAndTransform(value, callback);
-		}
+		for (const [key, value] of Object.entries(node)) newNode[key] = await walkAndTransform(value, callback);
 		return newNode;
 	}
-
 	if (typeof node === 'string' && node.toLowerCase().endsWith('.svg')) {
 		const fullPath = path.join(ROOT, node);
 		try {
 			const stats = await fs.stat(fullPath);
-			if (stats.isFile()) {
-				return await callback(fullPath);
-			}
+			if (stats.isFile()) return await callback(fullPath);
 		} catch (err) {
 			console.warn(`⚠️ Fichier SVG introuvable : ${fullPath}`);
 		}
 	}
-
 	return node;
 }
+
 
 async function loadConfig(src) {
 	const fileContents = await fs.readFile(src, 'utf8');
@@ -76,7 +65,7 @@ async function loadConfig(src) {
 export default async function buildConf(src, dst) {
 	try {
 		const conf = await loadConfig(src);
-		const jsonContent = JSON.stringify(conf, null, 2);
+		const jsonContent = JSON.stringify(conf);
 		await fs.writeFile(dst, jsonContent, 'utf8');
 		console.log("✅ Configuration terminée avec succès !");
 	} catch (error) {

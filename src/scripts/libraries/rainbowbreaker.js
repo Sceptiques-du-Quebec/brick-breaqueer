@@ -407,16 +407,30 @@ export default class RainbowBreaker extends Phaser.Scene {
             if (this.lifeBonuses) this.lifeBonuses.clear(true, true);
             this.score += 1000;
             this.particles.emitParticleAt(this.scoreText.x + 50, this.scoreText.y + 10, 40);
-            this.tweens.add({
-                targets: this.scoreText,
-                scale: 1.1,
-                duration: 100,
-                yoyo: true,
-                ease: 'Cubic.easeInOut'
-            });
+            this.flashTextEffect(this.scoreText, 0x00ff00);
             this.update();
             this.revealFlag();
         }
+    }
+
+
+    flashTextEffect(target, color) {
+        const originalFill = target.style.color;
+        const baseColor = Phaser.Display.Color.IntegerToColor(color);
+        const washedColor = Phaser.Display.Color.Interpolate.ColorWithColor(baseColor, { r: 255, g: 255, b: 255 }, 100, 30);
+        const finalHex = Phaser.Display.Color.GetColor(washedColor.r, washedColor.g, washedColor.b);
+        target.setFill(Phaser.Display.Color.IntegerToColor(finalHex).rgba);
+        this.tweens.add({
+            targets: target,
+            scale: 1.05,
+            duration: 100,
+            yoyo: true,
+            ease: 'Cubic.easeInOut',
+            onComplete: () => {
+                target.setFill(originalFill);
+                target.setScale(1);
+            }
+        });
     }
 
 
@@ -435,9 +449,9 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     spawnLifeBonus(x, y) {
         const types = [
-            { char: '💗', type: 'LIFE' },
-            { char: '🌈', type: 'SLOW' },
-            { char: '🦄', type: 'POINTS' }
+            { char: DATA.bonus.life, type: 'LIFE' },
+            { char: DATA.bonus.slow, type: 'SLOW' },
+            { char: DATA.bonus.points, type: 'POINTS' }
         ];
         const selected = Phaser.Utils.Array.GetRandom(types);
         const bonus = this.add.text(x, y, selected.char, { fontSize: '28px', padding: { x: 10, y: 10 }}).setOrigin(0.5);
@@ -462,24 +476,12 @@ export default class RainbowBreaker extends Phaser.Scene {
         bonus.destroy();
         if (type === 'LIFE') {
             this.lives++;
-            this.tweens.add({
-                targets: this.livesText,
-                scale: 1.1,
-                duration: 100,
-                yoyo: true,
-                ease: 'Cubic.easeInOut'
-            });
+            this.flashTextEffect(this.livesText, 0x00ff00);
             this.particles.emitParticleAt(this.livesText.x - 40, this.livesText.y + 10, 15);
         }
         else if (type === 'POINTS') {
             this.score += 500;
-            this.tweens.add({
-                targets: this.scoreText,
-                scale: 1.1,
-                duration: 100,
-                yoyo: true,
-                ease: 'Cubic.easeInOut'
-            });
+            this.flashTextEffect(this.scoreText, 0x00ff00);
             this.particles.emitParticleAt(this.scoreText.x + 50, this.scoreText.y + 10, 15);
         }
         else if (type === 'SLOW') {
@@ -824,6 +826,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             if (this.ball && this.ball.y > height + 20) {
                 this.ball.y = -100;
                 this.lives--;
+                this.flashTextEffect(this.livesText, 0xff0000);
                 if (this.lives <= 0) this.gameOver();
                 else this.resetBall();
             }

@@ -12,7 +12,7 @@ const ljsin = path.resolve(srcin, "scripts/brickbreaqueer.core.js");
 const ljsout = path.resolve(srcin, "scripts/brickbreaqueer.core.min.js");
 
 const ROOT = process.cwd();
-const SRCCONF = path.join(ROOT, 'rainbowbreaker.yaml');
+const SRCCONF = path.join(ROOT, 'src/scripts/libraries/rainbowbreaker.yaml');
 const DSTCONF = path.join(ROOT, 'src/scripts/libraries/rainbowbreaker.json');
 
 // Exécution de la fonction asynchrone

@@ -13,14 +13,10 @@ const BANNER = path.join(__dirname, 'banner.txt');
 
 (async () => {
     try {
-        const stats = await exportDist(SRC, DIST, BANNER, { 
-            ignore: ["scripts/**/*.json"] 
-        });
-        
+        const stats = await exportDist(SRC, DIST, BANNER, { ignore: ["scripts/**/*.json", "scripts/**/*.yaml"] });
         console.log(`✅ Export finished.`);
         console.log(`   Files copied : ${stats.copied}`);
         console.log(`   Files ignored : ${stats.skipped}`);
-        
         process.exit(0);
     } catch(err) {
         console.error('❌ Build failed:', err);
