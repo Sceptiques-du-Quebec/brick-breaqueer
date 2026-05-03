@@ -30,7 +30,7 @@ export default class RainbowBreaker extends Phaser.Scene {
     launchTimer = null;
     countdownText = null;
     canContinue = true;
-    gridConfig = { cols: DATA.config.gridCols, rows: DATA.config.gridRows, brickW: 0, brickH: 0, startY: 0 };
+    gridConfig = { cols: DATA.config.gridCols, rows: DATA.config.gridRows, brickW: 0, brickH: 0, startY: 0, bgflagW: 0, bgflagH: 0 };
     rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
     comboWords = [];
     levelOrder = [];
@@ -94,9 +94,11 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.gridConfig.brickW = Math.floor((width * 0.9) / this.gridConfig.cols);
         this.gridConfig.brickH = Math.floor((height * 0.32) / this.gridConfig.rows);
-        this.gridConfig.startY = Math.floor(height * 0.15);
         this.gridConfig.totalWidth = this.gridConfig.cols * this.gridConfig.brickW;
         this.gridConfig.totalHeight = this.gridConfig.rows * this.gridConfig.brickH;
+        this.gridConfig.bgflagW = this.gridConfig.cols * this.gridConfig.brickW;
+        this.gridConfig.bgflagH = this.gridConfig.rows * this.gridConfig.brickH;
+        this.gridConfig.startY = Math.floor(height * 0.15);
 
         this.onGameOverCallback = this.registry.get('onGameOver');
         const fontName = this.registry.get('gameFont');
@@ -157,22 +159,11 @@ export default class RainbowBreaker extends Phaser.Scene {
             lifespan: 800,
             gravityY: 300,
             emitting: false,
-
             alpha: { start: 1, end: 0.7 },
             scale: { start: 1.8, end: 0 },
-
             tint: () => {
-                const base = Phaser.Display.Color.ValueToColor(
-                    Phaser.Utils.Array.GetRandom(this.rainbowColors)
-                );
-
-                const washed = Phaser.Display.Color.Interpolate.ColorWithColor(
-                    base,
-                    new Phaser.Display.Color(255, 255, 255),
-                    100,
-                    40
-                );
-
+                const base = Phaser.Display.Color.ValueToColor(Phaser.Utils.Array.GetRandom(this.rainbowColors));
+                const washed = Phaser.Display.Color.Interpolate.ColorWithColor(base, new Phaser.Display.Color(255, 255, 255), 100, 40);
                 return Phaser.Display.Color.GetColor(washed.r, washed.g, washed.b);
             }
         }).setDepth(5);
@@ -189,13 +180,11 @@ export default class RainbowBreaker extends Phaser.Scene {
             }
         }, { passive: true });
 
-        this.createLogoTexture('game_logo', DATA.images.logo);
 
 
         const onLoadComplete = this.registry.get('onLoadComplete');
         if (onLoadComplete && typeof onLoadComplete === 'function') {
             try {
-                // On utilise await pour attendre la résolution du callback[cite: 1]
                 await onLoadComplete();
             } catch (error) {
                 console.error("Erreur dans le callback onLoadComplete:", error);
@@ -258,37 +247,13 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.gameState = "START";
 
         if (this.bgFlag) this.bgFlag.setAlpha(0);
-
-        const fontName = this.registry.get('gameFont');
-        const mainColor = this.registry.get('gameColor');
-
-        const displayLogoHD = () => {
-            const sourceImg = this.textures.get('game_logo').getSourceImage();
-
-            if (!sourceImg || sourceImg.width === 0) {
-                this.time.delayedCall(50, displayLogoHD);
-                return;
-            }
-
-            const hdWidth = 2000;
-            const ratio = sourceImg.height / sourceImg.width;
-            const hdHeight = hdWidth * ratio;
-
-            if (!this.textures.exists('logo_hd')) {
-                const canvasTexture = this.textures.createCanvas('logo_hd', hdWidth, hdHeight);
-                canvasTexture.context.drawImage(sourceImg, 0, 0, hdWidth, hdHeight);
-                canvasTexture.refresh();
-            }
-
-            const logo = this.add.image(width / 2, height * 0.45, 'logo_hd');
+        if (this.textures.exists('game_logo')) {
+            const logo = this.add.image(width / 2, height * 0.45, 'game_logo');
             const displayWidth = width * 0.6;
-            logo.setScale(displayWidth / hdWidth);
+            const scale = displayWidth / logo.width;
+            logo.setScale(scale);
             this.uiGroup.add(logo);
             this.createStartText(logo.y + (logo.displayHeight / 2) + 50);
-        };
-
-        if (this.textures.exists('game_logo')) {
-            displayLogoHD();
         } else {
             this.createStartText(height * 0.5);
         }
@@ -323,26 +288,6 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.addFloatingEffect(sub);
         this.uiGroup.add(sub);
-    }
-
-
-    async createLogoTexture(key, svgData) {
-        const { width } = this.sys.game.config;
-        const targetWidth = width * 0.6;
-
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => {
-                const ratio = img.height / img.width;
-                const targetHeight = targetWidth * ratio;
-                if (this.textures.exists(key)) this.textures.remove(key);
-                const tex = this.textures.createCanvas(key, targetWidth, targetHeight);
-                tex.context.drawImage(img, 0, 0, targetWidth, targetHeight);
-                tex.update();
-                resolve();
-            };
-            img.src = svgData;
-        });
     }
 
 
@@ -382,10 +327,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.ball.setVisible(0);
         this.physics.add.collider(this.ball, this.paddle, (ball, paddle) => {
             this.comboCount = 0;
-            
+
             let diff = ball.x - paddle.x;
-            
-            ball.setVelocityX(12 * diff); 
+
+            ball.setVelocityX(12 * diff);
 
             if (Math.abs(ball.body.velocity.y) < 200) {
                 ball.setVelocityY(-300);
@@ -405,13 +350,12 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         const flagIndex = this.levelOrder[i % this.levelOrder.length];
         const currentFlag = this.FLAGS[flagIndex];
-        const textureKey = "flag_sharp_" + flagIndex;
-        const targetW = this.gridConfig.cols * this.gridConfig.brickW;
-        const targetH = this.gridConfig.rows * this.gridConfig.brickH;
-
-        if (!this.textures.exists(textureKey)) await this.createFlagTexture(textureKey, currentFlag.data, targetW, targetH);
+        const textureKey = currentFlag.id;
+        const targetW = this.gridConfig.bgflagW;
+        const targetH = this.gridConfig.bgflagH;
 
         this.bgFlag.setTexture(textureKey);
+        this.bgFlag.setSize(targetW, targetH);
         this.bgFlag.setDisplaySize(targetW, targetH);
 
         const startX = Math.floor((width - targetW) / 2);
@@ -430,21 +374,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.ball.setVisible(true).setAlpha(1);
         this.paddle.setVisible(true).setAlpha(1);
         this.resetBall();
-    }
-
-
-    async createFlagTexture(key, svgData, targetW, targetH) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => {
-                if (this.textures.exists(key)) this.textures.remove(key);
-                const tex = this.textures.createCanvas(key, targetW, targetH);
-                tex.context.drawImage(img, 0, 0, targetW, targetH);
-                tex.update();
-                resolve();
-            };
-            img.src = svgData;
-        });
     }
 
 
@@ -516,7 +445,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.lifeBonuses.add(bonus);
         bonus.setData('type', selected.type);
         bonus.body.setVelocityY(200);
-        bonus.body.setCollideWorldBounds(false); 
+        bonus.body.setCollideWorldBounds(false);
         this.tweens.add({
             targets: bonus,
             scale: 1.1,
@@ -541,7 +470,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                 ease: 'Cubic.easeInOut'
             });
             this.particles.emitParticleAt(this.livesText.x - 40, this.livesText.y + 10, 15);
-        } 
+        }
         else if (type === 'POINTS') {
             this.score += 500;
             this.tweens.add({
@@ -552,7 +481,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                 ease: 'Cubic.easeInOut'
             });
             this.particles.emitParticleAt(this.scoreText.x + 50, this.scoreText.y + 10, 15);
-        } 
+        }
         else if (type === 'SLOW') {
             this.applySlowMotion(10000);
         }
@@ -575,9 +504,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                 this.isSlowed = false;
                 this.ball.clearTint();
                 const targetSpeed = Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
-
                 this.ball.body.velocity.normalize().scale(targetSpeed);
-                
                 this.slowTimer = null;
             }
         });
@@ -592,7 +519,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.gameState = "REVEAL";
         this.canContinue = false;
         this.cancelSlowMotion();
-        
+
         if (this.lifeBonuses) {
             this.lifeBonuses.clear(true, true);
         }
@@ -608,26 +535,32 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         const flagIndex = this.levelOrder[this.level % this.levelOrder.length];
         const currentFlag = this.FLAGS[flagIndex];
+        const textureKey = currentFlag.id;
 
         this.historyText.setText(`${currentFlag.name.toUpperCase()}\n\n${currentFlag.history}`).setVisible(true);
 
-        this.bgFlag.setScale(1);
+        const targetW = this.gridConfig.bgflagW;
+        const targetH = this.gridConfig.bgflagH;
+
+        this.bgFlag.setTexture(textureKey);
         this.bgFlag.setOrigin(0.5, 0.5);
 
-        const targetW = this.gridConfig.cols * this.gridConfig.brickW;
+        this.bgFlag.setDisplaySize(targetW, targetH);
+
         const centerX = Math.floor((width - targetW) / 2) + (targetW / 2);
-        const centerY = this.gridConfig.startY + (this.gridConfig.totalHeight / 2);
+        const centerY = this.gridConfig.startY + (targetH / 2);
         this.bgFlag.setPosition(centerX, centerY);
+        this.bgFlag.setAlpha(1);
 
         this.tweens.add({
             targets: this.bgFlag,
-            scaleX: 1.05,
-            scaleY: 1.05,
-            duration: 100,
+            displayWidth: targetW * 1.05,
+            displayHeight: targetH * 1.05,
+            duration: 150,
             yoyo: true,
-            ease: 'Cubic.easeOut',
+            ease: 'Sine.easeInOut',
             onComplete: () => {
-                this.bgFlag.setScale(1);
+                this.bgFlag.setDisplaySize(targetW, targetH);
             }
         });
 
@@ -641,7 +574,6 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.uiGroup.add(sub);
         });
     }
-
 
     cancelSlowMotion() {
         this.isSlowed = false;
@@ -713,9 +645,9 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.ball.setVisible(true);
         this.comboCount = 0;
         this.lastBrickTime = 0;
-        
+
         let speed = Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
-        
+
         if (this.isSlowed) {
             speed = speed * 0.5;
             this.ball.setTint(0x00ffff);
@@ -901,11 +833,9 @@ export default class RainbowBreaker extends Phaser.Scene {
                     const direction = this.ball.body.velocity.y > 0 ? 1 : -1;
                     this.ball.body.setVelocityY(direction * 150);
                 }
-
-                const currentSpeed = this.isSlowed ? 
-                    Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed) * 0.5 : 
+                const currentSpeed = this.isSlowed ?
+                    Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed) * 0.5 :
                     Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
-
                 if (Math.abs(this.ball.body.velocity.length() - currentSpeed) > 1) {
                     this.ball.body.velocity.normalize().scale(currentSpeed);
                 }
