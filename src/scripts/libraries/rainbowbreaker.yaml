@@ -2,7 +2,7 @@
 config:
   width: 800
   height: 600
-  lives: 2
+  lives: 5
   baseSpeed: 320
   maxSpeed: 1000
   comboThreshold: 800
