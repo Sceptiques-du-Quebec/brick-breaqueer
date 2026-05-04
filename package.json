@@ -6,6 +6,7 @@
     "chokibasic": "^1.1.12",
     "js-yaml": "^4.1.1",
     "jsdom": "^29.1.1",
+    "midi-player-js": "^2.0.17",
     "phaser": "^4.1.0"
   },
   "scripts": {

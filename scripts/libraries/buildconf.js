@@ -112,7 +112,7 @@ export default async function buildConf(src, dst) {
         const conf = await loadConfig(src);
         const jsonContent = JSON.stringify(conf); 
         await fs.writeFile(dst, jsonContent, 'utf8');
-        console.log("✅ Configuration terminée avec succès (SVG, MP3 et MIDI inclus) !");
+        console.log("✅ Configuration terminée avec succès!");
     } catch (error) {
         console.error("❌ Erreur lors de la configuration :", error);
     }

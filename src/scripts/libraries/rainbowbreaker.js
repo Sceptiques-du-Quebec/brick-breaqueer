@@ -1,8 +1,18 @@
 import * as Phaser from "phaser";
+import MidiPlayer from 'midi-player-js';
+import { default as instrumentData } from "./webaudiofont";
+import WebAudioFontPlayer from './webaudiofontplayer';
 import DATA from "./rainbowbreaker.json";
 
 
 export default class RainbowBreaker extends Phaser.Scene {
+
+    musicVolume = 0.012;
+    audioCtx = null;
+    activeNotes = null;
+    player = null;
+    midiPlayer = null;
+    currentSongKey = null;
 
     musicOn = false;
     effectsOn = true;
@@ -90,9 +100,11 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.FLAGS = this.registry.get('gameFlags') || [];
         this.FLAGS.forEach(flag => this.load.image(flag.id, flag.data));
 
-        this.load.audio('sfx_song', DATA.audio.song);
+        Object.keys(DATA.songs).forEach(key => this.load.binary(`music_${key}`, DATA.songs[key]));
+
         this.load.audio('sfx_paddle', DATA.audio.paddle);
         this.load.audio('sfx_brick', DATA.audio.brick);
+        this.load.audio('sfx_count', DATA.audio.count);
         this.load.audio('sfx_points', DATA.audio.points);
         this.load.audio('sfx_slow', DATA.audio.slow);
         this.load.audio('sfx_lifeup', DATA.audio.lifeup);
@@ -181,8 +193,23 @@ export default class RainbowBreaker extends Phaser.Scene {
         const musicStore = localStorage.getItem('gameMusic');
         if(musicStore) this.musicOn = musicStore === 'yes' ? true : false;
 
-        this.backgroundMusic = this.sound.add('sfx_song', { loop: true, volume: 0.05 });
+        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        this.activeNotes = new Map();
+        this.player = new WebAudioFontPlayer();
+
+        this.midiPlayer = new MidiPlayer.Player((event) => {
+            this.handleMidiPipeline(event);
+        });
+
+        this.midiPlayer.on('endOfFile', () => {
+    
+            
+            this.playRandomSong();
+        });
         
+    
+    
+
         this.effectsOn = this.registry.get('gameEffets');
         const effetsStore = localStorage.getItem('gameEffets');
         if(effetsStore) this.effectsOn = effetsStore === 'yes' ? true : false;
@@ -205,16 +232,18 @@ export default class RainbowBreaker extends Phaser.Scene {
                 this.musicBtn.setAlpha(1);
                 this.musicBtn.clearTint();
                 localStorage.setItem('gameMusic', 'yes');
+                this.audioCtx.resume().then(() => {
+                    this.playRandomSong();
+                });
 
-                if (!this.backgroundMusic.isPlaying) {
-                    this.backgroundMusic.play();
-                }
             } else {
                 this.musicBtn.setAlpha(0.3);
                 this.musicBtn.setTint(0x808080);
                 localStorage.setItem('gameMusic', 'no');
-
-                this.backgroundMusic.stop();
+                this.midiPlayer.pause();
+                this.clearActiveNotes();
+                this.audioCtx.suspend();
+                
             }
         });
 
@@ -266,8 +295,6 @@ export default class RainbowBreaker extends Phaser.Scene {
             }
         }, { passive: true });
 
-
-
         const onLoadComplete = this.registry.get('onLoadComplete');
         if (onLoadComplete && typeof onLoadComplete === 'function') {
             try {
@@ -276,7 +303,6 @@ export default class RainbowBreaker extends Phaser.Scene {
                 console.error("Erreur dans le callback onLoadComplete:", error);
             }
         }
-
 
         this.showStartScreen();
 
@@ -308,6 +334,118 @@ export default class RainbowBreaker extends Phaser.Scene {
             if (this.time.now - this.lastMultiTouchTime < 500) return;
             this.handleGlobalAction(false);
         });
+    }
+
+
+    handleMidiPipeline(event) {
+        if (event.name !== 'Note on' && event.name !== 'Note off') {
+            return;
+        }
+
+        if (!this.musicOn || !this.player || !this.midiPlayer || !this.midiPlayer.isPlaying()) {
+            return;
+        }
+
+        if (event.noteNumber === undefined) {
+            return;
+        }
+
+        const now = this.audioCtx.currentTime;
+
+        switch (event.name) {
+            case 'Note on':
+                if (event.velocity > 0) {
+                    this.stopNotePipe(event.noteNumber);
+
+                    const vol = (event.velocity / 127) * (this.musicVolume || 0.012);
+
+                    const envelope = this.player.queueWaveTable(
+                        this.audioCtx,
+                        this.audioCtx.destination,
+                        instrumentData,
+                        0,
+                        event.noteNumber,
+                        999,
+                        vol
+                    );
+
+                    this.activeNotes.set(event.noteNumber, envelope);
+                } else {
+                    this.stopNotePipe(event.noteNumber);
+                }
+                break;
+
+            case 'Note off':
+                this.stopNotePipe(event.noteNumber);
+                break;
+        }
+    }
+
+
+    stopNotePipe(noteNumber) {
+        const envelope = this.activeNotes.get(noteNumber);
+        if (envelope) {
+            envelope.cancel();
+            this.activeNotes.delete(noteNumber);
+        }
+    }
+
+
+    async playRandomSong(stop = false) {
+        const songKeys = Object.keys(DATA.songs);
+        if (songKeys.length === 0) return;
+
+
+        let availableKeys = songKeys.filter(key => key !== this.currentSongKey);
+        
+        if (availableKeys.length === 0) {
+            availableKeys = songKeys;
+        }
+
+        const randomKey = Phaser.Utils.Array.GetRandom(availableKeys);
+        const midiArrayBuffer = this.cache.binary.get(`music_${randomKey}`);
+        this.currentSongKey = randomKey;
+
+        if (midiArrayBuffer) {
+            try {
+                if (this.musicOn && this.audioCtx) {
+                    this.midiPlayer.pause();
+                    this.clearActiveNotes();
+                    this.audioCtx.suspend();
+
+                }
+
+                this.midiPlayer.stop();
+                this.audioCtx.suspend();
+
+                await new Promise(resolve => {
+                    requestAnimationFrame(() => {
+                        setTimeout(resolve, 100);
+                    });
+                });
+                if(stop) return;
+                this.midiPlayer.loadArrayBuffer(midiArrayBuffer);
+
+                if (this.musicOn) {
+                    this.audioCtx.resume();
+                    this.midiPlayer.play();
+                }
+            } catch (e) {
+                console.error("Erreur transition MIDI:", e);
+            }
+        }
+    }
+
+
+    clearActiveNotes() {
+        if (this.activeNotes) {
+            this.activeNotes.forEach((envelope, note) => {
+                if (envelope && envelope.cancel) {
+                    envelope.cancel();
+                }
+            });
+            this.activeNotes.clear();
+        }
     }
 
 
@@ -401,8 +539,13 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.bricks = this.physics.add.staticGroup();
         this.createGameObjects();
         this.loadLevel(this.level);
+
+        if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+        }
+
         if (this.musicOn) {
-            this.backgroundMusic.play();
+            this.playRandomSong();
         }
     }
 
@@ -602,7 +745,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         if (!this.isSlowed) {
             this.isSlowed = true;
-            this.ball.body.velocity.scale(0.5);
+            this.ball.body.velocity.scale(0.75);
             this.ball.setTint(0x00ffff);
         }
 
@@ -627,9 +770,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.canContinue = false;
         this.cancelSlowMotion();
 
-        if (this.lifeBonuses) {
-            this.lifeBonuses.clear(true, true);
-        }
+        if (this.lifeBonuses) this.lifeBonuses.clear(true, true);
 
         this.trail = [];
         this.trailG.clear();
@@ -682,6 +823,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         });
     }
 
+
     cancelSlowMotion() {
         this.isSlowed = false;
         if (this.slowTimer) {
@@ -727,6 +869,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             delay: 1000,
             callback: () => {
                 if (index < countdownValues.length) {
+                    if(!this.musicOn) this.playSoundEffet('sfx_count');
                     this.countdownText.setText(countdownValues[index]);
                     this.countdownText.setScale(0.5);
                     this.tweens.add({
@@ -764,15 +907,6 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
 
-    togglePause() {
-        if (this.gameState === "PLAYING") {
-            this.setPause(true);
-        } else if (this.gameState === "PAUSED") {
-            this.setPause(false);
-        }
-    }
-
-
     handleTogglePause() {
         if (this.gameState === "PLAYING") {
             this.setPause(true);
@@ -792,8 +926,13 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.gameState = "PAUSED";
             this.physics.world.pause();
 
-            if (this.musicOn && this.backgroundMusic) {
-                this.backgroundMusic.pause();
+
+
+            if (this.musicOn) {
+                this.midiPlayer.pause();
+                this.clearActiveNotes();
+                this.audioCtx.suspend();
+                
             }
 
             if (this.slowTimer) {
@@ -820,8 +959,12 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.gameState = "PLAYING";
             this.physics.world.resume();
 
-            if (this.musicOn && this.backgroundMusic) {
-                this.backgroundMusic.resume();
+            if (this.musicOn) {
+                this.audioCtx.resume().then(() => {
+                    if (this.musicOn) {
+                        this.midiPlayer.play();
+                    }
+                });
             }
 
             if (this.slowTimer) {
