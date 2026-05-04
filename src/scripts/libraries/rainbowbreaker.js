@@ -420,15 +420,10 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.ball = this.physics.add.image(width / 2, height - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
         this.ball.setVisible(0);
         this.physics.add.collider(this.ball, this.paddle, (ball, paddle) => {
-
-                this.playSoundEffet('sfx_paddle');
-
+            this.playSoundEffet('sfx_paddle');
             this.comboCount = 0;
-
             let diff = ball.x - paddle.x;
-
             ball.setVelocityX(12 * diff);
-
             if (Math.abs(ball.body.velocity.y) < 200) {
                 ball.setVelocityY(-300);
             }
@@ -522,7 +517,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     flashTextEffect(target, color) {
-        const originalFill = target.style.color;
+        const originalFill = this.registry.get('gameColor');
         const baseColor = Phaser.Display.Color.IntegerToColor(color);
         const washedColor = Phaser.Display.Color.Interpolate.ColorWithColor(baseColor, { r: 255, g: 255, b: 255 }, 100, 30);
         const finalHex = Phaser.Display.Color.GetColor(washedColor.r, washedColor.g, washedColor.b);
