@@ -4,7 +4,7 @@ config:
   height: 600
   lives: 5
   baseSpeed: 320
-  maxSpeed: 1000
+  maxSpeed: 1200
   comboThreshold: 800
   bonusChance: 16
   gridCols: 8
