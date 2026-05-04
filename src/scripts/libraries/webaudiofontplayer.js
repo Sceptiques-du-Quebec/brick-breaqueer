@@ -13,10 +13,10 @@ class WebAudioFontChannel {
             this[`band${freq < 1000 ? freq : (freq / 1024) + 'k'}`] = lastNode;
         });
 
-		lastNode.connect(output);
+		// lastNode.connect(output);
 
 		this.limiter = audioContext.createDynamicsCompressor();
-		this.limiter.threshold.setValueAtTime(-6.0, audioContext.currentTime); 
+		this.limiter.threshold.setValueAtTime(-3.0, audioContext.currentTime); 
 		this.limiter.ratio.setValueAtTime(40, audioContext.currentTime);
 		this.limiter.attack.setValueAtTime(0.000, audioContext.currentTime);
 		this.limiter.release.setValueAtTime(0.25, audioContext.currentTime);

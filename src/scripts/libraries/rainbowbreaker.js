@@ -12,6 +12,8 @@ export default class RainbowBreaker extends Phaser.Scene {
     player = null;
     midiPlayer = null;
     currentSongKey = null;
+    songOrder = [];
+    songIndex = 0;
 
     musicOn = false;
     effectsOn = true;
@@ -205,6 +207,11 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.effectsBtn.setOrigin(0.5, 0);
         this.effectsBtn.setInteractive(new Phaser.Geom.Circle(15, 15, 35), Phaser.Geom.Circle.Contains);
 
+
+        const songKeys = Object.keys(DATA.songs);
+        this.songOrder = Phaser.Utils.Array.Shuffle([...songKeys]);
+        this.songIndex = 0;
+
         this.musicOn = this.registry.get('gameMusic');
         const musicStore = localStorage.getItem('gameMusic');
         if(musicStore) this.musicOn = musicStore === 'yes' ? true : false;
@@ -218,7 +225,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         });
 
         this.midiPlayer.on('endOfFile', () => {
-            this.playRandomSong();
+            this.playNextSong();
         });
 
         this.effectsOn = this.registry.get('gameEffets');
@@ -244,7 +251,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                 this.musicBtn.clearTint();
                 localStorage.setItem('gameMusic', 'yes');
                 this.audioCtx.resume().then(() => {
-                    this.playRandomSong();
+                    this.playNextSong();
                 });
 
             } else {
@@ -369,14 +376,14 @@ export default class RainbowBreaker extends Phaser.Scene {
                     this.stopNotePipe(event.noteNumber);
 
                     const vol = (event.velocity / 127) * (this.musicVolume || 0.012);
-
+                    // console.log(vol);
                     const envelope = this.player.queueWaveTable(
                         this.audioCtx,
                         this.audioCtx.destination,
                         DATA.instrument,
                         0,
                         event.noteNumber,
-                        999,
+                        2,
                         vol
                     );
 
@@ -402,20 +409,23 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
 
-    async playRandomSong(stop = false) {
-        const songKeys = Object.keys(DATA.songs);
-        if (songKeys.length === 0) return;
+    async playNextSong(stop = false) {
+        if (this.songOrder.length === 0) return;
 
+        if (this.songIndex >= this.songOrder.length) {
+            Phaser.Utils.Array.Shuffle(this.songOrder);
+            this.songIndex = 0;
 
-        let availableKeys = songKeys.filter(key => key !== this.currentSongKey);
-        
-        if (availableKeys.length === 0) {
-            availableKeys = songKeys;
+            if (this.songOrder[0] === this.currentSongKey && this.songOrder.length > 1) {
+                Phaser.Utils.Array.Shuffle(this.songOrder);
+            }
         }
 
-        const randomKey = Phaser.Utils.Array.GetRandom(availableKeys);
-        const midiArrayBuffer = this.cache.binary.get(`music_${randomKey}`);
-        this.currentSongKey = randomKey;
+        const nextKey = this.songOrder[this.songIndex];
+        const midiArrayBuffer = this.cache.binary.get(`music_${nextKey}`);
+
+        this.songIndex++;
+        this.currentSongKey = nextKey;
 
         if (midiArrayBuffer) {
             try {
@@ -423,7 +433,6 @@ export default class RainbowBreaker extends Phaser.Scene {
                     this.midiPlayer.pause();
                     this.clearActiveNotes();
                     this.audioCtx.suspend();
-
                 }
 
                 this.midiPlayer.stop();
@@ -434,7 +443,8 @@ export default class RainbowBreaker extends Phaser.Scene {
                         setTimeout(resolve, 100);
                     });
                 });
-                if(stop) return;
+
+                if (stop) return;
                 this.midiPlayer.loadArrayBuffer(midiArrayBuffer);
 
                 if (this.musicOn) {
@@ -553,7 +563,7 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
         if (this.musicOn) {
-            this.playRandomSong();
+            this.playNextSong();
         }
     }
 

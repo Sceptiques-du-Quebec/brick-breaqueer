@@ -54,6 +54,16 @@ songs:
   iwillsurvive: /assets/songs/iwillsurvive.mid
   gracekelly: /assets/songs/mika-grace_kelly.mid
   ymca: /assets/songs/ymca.mid
+  itrainingman: /assets/songs/itrainingman.mid
+  bornthisway: /assets/songs/bornthisway.mid
+  believe: /assets/songs/believe.mid
+  imcomingout: /assets/songs/imcomingout.mid
+  dancingqueen: /assets/songs/dancingqueen.mid
+  toxic: /assets/songs/toxic.mid
+  smalltownboy: /assets/songs/smalltownboy.mid
+  truecolors: /assets/songs/truecolors.mid
+  iwanttobreakfree: /assets/songs/iwanttobreakfree.mid
+  
 
 # Mots de brique
 words:
