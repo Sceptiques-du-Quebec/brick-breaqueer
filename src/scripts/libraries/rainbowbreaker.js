@@ -1,6 +1,5 @@
 import * as Phaser from "phaser";
 import MidiPlayer from 'midi-player-js';
-import { default as instrumentData } from "./webaudiofont";
 import WebAudioFontPlayer from './webaudiofontplayer';
 import DATA from "./rainbowbreaker.json";
 
@@ -177,21 +176,16 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.scoreText = this.add.text(width * 0.055, height * 0.04, "Score: 0", textStyle)
             .setResolution(2).setDepth(10).setVisible(false);
 
-        // this.musicBtn = this.add.text(width * 0.35, height * 0.04, DATA.sounds.music, iconStyle)
-        //     .setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(10).setVisible(false);
 
         this.levelText = this.add.text(width / 2, height * 0.04, "Niveau: 1", textStyle)
             .setResolution(2).setOrigin(0.5, 0).setDepth(10).setVisible(false);
 
-        // this.effectsBtn = this.add.text(width * 0.65, height * 0.04, DATA.sounds.effets, iconStyle)
-        //     .setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(10).setVisible(false);
 
         this.livesText = this.add.text(width * 0.945, height * 0.04, "Vies: " + DATA.config.lives, textStyle)
             .setResolution(2).setOrigin(1, 0).setDepth(10).setVisible(false);
 
 
 
-        // On réduit la valeur de height * 0.04 à 0.025 pour les remonter
         this.musicBtn = this.add.text(width * 0.35, height * 0.025, DATA.sounds.music, iconStyle)
             .setOrigin(0.5, 0)
             .setInteractive({ useHandCursor: true })
@@ -205,14 +199,11 @@ export default class RainbowBreaker extends Phaser.Scene {
             .setVisible(false);
 
 
-        // Agrandissement du bouton Musique
         this.musicBtn.setOrigin(0.5, 0);
         this.musicBtn.setInteractive(new Phaser.Geom.Circle(15, 15, 35), Phaser.Geom.Circle.Contains);
 
-        // Agrandissement du bouton Effets
         this.effectsBtn.setOrigin(0.5, 0);
         this.effectsBtn.setInteractive(new Phaser.Geom.Circle(15, 15, 35), Phaser.Geom.Circle.Contains);
-
 
         this.musicOn = this.registry.get('gameMusic');
         const musicStore = localStorage.getItem('gameMusic');
@@ -229,9 +220,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.midiPlayer.on('endOfFile', () => {
             this.playRandomSong();
         });
-        
-    
-    
 
         this.effectsOn = this.registry.get('gameEffets');
         const effetsStore = localStorage.getItem('gameEffets');
@@ -385,7 +373,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                     const envelope = this.player.queueWaveTable(
                         this.audioCtx,
                         this.audioCtx.destination,
-                        instrumentData,
+                        DATA.instrument,
                         0,
                         event.noteNumber,
                         999,
@@ -563,9 +551,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.createGameObjects();
         this.loadLevel(this.level);
 
-        // if (this.audioCtx.state === 'suspended') {
-        //     this.audioCtx.resume();
-        // }
 
         if (this.musicOn) {
             this.playRandomSong();
@@ -1054,7 +1039,6 @@ export default class RainbowBreaker extends Phaser.Scene {
                 this.startGame();
                 break;
             case "GAMEOVER":
-                // this.showStartScreen();
                 this.startGame();
                 break;
             case "REVEAL":

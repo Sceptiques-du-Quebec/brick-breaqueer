@@ -70,8 +70,21 @@ async function walkAndTransform(node, callbackSvg, callbackAudio) {
         const lowerNode = node.toLowerCase();
         const fullPath = path.join(ROOT, node);
 
+        // --- NOUVEAU : Gestion de l'injection JSON ---
+        if (lowerNode.endsWith('.json')) {
+            try {
+                const stats = await fs.stat(fullPath);
+                if (stats.isFile()) {
+                    const jsonRaw = await fs.readFile(fullPath, 'utf8');
+                    return JSON.parse(jsonRaw); // On remplace la string par l'objet parsé
+                }
+            } catch (err) {
+                console.warn(`⚠️ Fichier JSON introuvable ou malformé : ${fullPath}`);
+            }
+        }
+
         // Gestion SVG
-        if (lowerNode.endsWith('.svg')) {
+        else if (lowerNode.endsWith('.svg')) {
             try {
                 const stats = await fs.stat(fullPath);
                 if (stats.isFile()) return await callbackSvg(fullPath);
@@ -79,7 +92,7 @@ async function walkAndTransform(node, callbackSvg, callbackAudio) {
                 console.warn(`⚠️ Fichier SVG introuvable : ${fullPath}`);
             }
         } 
-        // Gestion Audio (MP3 et MIDI)
+        // Gestion Audio
         else if (lowerNode.endsWith('.mp3') || lowerNode.endsWith('.mid') || lowerNode.endsWith('.midi')) {
             try {
                 const stats = await fs.stat(fullPath);

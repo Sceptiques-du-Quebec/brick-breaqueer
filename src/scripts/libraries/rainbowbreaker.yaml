@@ -18,6 +18,10 @@ config:
   effectsVolume: 0.18
   parent: rainbowbreaker-container
 
+# Images vectorielles
+images:
+  logo: /assets/logos/logo_brickbreaqueer.svg
+
 # Caractères de Bonus
 bonus:
   life: 💗
@@ -29,9 +33,9 @@ sounds:
   effets: 🔊
   music: 🎵
 
-# Images vectorielles
-images:
-  logo: /assets/logos/logo_brickbreaqueer.svg
+# Instrument / https://github.com/surikov/webaudiofont#catalog-of-instruments
+instrument: /assets/audiofonts/0810_GeneralUserGS_sf2_file.json
+# instrument: /assets/audiofonts/1100_Aspirin_sf2_file.json
 
 # Fichiers audio
 audio:
