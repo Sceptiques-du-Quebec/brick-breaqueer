@@ -172,22 +172,47 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         const baseSize = Math.max(14, Math.round(width / 40));
         const textStyle = { font: `${fontWeight} ${baseSize}px "${fontName}"`, fill: mainColor };
-        const iconStyle = { font: `${baseSize * 1.2}px "${fontName}"`, fill: mainColor };
+        const iconStyle = { font: `${baseSize * 1.6}px "${fontName}"`, fill: mainColor };
 
         this.scoreText = this.add.text(width * 0.055, height * 0.04, "Score: 0", textStyle)
             .setResolution(2).setDepth(10).setVisible(false);
 
-        this.musicBtn = this.add.text(width * 0.35, height * 0.04, DATA.sounds.music, iconStyle)
-            .setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(10).setVisible(false);
+        // this.musicBtn = this.add.text(width * 0.35, height * 0.04, DATA.sounds.music, iconStyle)
+        //     .setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(10).setVisible(false);
 
         this.levelText = this.add.text(width / 2, height * 0.04, "Niveau: 1", textStyle)
             .setResolution(2).setOrigin(0.5, 0).setDepth(10).setVisible(false);
 
-        this.effectsBtn = this.add.text(width * 0.65, height * 0.04, DATA.sounds.effets, iconStyle)
-            .setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(10).setVisible(false);
+        // this.effectsBtn = this.add.text(width * 0.65, height * 0.04, DATA.sounds.effets, iconStyle)
+        //     .setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(10).setVisible(false);
 
         this.livesText = this.add.text(width * 0.945, height * 0.04, "Vies: " + DATA.config.lives, textStyle)
             .setResolution(2).setOrigin(1, 0).setDepth(10).setVisible(false);
+
+
+
+        // On réduit la valeur de height * 0.04 à 0.025 pour les remonter
+        this.musicBtn = this.add.text(width * 0.35, height * 0.025, DATA.sounds.music, iconStyle)
+            .setOrigin(0.5, 0)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(10)
+            .setVisible(false);
+
+        this.effectsBtn = this.add.text(width * 0.65, height * 0.025, DATA.sounds.effets, iconStyle)
+            .setOrigin(0.5, 0)
+            .setInteractive({ useHandCursor: true })
+            .setDepth(10)
+            .setVisible(false);
+
+
+        // Agrandissement du bouton Musique
+        this.musicBtn.setOrigin(0.5, 0);
+        this.musicBtn.setInteractive(new Phaser.Geom.Circle(15, 15, 35), Phaser.Geom.Circle.Contains);
+
+        // Agrandissement du bouton Effets
+        this.effectsBtn.setOrigin(0.5, 0);
+        this.effectsBtn.setInteractive(new Phaser.Geom.Circle(15, 15, 35), Phaser.Geom.Circle.Contains);
+
 
         this.musicOn = this.registry.get('gameMusic');
         const musicStore = localStorage.getItem('gameMusic');
