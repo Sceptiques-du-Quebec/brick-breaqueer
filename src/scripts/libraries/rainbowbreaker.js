@@ -202,8 +202,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         });
 
         this.midiPlayer.on('endOfFile', () => {
-    
-            
             this.playRandomSong();
         });
         
@@ -540,9 +538,9 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.createGameObjects();
         this.loadLevel(this.level);
 
-        if (this.audioCtx.state === 'suspended') {
-            this.audioCtx.resume();
-        }
+        // if (this.audioCtx.state === 'suspended') {
+        //     this.audioCtx.resume();
+        // }
 
         if (this.musicOn) {
             this.playRandomSong();
@@ -996,6 +994,13 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
 
+        if(this.musicOn) {
+            this.midiPlayer.stop();
+            this.clearActiveNotes();
+        }
+
+        this.playSoundEffet('sfx_gameover');   
+
         const titleText = "FIN DE LA PARTIE";
         const title = this.add.text(width / 2, height * 0.65, titleText, { font: `${fontWeight} ${Math.round(width / 18)}px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
         this.uiGroup.add(title);
@@ -1024,7 +1029,8 @@ export default class RainbowBreaker extends Phaser.Scene {
                 this.startGame();
                 break;
             case "GAMEOVER":
-                this.showStartScreen();
+                // this.showStartScreen();
+                this.startGame();
                 break;
             case "REVEAL":
                 if (!this.canContinue) return;
@@ -1084,9 +1090,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                 this.lives--;
                 
                 this.flashTextEffect(this.livesText, 0xff0000);
-                if (this.lives <= 0) {
-
-                    this.playSoundEffet('sfx_gameover');    
+                if (this.lives <= 0) { 
                     this.gameOver();
                 }
                 else {
