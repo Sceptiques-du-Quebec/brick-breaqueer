@@ -101,7 +101,7 @@ words:
 flags:
 
   # Drapeau Transgenre
-  - id: flag_trans
+  - id: trans
     name: Drapeau Transgenre
     data: /assets/flags/trans_flag.svg
     history: Créé en 1999 par la femme transgenre Monica Helms, ce drapeau déploie
@@ -111,7 +111,7 @@ flags:
       en transition.
 
   # Drapeau Bisexuel
-  - id: flag_bi
+  - id: bi
     name: Drapeau Bisexuel
     data: /assets/flags/bisexual_flag.svg
     history: Conçu par Michael Page en 1998 pour accroître la visibilité des
@@ -121,7 +121,7 @@ flags:
       violette qui symbolise la fusion et la fluidité de ces attirances.
 
   # Drapeau Asexuel
-  - id: flag_asexual
+  - id: asexual
     name: Drapeau Asexuel
     data: /assets/flags/asexual_flag.svg
     history: Sélectionné par un vote communautaire sur le site de l'AVEN en 2010, ce
@@ -130,7 +130,7 @@ flags:
       alliés ainsi que la communauté dans son ensemble.
 
   # Drapeau Queer
-  - id: flag_queer
+  - id: queer
     name: Drapeau Queer
     data: /assets/flags/queer_flag.svg
     history: Créé par l'artiste Pastel_Baby vers 2017, ce drapeau à neuf bandes
@@ -139,7 +139,7 @@ flags:
       pour inclure toutes les nuances d'identités et d'expressions.
 
   # Drapeau Gay
-  - id: flag_gay
+  - id: gay
     name: Drapeau Gay
     data: /assets/flags/gay_flag.svg
     history: Inspiré par le drapeau lesbien, ce drapeau à sept bandes a été conçu
@@ -149,7 +149,7 @@ flags:
       diversité des expressions de genre.
 
   # Drapeau Intersexe
-  - id: flag_intersex
+  - id: intersex
     name: Drapeau Intersexe
     data: /assets/flags/intersex_flag.svg
     history: Créé en 2013 par Morgan Carpenter d'Intersex Human Rights Australia, ce
@@ -159,7 +159,7 @@ flags:
       caractéristiques sexuelles.
 
   # Drapeau Lesbien
-  - id: flag_lesbian
+  - id: lesbian
     name: Drapeau Lesbien
     data: /assets/flags/lesbian_flag.svg
     history: Apparu sur le web en 2018 pour remplacer les versions plus anciennes,
@@ -168,7 +168,7 @@ flags:
       allant de l'expression de genre à la sérénité et à la communauté.
 
   # Drapeau Pansexuel
-  - id: flag_pan
+  - id: pan
     name: Drapeau Pansexuel
     data: /assets/flags/pansexual_flag.svg
     history: Créé en 2010 par Jasper V. pour offrir une identité propre à la
@@ -177,7 +177,7 @@ flags:
       de son identité de genre.
 
   # Drapeau Demisexuel
-  - id: flag_demisexual
+  - id: demisexual
     name: Drapeau Demisexuel
     data: /assets/flags/demisexual_flag.svg
     history: Apparu peu après 2010, le drapeau demisexuel reprend les couleurs de
@@ -187,7 +187,7 @@ flags:
       fort.
 
   # Drapeau de la Fierté
-  - id: flag_pride
+  - id: pride
     name: Drapeau de la Fierté
     data: /assets/flags/pride_flag.svg
     history: Créé en 2018 par Daniel Quasar et mis à jour en 2021 par Valentino
@@ -196,7 +196,7 @@ flags:
       intersexes.
 
   # Drapeau Non-binaire
-  - id: flag_nonbinary
+  - id: nonbinary
     name: Drapeau Non-binaire
     data: /assets/flags/nonbinary_flag.svg
     history: Créé en 2014 par Kye Rowan, il se compose de quatre bandes (jaune,
@@ -204,7 +204,7 @@ flags:
       s'inscrit pas dans la binarité homme/femme.
 
   # Drapeau Genderfluid
-  - id: flag_genderfluid
+  - id: genderfluid
     name: Drapeau Genderfluid
     data: /assets/flags/genderfluid_flag.svg
     history: Conçu par Serena Dyer en 2012, ce drapeau à cinq bandes (rose, blanc,
@@ -212,7 +212,7 @@ flags:
       au fil du temps.
 
   # Drapeau Agenre
-  - id: flag_agender
+  - id: agender
     name: Drapeau Agenre
     data: /assets/flags/agender_flag.svg
     history: Créé en 2014 par Salem X, il utilise des bandes noires, grises,
@@ -220,7 +220,7 @@ flags:
       ou une identité de genre neutre.
 
   # Drapeau Polysexuel
-  - id: flag_polysexual
+  - id: polysexual
     name: Drapeau Polysexuel
     data: /assets/flags/polysexual_flag.svg
     history: Souvent confondu avec la pansexualité, ce drapeau (rose, vert, bleu)
@@ -228,14 +228,14 @@ flags:
       tous.
 
   # Drapeau Aromantique
-  - id: flag_aromantic
+  - id: aromantic
     name: Drapeau Aromantique
     data: /assets/flags/aromantic_flag.svg
     history: Utilisant des nuances de vert, de blanc, de gris et de noir, il
       représente les personnes qui ressentent peu ou pas d'attirance romantique.
 
   # Drapeau Omnisexuel
-  - id: flag_omnisexual
+  - id: omnisexual
     name: Drapeau Omnisexuel
     data: /assets/flags/omnisexual_flag.svg
     history: Proche du drapeau pansexuel mais avec des nuances de bleu et de rose
@@ -244,7 +244,7 @@ flags:
       souvent décrite comme "aveugle au genre").
 
   # Drapeau Two-Spirits
-  - id: flag_twospirits
+  - id: twospirits
     name: Drapeau Two-Spirits
     data: /assets/flags/twospirit_flag.svg
     history: Adopté en 1990 à Winnipeg, le terme Two-Spirit s'illustre par un
@@ -253,7 +253,7 @@ flags:
       spirituelles autochtones nord-américaines précoloniales.
 
   # Drapeau Genderqueer
-  - id: flag_genderqueer
+  - id: genderqueer
     name: Drapeau Genderqueer
     data: /assets/flags/genderqueer_flag.svg
     history: Créé en 2011 par Marilyn Roxie, ce drapeau arbore des bandes lavande,
@@ -263,7 +263,7 @@ flags:
       traditionnelles.
 
   # Drapeau Bigenre
-  - id: flag_bigender
+  - id: bigender
     name: Drapeau Bigenre
     data: /assets/flags/bigender_flag.svg
     history: Apparu vers 2010, ce drapeau décline des nuances de rose, de bleu, de
@@ -271,7 +271,7 @@ flags:
       masculines, féminines et neutres au sein d'une même fluidité de genre.
 
   # Drapeau Neutrois
-  - id: flag_neutrois
+  - id: neutrois
     name: Drapeau Neutrois
     data: /assets/flags/neutrois_flag.svg
     history: Apparu vers 2010, ce drapeau arbore trois bandes horizontales blanche,
@@ -279,7 +279,7 @@ flags:
       le rejet de la binarité et les identités agenres ou dépourvues de genre.
 
   # Drapeau Gris asexuel
-  - id: flag_greyasexual
+  - id: greyasexual
     name: Drapeau Gris asexuel
     data: /assets/flags/greyasexuality_flag.svg
     history: Créé en 2010 dans la lignée du drapeau asexuel, ce drapeau utilise des
@@ -289,7 +289,7 @@ flags:
       spécifiques.
 
   # Drapeau Lithromantique
-  - id: flag_lithromantic
+  - id: lithromantic
     name: Drapeau Lithromantique
     data: /assets/flags/lithromantic_flag.svg
     history: Créé vers 2014, ce drapeau décline des bandes de couleur rouge, orange,
@@ -298,7 +298,7 @@ flags:
       voient leur désir s'estomper si tel est le cas.
 
   # Drapeau Apothisexuel
-  - id: flag_apothisexual
+  - id: apothisexual
     name: Drapeau Apothisexuel
     data: /assets/flags/apothisexual_flag.svg
     history: Créée vers 2014, utilise des bandes violette, blanche et noire
@@ -307,7 +307,7 @@ flags:
       d'affirmer cette identité au sein du spectre.
 
   # Drapeau Polyamoureux
-  - id: flag_polyamory
+  - id: polyamory
     name: Drapeau Polyamoureux
     data: /assets/flags/polyamory_flag.svg
     history: Créé en 1995 par Jim Evans, ce drapeau arbore des bandes bleue, rouge

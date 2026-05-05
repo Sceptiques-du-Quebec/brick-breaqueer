@@ -1,7 +1,10 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import buildConf from './libraries/buildconf.js';
-import { createWatchers, buildCSS, buildJS } from "chokibasic";
+import { createWatchers, buildCSS, buildJS, buildConf } from "chokibasic";
+import { midiTrim } from './libraries/miditrim.js';
+import { processMp3 } from './libraries/processmp3.js';
+import { processSvg } from './libraries/processsvg.js';
+
 
 // Configuration de l'équivalent __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -39,7 +42,19 @@ const { close } = createWatchers(
                 const loaderoutfile = path.resolve(__dirname, "../src/scripts/brickbreaqueer.core.min.js");
                 
                 try {
-                    await buildConf(yamlconf, jsonconf);
+                    // await buildConf(yamlconf, jsonconf);
+
+
+                    await buildConf(yamlconf, jsonconf, {
+                        "**/*.json": (content) => JSON.parse(content.toString('utf8')),
+                        "**/*.mid": (content) => midiTrim(content, true),
+                        "**/*.mp3": (content) => processMp3(content),
+                        "**/*.svg": (content) => processSvg(content, 800)
+                    });
+
+
+
+
                     await buildJS(loaderentry, loaderoutfile);
                 } catch (err) {
                     console.error("❌ Build error:", err);
