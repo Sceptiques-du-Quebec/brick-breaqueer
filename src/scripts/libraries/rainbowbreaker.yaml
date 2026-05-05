@@ -18,27 +18,24 @@ config:
   effectsVolume: 0.18
   parent: rainbowbreaker-container
 
+# Icones
+icons:
+  life: 💗
+  slow: 🌈
+  points: 🦄
+  effets: 🔊
+  music: 🎵
+
 # Images vectorielles
 images:
   logo: /assets/logos/logo_brickbreaqueer.svg
 
-# Caractères de Bonus
-bonus:
-  life: 💗
-  slow: 🌈
-  points: 🦄
-
-# Caractères de son
-sounds:
-  effets: 🔊
-  music: 🎵
-
-# Instrument / https://github.com/surikov/webaudiofont#catalog-of-instruments
+# WebAudioFont JSON / https://github.com/surikov/webaudiofont#catalog-of-instruments
 instrument: /assets/audiofonts/0810_GeneralUserGS_sf2_file.json
 # instrument: /assets/audiofonts/1100_Aspirin_sf2_file.json
 
 # Fichiers audio
-audio:
+sounds:
   paddle: /assets/sounds/ball-paddle.mp3
   brick: /assets/sounds/glass-break.mp3
   count: /assets/sounds/count.mp3
@@ -52,9 +49,9 @@ audio:
 # Chansons midi
 songs:
   iwillsurvive: /assets/songs/iwillsurvive.mid
-  gracekelly: /assets/songs/mika-grace_kelly.mid
+  gracekelly: /assets/songs/gracekelly.mid
   ymca: /assets/songs/ymca.mid
-  itrainingman: /assets/songs/itrainingman.mid
+  itrainingman: /assets/songs/itsrainingman.mid
   bornthisway: /assets/songs/bornthisway.mid
   believe: /assets/songs/believe.mid
   imcomingout: /assets/songs/imcomingout.mid

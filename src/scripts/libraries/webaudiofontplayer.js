@@ -1,25 +1,23 @@
-// https://github.com/surikov/webaudiofont
 
 
 class WebAudioFontChannel {
 
-	constructor(audioContext) {
+    constructor(audioContext) {
         this.audioContext = audioContext;
         this.input = audioContext.createGain();
-        
+
         let lastNode = this.input;
         [32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384].forEach(freq => {
             lastNode = this.bandEqualizer(lastNode, freq);
             this[`band${freq < 1000 ? freq : (freq / 1024) + 'k'}`] = lastNode;
         });
 
-		// lastNode.connect(output);
 
-		this.limiter = audioContext.createDynamicsCompressor();
-		this.limiter.threshold.setValueAtTime(-3.0, audioContext.currentTime); 
-		this.limiter.ratio.setValueAtTime(40, audioContext.currentTime);
-		this.limiter.attack.setValueAtTime(0.000, audioContext.currentTime);
-		this.limiter.release.setValueAtTime(0.25, audioContext.currentTime);
+        this.limiter = audioContext.createDynamicsCompressor();
+        this.limiter.threshold.setValueAtTime(-3.0, audioContext.currentTime);
+        this.limiter.ratio.setValueAtTime(40, audioContext.currentTime);
+        this.limiter.attack.setValueAtTime(0.000, audioContext.currentTime);
+        this.limiter.release.setValueAtTime(0.25, audioContext.currentTime);
         this.output = audioContext.createGain();
 
         lastNode.connect(this.limiter);
@@ -45,36 +43,58 @@ class WebAudioFontPlayer {
         this.nearZero = 0.000001;
     }
 
-    adjustPreset = (audioContext, preset) => {
-        preset.zones.forEach(zone => this.adjustZone(audioContext, zone));
+    adjustPreset = async (audioContext, preset) => {
+        const promises = preset.zones.map(zone => this.adjustZone(audioContext, zone));
+        await Promise.all(promises);
     };
 
     adjustZone = (audioContext, zone) => {
-        if (zone.buffer) return;
+        if (zone.buffer) return Promise.resolve(zone);
 
-        zone.delay = 0;
-        if (zone.sample) {
-            const decoded = atob(zone.sample);
-            zone.buffer = audioContext.createBuffer(1, decoded.length / 2, zone.sampleRate);
-            const float32Array = zone.buffer.getChannelData(0);
+        return new Promise((resolve, reject) => {
+            zone.delay = 0;
 
-            for (let i = 0; i < decoded.length / 2; i++) {
-                const b1 = decoded.charCodeAt(i * 2) & 0xFF;
-                const b2 = decoded.charCodeAt(i * 2 + 1) & 0xFF;
-                let n = (b2 << 8) | b1;
-                if (n >= 32768) n -= 65536;
-                float32Array[i] = n / 32768.0;
+            if (zone.sample) {
+                const decoded = atob(zone.sample);
+                zone.buffer = audioContext.createBuffer(1, decoded.length / 2, zone.sampleRate);
+                const float32Array = zone.buffer.getChannelData(0);
+
+                for (let i = 0; i < decoded.length / 2; i++) {
+                    const b1 = decoded.charCodeAt(i * 2) & 0xFF;
+                    const b2 = decoded.charCodeAt(i * 2 + 1) & 0xFF;
+                    let n = (b2 << 8) | b1;
+                    if (n >= 32768) n -= 65536;
+                    float32Array[i] = n / 32768.0;
+                }
+                this.applyZoneParameters(zone);
+                resolve(zone);
+            } else if (zone.file) {
+                const decoded = atob(zone.file);
+                const uint8Array = new Uint8Array(decoded.length);
+                for (let i = 0; i < decoded.length; i++) {
+                    uint8Array[i] = decoded.charCodeAt(i);
+                }
+
+                audioContext.decodeAudioData(
+                    uint8Array.buffer,
+                    (audioBuffer) => {
+                        zone.buffer = audioBuffer;
+                        this.applyZoneParameters(zone);
+                        resolve(zone);
+                    },
+                    (error) => {
+                        console.error("Erreur de décodage audio:", error);
+                        reject(error);
+                    }
+                );
+            } else {
+                this.applyZoneParameters(zone);
+                resolve(zone);
             }
-        } else if (zone.file) {
-            const decoded = atob(zone.file);
-            const uint8Array = new Uint8Array(decoded.length);
-            for (let i = 0; i < decoded.length; i++) uint8Array[i] = decoded.charCodeAt(i);
-            
-            audioContext.decodeAudioData(uint8Array.buffer, (audioBuffer) => {
-                zone.buffer = audioBuffer;
-            });
-        }
+        });
+    };
 
+    applyZoneParameters = (zone) => {
         zone.loopStart = this.numValue(zone.loopStart, 0);
         zone.loopEnd = this.numValue(zone.loopEnd, 0);
         zone.coarseTune = this.numValue(zone.coarseTune, 0);
@@ -129,13 +149,13 @@ class WebAudioFontPlayer {
         envelope.audioBufferSourceNode = source;
         envelope.when = startWhen;
         envelope.duration = waveDuration;
-        
+
         return envelope;
     }
 
     setupEnvelope(audioContext, envelope, zone, volume, when, sampleDuration, noteDuration) {
         envelope.gain.setValueAtTime(this.noZeroVolume(0), audioContext.currentTime);
-        
+
         const duration = Math.min(noteDuration, sampleDuration - this.afterTime);
         const ahdsr = (zone.ahdsr && zone.ahdsr.length > 0) ? zone.ahdsr : [
             { duration: 0, volume: 1 },
@@ -167,13 +187,13 @@ class WebAudioFontPlayer {
     }
 
     findEnvelope(audioContext, target) {
-        let envelope = this.envelopes.find(e => 
+        let envelope = this.envelopes.find(e =>
             e.target === target && audioContext.currentTime > e.when + e.duration + 0.001
         );
 
         if (envelope) {
             if (envelope.audioBufferSourceNode) {
-                try { envelope.audioBufferSourceNode.stop(0); envelope.audioBufferSourceNode.disconnect(); } catch (e) {}
+                try { envelope.audioBufferSourceNode.stop(0); envelope.audioBufferSourceNode.disconnect(); } catch (e) { }
                 envelope.audioBufferSourceNode = null;
             }
         } else {
@@ -199,15 +219,15 @@ class WebAudioFontPlayer {
         return zone;
     };
 
-	limitVolume = (v) => {
-		const requestedVolume = v ? 1.0 * v : 0.5;
-		return Math.min(requestedVolume, 0.8); 
-	};
+    limitVolume = (v) => {
+        const requestedVolume = v ? 1.0 * v : 0.5;
+        return Math.min(requestedVolume, 0.8);
+    };
     noZeroVolume = (n) => n > this.nearZero ? n : this.nearZero;
     numValue = (a, b) => typeof a === "number" ? a : b;
-    
+
     resumeContext(audioContext) {
-        if (audioContext.state === 'suspended') audioContext.resume().catch(() => {});
+        if (audioContext.state === 'suspended') audioContext.resume().catch(() => { });
     }
 
     queueChord(ctx, tgt, prst, w, pchs, d, v, s) {
@@ -220,7 +240,7 @@ class WebAudioFontPlayer {
             e.gain.cancelScheduledValues(0);
             e.gain.setValueAtTime(this.nearZero, audioContext.currentTime);
             e.when = -1;
-            try { e.audioBufferSourceNode?.disconnect(); } catch (e) {}
+            try { e.audioBufferSourceNode?.disconnect(); } catch (e) { }
         });
     }
 }

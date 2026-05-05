@@ -47,7 +47,6 @@ export default class RainbowBreaker extends Phaser.Scene {
     canContinue = true;
     gridConfig = { cols: DATA.config.gridCols, rows: DATA.config.gridRows, brickW: 0, brickH: 0, startY: 0, bgflagW: 0, bgflagH: 0 };
     rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
-    comboWords = [];
     levelOrder = [];
     FLAGS = [];
 
@@ -89,7 +88,6 @@ export default class RainbowBreaker extends Phaser.Scene {
         game.registry.set('gameColor', settings.color || DATA.config.color);
         game.registry.set('gameEffects', settings.effets || DATA.config.effets);
         game.registry.set('gameMusic', settings.music || DATA.config.music);
-        game.registry.set('gameFlags', DATA.flags)
         game.registry.set('gameWords', DATA.words);
 
         return game;
@@ -97,27 +95,15 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     preload() {
-        this.load.image('game_logo', DATA.images.logo);
-        this.FLAGS = this.registry.get('gameFlags') || [];
-        this.FLAGS.forEach(flag => this.load.image(flag.id, flag.data));
-
+        DATA.flags.forEach(flag => this.load.image(`flag_${flag.id}`, flag.data));
+        Object.keys(DATA.images).forEach(key => this.load.image(`game_${key}`, DATA.images[key]));
         Object.keys(DATA.songs).forEach(key => this.load.binary(`music_${key}`, DATA.songs[key]));
-
-        this.load.audio('sfx_paddle', DATA.audio.paddle);
-        this.load.audio('sfx_brick', DATA.audio.brick);
-        this.load.audio('sfx_count', DATA.audio.count);
-        this.load.audio('sfx_points', DATA.audio.points);
-        this.load.audio('sfx_slow', DATA.audio.slow);
-        this.load.audio('sfx_lifeup', DATA.audio.lifeup);
-        this.load.audio('sfx_lifedown', DATA.audio.lifedown);
-        this.load.audio('sfx_levelup', DATA.audio.levelup);
-        this.load.audio('sfx_gameover', DATA.audio.gameover);
+        Object.keys(DATA.sounds).forEach(key => this.load.audio(`sfx_${key}`, DATA.sounds[key]))
     }
 
 
     async create() {
         const { width, height } = this.sys.game.config;
-        this.comboWords = this.registry.get('gameWords') || ["BRAVO"];
 
         this.pauseText = null;
         this.pauseSubText = null;
@@ -188,13 +174,13 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
 
-        this.musicBtn = this.add.text(width * 0.35, height * 0.025, DATA.sounds.music, iconStyle)
+        this.musicBtn = this.add.text(width * 0.35, height * 0.025, DATA.icons.music, iconStyle)
             .setOrigin(0.5, 0)
             .setInteractive({ useHandCursor: true })
             .setDepth(10)
             .setVisible(false);
 
-        this.effectsBtn = this.add.text(width * 0.65, height * 0.025, DATA.sounds.effets, iconStyle)
+        this.effectsBtn = this.add.text(width * 0.65, height * 0.025, DATA.icons.effets, iconStyle)
             .setOrigin(0.5, 0)
             .setInteractive({ useHandCursor: true })
             .setDepth(10)
@@ -219,12 +205,11 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         this.activeNotes = new Map();
         this.player = new WebAudioFontPlayer();
+        await this.player.adjustPreset(this.audioCtx, DATA.instrument);
 
-        this.midiPlayer = new MidiPlayer.Player((event) => {
-            this.handleMidiPipeline(event);
-        });
-
-        this.midiPlayer.on('endOfFile', () => {
+        this.midiPlayer = new MidiPlayer.Player(event => this.handleMidiPipeline(event));
+        this.midiPlayer.on('endOfFile', async () => {
+            await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 500)));
             this.playNextSong();
         });
 
@@ -307,22 +292,10 @@ export default class RainbowBreaker extends Phaser.Scene {
             if (!canvas) return;
             const rect = canvas.getBoundingClientRect();
             const x = (event.clientX - rect.left) * (canvas.width / rect.width);
-
             if (this.gameState === "PLAYING") {
                 this.lastPointerX = x;
             }
         }, { passive: true });
-
-        const onLoadComplete = this.registry.get('onLoadComplete');
-        if (onLoadComplete && typeof onLoadComplete === 'function') {
-            try {
-                await onLoadComplete();
-            } catch (error) {
-                console.error("Erreur dans le callback onLoadComplete:", error);
-            }
-        }
-
-        this.showStartScreen();
 
         this.input.on('pointerdown', (pointer) => {
             if (this.input.pointer1.active && this.input.pointer2.active) {
@@ -352,41 +325,31 @@ export default class RainbowBreaker extends Phaser.Scene {
             if (this.time.now - this.lastMultiTouchTime < 500) return;
             this.handleGlobalAction(false);
         });
+
+        const onLoadComplete = this.registry.get('onLoadComplete');
+        if (onLoadComplete && typeof onLoadComplete === 'function') {
+            try {
+                await onLoadComplete();
+            } catch (error) {
+                console.error("Erreur dans le callback onLoadComplete:", error);
+            }
+        }
+
+        this.showStartScreen();
     }
 
 
-    handleMidiPipeline(event) {
-        if (event.name !== 'Note on' && event.name !== 'Note off') {
-            return;
-        }
-
-        if (!this.musicOn || !this.player || !this.midiPlayer || !this.midiPlayer.isPlaying()) {
-            return;
-        }
-
-        if (event.noteNumber === undefined) {
-            return;
-        }
-
+    async handleMidiPipeline(event) {
+        if (event.name !== 'Note on' && event.name !== 'Note off') return;
+        if (!this.musicOn || !this.player || !this.midiPlayer || !this.midiPlayer.isPlaying()) return;
+        if (event.noteNumber === undefined) return;
         const now = this.audioCtx.currentTime;
-
         switch (event.name) {
             case 'Note on':
-                if (event.velocity > 0) {
+                if (event.velocity > 0 && event.velocity <= 127) {
                     this.stopNotePipe(event.noteNumber);
-
                     const vol = (event.velocity / 127) * (this.musicVolume || 0.012);
-                    // console.log(vol);
-                    const envelope = this.player.queueWaveTable(
-                        this.audioCtx,
-                        this.audioCtx.destination,
-                        DATA.instrument,
-                        0,
-                        event.noteNumber,
-                        2,
-                        vol
-                    );
-
+                    const envelope = this.player.queueWaveTable(this.audioCtx, this.audioCtx.destination, DATA.instrument, 0, event.noteNumber, 2, vol);
                     this.activeNotes.set(event.noteNumber, envelope);
                 } else {
                     this.stopNotePipe(event.noteNumber);
@@ -409,13 +372,11 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
 
-    async playNextSong(stop = false) {
+    async playNextSong() {
         if (this.songOrder.length === 0) return;
-
         if (this.songIndex >= this.songOrder.length) {
             Phaser.Utils.Array.Shuffle(this.songOrder);
             this.songIndex = 0;
-
             if (this.songOrder[0] === this.currentSongKey && this.songOrder.length > 1) {
                 Phaser.Utils.Array.Shuffle(this.songOrder);
             }
@@ -430,25 +391,14 @@ export default class RainbowBreaker extends Phaser.Scene {
         if (midiArrayBuffer) {
             try {
                 if (this.musicOn && this.audioCtx) {
-                    this.midiPlayer.pause();
+                    this.midiPlayer.stop();
                     this.clearActiveNotes();
                     this.audioCtx.suspend();
                 }
-
-                this.midiPlayer.stop();
-                this.audioCtx.suspend();
-
-                await new Promise(resolve => {
-                    requestAnimationFrame(() => {
-                        setTimeout(resolve, 100);
-                    });
-                });
-
-                if (stop) return;
+                await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 100)));
                 this.midiPlayer.loadArrayBuffer(midiArrayBuffer);
-
                 if (this.musicOn) {
-                    this.audioCtx.resume();
+                    await this.audioCtx.resume();
                     this.midiPlayer.play();
                 }
             } catch (e) {
@@ -549,7 +499,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.effectsBtn.setVisible(true);
         this.score = 0; this.level = 0; this.lives = DATA.config.lives;
 
-        const totalFlags = this.FLAGS.length;
+        const totalFlags = DATA.flags.length;
         let others = Array.from({ length: totalFlags - 1 }, (_, i) => i + 1);
         for (let i = others.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -559,12 +509,14 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.bricks = this.physics.add.staticGroup();
         this.createGameObjects();
-        this.loadLevel(this.level);
-
 
         if (this.musicOn) {
             this.playNextSong();
         }
+        this.loadLevel(this.level);
+
+
+
     }
 
 
@@ -609,12 +561,12 @@ export default class RainbowBreaker extends Phaser.Scene {
         if (this.bricks) this.bricks.clear(true, true);
 
         const flagIndex = this.levelOrder[i % this.levelOrder.length];
-        const currentFlag = this.FLAGS[flagIndex];
+        const currentFlag = DATA.flags[flagIndex];
         const textureKey = currentFlag.id;
         const targetW = this.gridConfig.bgflagW;
         const targetH = this.gridConfig.bgflagH;
 
-        this.bgFlag.setTexture(textureKey);
+        this.bgFlag.setTexture(`flag_${currentFlag.id}`);
         this.bgFlag.setSize(targetW, targetH);
         this.bgFlag.setDisplaySize(targetW, targetH);
 
@@ -701,7 +653,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontName = this.registry.get('gameFont');
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
-        const word = Phaser.Utils.Array.GetRandom(this.comboWords);
+        const word = Phaser.Utils.Array.GetRandom(DATA.words);
         const txt = this.add.text(x, y, `${word}\n+${bonus}`, {
             font: `${fontWeight} 22px "${fontName}"`, fill: mainColor,
             stroke: "#FFF", strokeThickness: 4, align: "center"
@@ -712,9 +664,9 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     spawnLifeBonus(x, y) {
         const types = [
-            { char: DATA.bonus.life, type: 'LIFE' },
-            { char: DATA.bonus.slow, type: 'SLOW' },
-            { char: DATA.bonus.points, type: 'POINTS' }
+            { char: DATA.icons.life, type: 'LIFE' },
+            { char: DATA.icons.slow, type: 'SLOW' },
+            { char: DATA.icons.points, type: 'POINTS' }
         ];
         const selected = Phaser.Utils.Array.GetRandom(types);
         const bonus = this.add.text(x, y, selected.char, { fontSize: '28px', padding: { x: 10, y: 10 }}).setOrigin(0.5);
@@ -760,13 +712,11 @@ export default class RainbowBreaker extends Phaser.Scene {
     applySlowMotion(duration) {
         if (!this.ball || !this.ball.body) return;
         if (this.slowTimer) this.slowTimer.destroy();
-
         if (!this.isSlowed) {
             this.isSlowed = true;
             this.ball.body.velocity.scale(0.75);
             this.ball.setTint(0x00ffff);
         }
-
         this.slowTimer = this.time.delayedCall(duration, () => {
             if (this.ball && this.ball.body && this.gameState === "PLAYING") {
                 this.isSlowed = false;
@@ -800,7 +750,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         const mainColor = this.registry.get('gameColor');
 
         const flagIndex = this.levelOrder[this.level % this.levelOrder.length];
-        const currentFlag = this.FLAGS[flagIndex];
+        const currentFlag = DATA.flags[flagIndex];
         const textureKey = currentFlag.id;
 
         this.historyText.setText(`${currentFlag.name.toUpperCase()}\n\n${currentFlag.history}`).setVisible(true);
@@ -808,9 +758,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         const targetW = this.gridConfig.bgflagW;
         const targetH = this.gridConfig.bgflagH;
 
-        this.bgFlag.setTexture(textureKey);
+        this.bgFlag.setTexture(`flag_${currentFlag.id}`);
         this.bgFlag.setOrigin(0.5, 0.5);
-
         this.bgFlag.setDisplaySize(targetW, targetH);
 
         const centerX = Math.floor((width - targetW) / 2) + (targetW / 2);
@@ -848,9 +797,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.slowTimer.destroy();
             this.slowTimer = null;
         }
-        if (this.ball) {
-            this.ball.clearTint();
-        }
+        if (this.ball) this.ball.clearTint();
     }
 
 
@@ -944,13 +891,10 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.gameState = "PAUSED";
             this.physics.world.pause();
 
-
-
             if (this.musicOn) {
                 this.midiPlayer.pause();
                 this.clearActiveNotes();
                 this.audioCtx.suspend();
-                
             }
 
             if (this.slowTimer) {

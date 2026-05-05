@@ -7,7 +7,7 @@
     ██████╔╝╚██████╔╝╚██████╔╝   ██║   ███████╗╚██████╔╝██╔╝ ██╗
     ╚═════╝  ╚═════╝  ╚═════╝    ╚═╝   ╚══════╝ ╚═════╝ ╚═╝  ╚═╝
 
-    Généré: Lundi le 4 mai 2026 à 9 h 42
+    Généré: Lundi le 4 mai 2026 à 21 h 38
     Auteur: Maxime Larrivée-Roy <mlarriveeroy@gmail.com>
     Github: https://github.com/Sceptiques-du-Quebec/brick-breaqueer
 
@@ -23,7 +23,7 @@
 	<meta property="og:title" content="Brick Breaqueer 🌈">
 	<meta property="og:description" content="Jeu de briques ludique, éducatif et inclusif.">
 	<meta property="og:url" content="https://sceptiquesduquebec.com/brick-breaqueer/">
-	<meta property="og:image" content="https://sceptiquesduquebec.com/brick-breaqueer//images/ogimage.webp">
+	<meta property="og:image" content="https://sceptiquesduquebec.com/brick-breaqueer/images/ogimage.webp">
 	<link rel="icon" type="image/x-icon" href="./favicon.ico">
 	<title>Brick Breaqueer 🌈</title>
 	<style>
@@ -102,14 +102,10 @@
 				effets: false,
 				music: true,
 				onLoadComplete: async () => {
-					await new Promise(resolve => setTimeout(resolve, 1000));
 					document.querySelector('#game-container').classList.add('loaded');
-					console.log("Interface externe masquée");
 				},
 				onGameOver: async (stats) => {
 					console.log("Stats de fin de partie :", stats);
-					await new Promise(resolve => setTimeout(resolve, 2000));
-					console.log("Modal fermé");
 				}
 			});
 		};
