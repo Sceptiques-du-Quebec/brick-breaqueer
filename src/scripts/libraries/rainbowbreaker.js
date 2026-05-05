@@ -1,16 +1,11 @@
 import * as Phaser from "phaser";
-import MidiPlayer from 'midi-player-js';
-import WebAudioFontPlayer from './webaudiofontplayer';
+import MidiAudioPlayer from "midi-audio-player";
 import DATA from "./rainbowbreaker.json";
 
 
 export default class RainbowBreaker extends Phaser.Scene {
 
-    musicVolume = 0.012;
-    audioCtx = null;
-    activeNotes = null;
     player = null;
-    midiPlayer = null;
     currentSongKey = null;
     songOrder = [];
     songIndex = 0;
@@ -194,6 +189,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.effectsBtn.setInteractive(new Phaser.Geom.Circle(15, 15, 35), Phaser.Geom.Circle.Contains);
 
 
+
         const songKeys = Object.keys(DATA.songs);
         this.songOrder = Phaser.Utils.Array.Shuffle([...songKeys]);
         this.songIndex = 0;
@@ -202,15 +198,9 @@ export default class RainbowBreaker extends Phaser.Scene {
         const musicStore = localStorage.getItem('gameMusic');
         if(musicStore) this.musicOn = musicStore === 'yes' ? true : false;
 
-        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        this.activeNotes = new Map();
-        this.player = new WebAudioFontPlayer();
-        await this.player.adjustPreset(this.audioCtx, DATA.instrument);
-
-        this.midiPlayer = new MidiPlayer.Player(event => this.handleMidiPipeline(event));
-        this.midiPlayer.on('endOfFile', async () => {
-            await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 500)));
-            this.playNextSong();
+        this.player = new MidiAudioPlayer({
+            volume: DATA.config.musicVolume,
+            onEndFile: async () => await this.playNextSong()
         });
 
         this.effectsOn = this.registry.get('gameEffets');
@@ -235,18 +225,12 @@ export default class RainbowBreaker extends Phaser.Scene {
                 this.musicBtn.setAlpha(1);
                 this.musicBtn.clearTint();
                 localStorage.setItem('gameMusic', 'yes');
-                this.audioCtx.resume().then(() => {
-                    this.playNextSong();
-                });
-
+                this.playNextSong();
             } else {
                 this.musicBtn.setAlpha(0.3);
                 this.musicBtn.setTint(0x808080);
                 localStorage.setItem('gameMusic', 'no');
-                this.midiPlayer.pause();
-                this.clearActiveNotes();
-                this.audioCtx.suspend();
-                
+                this.player.stop();
             }
         });
 
@@ -339,39 +323,6 @@ export default class RainbowBreaker extends Phaser.Scene {
     }
 
 
-    async handleMidiPipeline(event) {
-        if (event.name !== 'Note on' && event.name !== 'Note off') return;
-        if (!this.musicOn || !this.player || !this.midiPlayer || !this.midiPlayer.isPlaying()) return;
-        if (event.noteNumber === undefined) return;
-        const now = this.audioCtx.currentTime;
-        switch (event.name) {
-            case 'Note on':
-                if (event.velocity > 0 && event.velocity <= 127) {
-                    this.stopNotePipe(event.noteNumber);
-                    const vol = (event.velocity / 127) * (this.musicVolume || 0.012);
-                    const envelope = this.player.queueWaveTable(this.audioCtx, this.audioCtx.destination, DATA.instrument, 0, event.noteNumber, 2, vol);
-                    this.activeNotes.set(event.noteNumber, envelope);
-                } else {
-                    this.stopNotePipe(event.noteNumber);
-                }
-                break;
-
-            case 'Note off':
-                this.stopNotePipe(event.noteNumber);
-                break;
-        }
-    }
-
-
-    stopNotePipe(noteNumber) {
-        const envelope = this.activeNotes.get(noteNumber);
-        if (envelope) {
-            envelope.cancel();
-            this.activeNotes.delete(noteNumber);
-        }
-    }
-
-
     async playNextSong() {
         if (this.songOrder.length === 0) return;
         if (this.songIndex >= this.songOrder.length) {
@@ -383,40 +334,9 @@ export default class RainbowBreaker extends Phaser.Scene {
         }
 
         const nextKey = this.songOrder[this.songIndex];
-        const midiArrayBuffer = this.cache.binary.get(`music_${nextKey}`);
-
+        this.player.play(this.cache.binary.get(`music_${nextKey}`));
         this.songIndex++;
         this.currentSongKey = nextKey;
-
-        if (midiArrayBuffer) {
-            try {
-                if (this.musicOn && this.audioCtx) {
-                    this.midiPlayer.stop();
-                    this.clearActiveNotes();
-                    this.audioCtx.suspend();
-                }
-                await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 100)));
-                this.midiPlayer.loadArrayBuffer(midiArrayBuffer);
-                if (this.musicOn) {
-                    await this.audioCtx.resume();
-                    this.midiPlayer.play();
-                }
-            } catch (e) {
-                console.error("Erreur transition MIDI:", e);
-            }
-        }
-    }
-
-
-    clearActiveNotes() {
-        if (this.activeNotes) {
-            this.activeNotes.forEach((envelope, note) => {
-                if (envelope && envelope.cancel) {
-                    envelope.cancel();
-                }
-            });
-            this.activeNotes.clear();
-        }
     }
 
 
@@ -514,9 +434,6 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.playNextSong();
         }
         this.loadLevel(this.level);
-
-
-
     }
 
 
@@ -892,9 +809,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.physics.world.pause();
 
             if (this.musicOn) {
-                this.midiPlayer.pause();
-                this.clearActiveNotes();
-                this.audioCtx.suspend();
+                this.player.pause();
             }
 
             if (this.slowTimer) {
@@ -922,11 +837,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.physics.world.resume();
 
             if (this.musicOn) {
-                this.audioCtx.resume().then(() => {
-                    if (this.musicOn) {
-                        this.midiPlayer.play();
-                    }
-                });
+                this.player.play();
             }
 
             if (this.slowTimer) {
@@ -958,11 +869,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
 
-        if(this.musicOn) {
-            this.midiPlayer.stop();
-            this.clearActiveNotes();
-        }
-
+        if(this.musicOn) await this.player.stop();
         this.playSoundEffet('sfx_gameover');   
 
         const titleText = "FIN DE LA PARTIE";

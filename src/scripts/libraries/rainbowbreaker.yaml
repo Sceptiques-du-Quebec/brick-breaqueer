@@ -14,7 +14,7 @@ config:
   color: #161616
   music: true
   effets: true
-  musicVolume: 0.05
+  musicVolume: 0.012
   effectsVolume: 0.18
   parent: rainbowbreaker-container
 
@@ -30,9 +30,6 @@ icons:
 images:
   logo: /assets/logos/logo_brickbreaqueer.svg
 
-# WebAudioFont JSON / https://github.com/surikov/webaudiofont#catalog-of-instruments
-instrument: /assets/audiofonts/0810_GeneralUserGS_sf2_file.json
-# instrument: /assets/audiofonts/1100_Aspirin_sf2_file.json
 
 # Fichiers audio
 sounds:
@@ -60,6 +57,7 @@ songs:
   smalltownboy: /assets/songs/smalltownboy.mid
   truecolors: /assets/songs/truecolors.mid
   iwanttobreakfree: /assets/songs/iwanttobreakfree.mid
+  # 10seconds: /assets/songs/10seconds.mid
   
 
 # Mots de brique
