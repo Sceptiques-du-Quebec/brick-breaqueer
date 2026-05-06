@@ -355,6 +355,19 @@ export default class RainbowBreaker extends Phaser.Scene {
         const { width, height } = this.sys.game.config;
         this.gameState = "START";
 
+
+const fontName = this.registry.get('gameFont');
+    const mainColor = this.registry.get('gameColor');
+    
+    // On l'aligne à 95% de la largeur pour laisser une petite marge à droite
+    const versionText = this.add.text(width * 0.95, 20, `Version: ${DATA.config.version}`, {
+        font: `600 ${Math.max(10, Math.round(width / 60))}px "${fontName}"`,
+        fill: mainColor,
+        align: 'right'
+    }).setOrigin(1, 0).setAlpha(0.6).setDepth(10);
+    
+    this.uiGroup.add(versionText);
+
         if (this.bgFlag) this.bgFlag.setAlpha(0);
         if (this.textures.exists('game_logo')) {
             const logo = this.add.image(width / 2, height * 0.45, 'game_logo');

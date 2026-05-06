@@ -1,6 +1,7 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildCSS, buildJS, buildConf } from "chokibasic";
+// import { buildCSS, buildJS, buildConf } from "../../chokibasic/index.js";
 import { midiTrim } from './libraries/miditrim.js';
 import { processMp3 } from './libraries/processmp3.js';
 import { processSvg } from './libraries/processsvg.js';

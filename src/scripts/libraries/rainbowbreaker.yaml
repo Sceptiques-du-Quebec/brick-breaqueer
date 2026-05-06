@@ -1,5 +1,7 @@
 # Configurations de base
 config:
+  date: __DATE__
+  version: __VERSION__
   width: 800
   height: 600
   lives: 5

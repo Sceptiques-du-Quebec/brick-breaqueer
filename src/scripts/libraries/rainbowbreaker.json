@@ -1,5 +1,7 @@
 {
   "config": {
+    "date": "2026-05-06 16:45:37",
+    "version": "2.0.4",
     "width": 800,
     "height": 600,
     "lives": 5,
