@@ -1,5 +1,6 @@
 import * as Phaser from "phaser";
 import MidiAudioPlayer from "midi-audio-player";
+// import MidiAudioPlayer from "../../../../midi-audio-player";
 import DATA from "./rainbowbreaker.json";
 
 
@@ -43,7 +44,6 @@ export default class RainbowBreaker extends Phaser.Scene {
     gridConfig = { cols: DATA.config.gridCols, rows: DATA.config.gridRows, brickW: 0, brickH: 0, startY: 0, bgflagW: 0, bgflagH: 0 };
     rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
     levelOrder = [];
-    FLAGS = [];
 
 
     static init(settings) {
@@ -790,11 +790,8 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     handleTogglePause() {
-        if (this.gameState === "PLAYING") {
-            this.setPause(true);
-        } else if (this.gameState === "PAUSED") {
-            this.setPause(false);
-        }
+        if (this.gameState === "PLAYING") this.setPause(true);
+        else if (this.gameState === "PAUSED") this.setPause(false);
     }
 
 
@@ -808,19 +805,12 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.gameState = "PAUSED";
             this.physics.world.pause();
 
-            if (this.musicOn) {
-                this.player.pause();
-            }
-
-            if (this.slowTimer) {
-                this.slowTimer.paused = true;
-            }
+            if (this.musicOn) this.player.pause();
+            if (this.slowTimer) this.slowTimer.paused = true;
 
             if (this.launchTimer) {
                 this.launchTimer.paused = true;
-                if (this.countdownText) {
-                    this.countdownText.setVisible(false);
-                }
+                if (this.countdownText) this.countdownText.setVisible(false);
             }
 
             this.pauseText = this.add.text(width / 2, height * 0.65, "PAUSE", {
@@ -836,19 +826,12 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.gameState = "PLAYING";
             this.physics.world.resume();
 
-            if (this.musicOn) {
-                this.player.play();
-            }
-
-            if (this.slowTimer) {
-                this.slowTimer.paused = false;
-            }
+            if (this.musicOn) this.player.play();
+            if (this.slowTimer) this.slowTimer.paused = false;
 
             if (this.launchTimer) {
                 this.launchTimer.paused = false;
-                if (this.countdownText) {
-                    this.countdownText.setVisible(true);
-                }
+                if (this.countdownText) this.countdownText.setVisible(true);
             }
             else if (this.ball.body.velocity.x === 0 && this.ball.body.velocity.y === 0) {
                 this.resetBall();
@@ -881,10 +864,8 @@ export default class RainbowBreaker extends Phaser.Scene {
             this.livesText.setText(`Vies : 0`);
             this.livesText.setVisible(true);
         }
-        if (this.livesGroup) {
-            this.livesGroup.clear(true, true);
-        }
 
+        if (this.livesGroup) this.livesGroup.clear(true, true);
         if (this.onGameOverCallback) await this.onGameOverCallback({ score: this.score, levelReached: this.level + 1 });
         this.gameState = "GAMEOVER";
         const sub = this.add.text(width / 2, title.y + 50, "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR RÉESSAYER", { font: `${fontWeight} ${Math.round(width / 40)}px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
