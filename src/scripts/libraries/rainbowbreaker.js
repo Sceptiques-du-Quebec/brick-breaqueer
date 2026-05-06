@@ -90,9 +90,9 @@ export default class RainbowBreaker extends Phaser.Scene {
 
     preload() {
         DATA.flags.forEach(flag => this.load.image(`flag_${flag.id}`, flag.data));
+        DATA.songs.forEach((bin, key) => this.load.binary(`music_${key}`, bin));
+        Object.keys(DATA.sounds).forEach(key => this.load.audio(`sfx_${key}`, DATA.sounds[key]));
         Object.keys(DATA.images).forEach(key => this.load.image(`game_${key}`, DATA.images[key]));
-        Object.keys(DATA.songs).forEach(key => this.load.binary(`music_${key}`, DATA.songs[key]));
-        Object.keys(DATA.sounds).forEach(key => this.load.audio(`sfx_${key}`, DATA.sounds[key]))
     }
 
 
@@ -158,15 +158,11 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.scoreText = this.add.text(width * 0.055, height * 0.04, "Score: 0", textStyle)
             .setResolution(2).setDepth(10).setVisible(false);
 
-
         this.levelText = this.add.text(width / 2, height * 0.04, "Niveau: 1", textStyle)
             .setResolution(2).setOrigin(0.5, 0).setDepth(10).setVisible(false);
 
-
         this.livesText = this.add.text(width * 0.945, height * 0.04, "Vies: " + DATA.config.lives, textStyle)
             .setResolution(2).setOrigin(1, 0).setDepth(10).setVisible(false);
-
-
 
         this.musicBtn = this.add.text(width * 0.35, height * 0.025, DATA.icons.music, iconStyle)
             .setOrigin(0.5, 0)
@@ -180,14 +176,11 @@ export default class RainbowBreaker extends Phaser.Scene {
             .setDepth(10)
             .setVisible(false);
 
-
         this.musicBtn.setOrigin(0.5, 0);
         this.musicBtn.setInteractive(new Phaser.Geom.Circle(15, 15, 35), Phaser.Geom.Circle.Contains);
 
         this.effectsBtn.setOrigin(0.5, 0);
         this.effectsBtn.setInteractive(new Phaser.Geom.Circle(15, 15, 35), Phaser.Geom.Circle.Contains);
-
-
 
         const songKeys = Object.keys(DATA.songs);
         this.songOrder = Phaser.Utils.Array.Shuffle([...songKeys]);

@@ -18,6 +18,7 @@ config:
   effectsVolume: 0.18
   parent: rainbowbreaker-container
 
+
 # Icones
 icons:
   life: 💗
@@ -25,6 +26,7 @@ icons:
   points: 🦄
   effets: 🔊
   music: 🎵
+
 
 # Images vectorielles
 images:
@@ -43,22 +45,23 @@ sounds:
   levelup: /assets/sounds/levelup.mp3
   gameover: /assets/sounds/gameover.mp3
 
+
 # Chansons midi
 songs:
-  iwillsurvive: /assets/songs/iwillsurvive.mid
-  gracekelly: /assets/songs/gracekelly.mid
-  ymca: /assets/songs/ymca.mid
-  itsrainingman: /assets/songs/itsrainingman.mid
-  bornthisway: /assets/songs/bornthisway.mid
-  believe: /assets/songs/believe.mid
-  imcomingout: /assets/songs/imcomingout.mid
-  dancingqueen: /assets/songs/dancingqueen.mid
-  toxic: /assets/songs/toxic.mid
-  smalltownboy: /assets/songs/smalltownboy.mid
-  truecolors: /assets/songs/truecolors.mid
-  iwanttobreakfree: /assets/songs/iwanttobreakfree.mid
-  ikissedagirl: /assets/songs/ikissedagirl.mid
-  # 10seconds: /assets/songs/10seconds.mid
+  - /assets/songs/iwillsurvive.mid
+  - /assets/songs/gracekelly.mid
+  - /assets/songs/ymca.mid
+  - /assets/songs/itsrainingman.mid
+  - /assets/songs/bornthisway.mid
+  - /assets/songs/believe.mid
+  - /assets/songs/imcomingout.mid
+  - /assets/songs/dancingqueen.mid
+  - /assets/songs/toxic.mid
+  - /assets/songs/smalltownboy.mid
+  - /assets/songs/truecolors.mid
+  - /assets/songs/iwanttobreakfree.mid
+  - /assets/songs/ikissedagirl.mid
+  # - /assets/songs/10seconds.mid
 
 
 # Mots de brique
