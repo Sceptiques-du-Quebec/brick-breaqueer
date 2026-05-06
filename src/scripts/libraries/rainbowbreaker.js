@@ -333,7 +333,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         }
 
         const nextKey = this.songOrder[this.songIndex];
-        // console.log('Song: ' + nextKey);
+        console.log('Song: ' + nextKey);
         this.player.play(this.cache.binary.get(`music_${nextKey}`));
         this.songIndex++;
         this.currentSongKey = nextKey;
