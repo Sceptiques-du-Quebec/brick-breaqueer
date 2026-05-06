@@ -444,20 +444,19 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         this.paddle = this.physics.add.image(width / 2, height - 40, "paddle").setImmovable(true).setTint(phaserColor);
         this.paddle.setCollideWorldBounds(true);
-        if (!this.lifeBonuses) {
-            this.lifeBonuses = this.physics.add.group();
-        }
+        this.paddle.body.checkCollision.down = false;
+        this.paddle.setCollideWorldBounds(true);
+        if (!this.lifeBonuses) this.lifeBonuses = this.physics.add.group();
+
         this.ball = this.physics.add.image(width / 2, height - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
         this.ball.setVisible(0);
         this.physics.add.collider(this.ball, this.paddle, (ball, paddle) => {
             this.playSoundEffet('sfx_paddle');
             this.comboCount = 0;
             let diff = ball.x - paddle.x;
-            ball.setVelocityX(12 * diff);
-            if (Math.abs(ball.body.velocity.y) < 200) {
-                ball.setVelocityY(-300);
-            }
+            ball.setVelocityX(10 * diff); 
         });
+
         this.physics.add.collider(this.ball, this.bricks, this.hitBrick, null, this);
         this.physics.add.overlap(this.paddle, this.lifeBonuses, this.collectLife, null, this);
     }
@@ -510,26 +509,16 @@ export default class RainbowBreaker extends Phaser.Scene {
         if (!brick || !brick.active) return;
         const currentTime = this.time.now;
         const timeSinceLastHit = currentTime - this.lastBrickTime;
-        if (timeSinceLastHit <= this.comboThreshold) {
-            this.comboCount++;
-        } else {
-            this.comboCount = 1;
-        }
+        if (timeSinceLastHit <= this.comboThreshold) this.comboCount++;
+        else this.comboCount = 1;
         this.lastBrickTime = currentTime;
         let totalPoints;
-        if (this.comboCount === 1) {
-            totalPoints = 50;
-        } else {
-            totalPoints = this.comboCount * 50;
-        }
+        if (this.comboCount === 1) totalPoints = 50;
+        else totalPoints = this.comboCount * 50;
         this.score += totalPoints;
         this.spawnComboWord(brick.x, brick.y, totalPoints, this.comboCount);
         this.particles.emitParticleAt(brick.x, brick.y, 20);
-
-        if (Phaser.Math.Between(1, DATA.config.bonusChance) === 1) {
-            this.spawnLifeBonus(brick.x, brick.y);
-        }
-        
+        if (Phaser.Math.Between(1, DATA.config.bonusChance) === 1) this.spawnLifeBonus(brick.x, brick.y);
         brick.destroy();
 
         if (this.bricks.countActive() === 0) {
@@ -643,9 +632,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                 this.slowTimer = null;
             }
         });
-        if (this.gameState === "PAUSED") {
-            this.slowTimer.paused = true;
-        }
+        if (this.gameState === "PAUSED") this.slowTimer.paused = true;
     }
 
 
@@ -777,14 +764,11 @@ export default class RainbowBreaker extends Phaser.Scene {
         this.ball.setVisible(true);
         this.comboCount = 0;
         this.lastBrickTime = 0;
-
         let speed = Math.min(this.baseSpeed + (this.level * 20), this.maxSpeed);
-
         if (this.isSlowed) {
             speed = speed * 0.5;
             this.ball.setTint(0x00ffff);
         }
-
         this.ball.setVelocity(Phaser.Math.Between(-80, 80), -speed);
     }
 
@@ -804,10 +788,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         if (isPaused) {
             this.gameState = "PAUSED";
             this.physics.world.pause();
-
             if (this.musicOn) this.player.pause();
             if (this.slowTimer) this.slowTimer.paused = true;
-
             if (this.launchTimer) {
                 this.launchTimer.paused = true;
                 if (this.countdownText) this.countdownText.setVisible(false);
@@ -825,10 +807,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         } else {
             this.gameState = "PLAYING";
             this.physics.world.resume();
-
             if (this.musicOn) this.player.play();
             if (this.slowTimer) this.slowTimer.paused = false;
-
             if (this.launchTimer) {
                 this.launchTimer.paused = false;
                 if (this.countdownText) this.countdownText.setVisible(true);
@@ -836,7 +816,6 @@ export default class RainbowBreaker extends Phaser.Scene {
             else if (this.ball.body.velocity.x === 0 && this.ball.body.velocity.y === 0) {
                 this.resetBall();
             }
-
             if (this.pauseText) this.pauseText.destroy();
             if (this.pauseSubText) this.pauseSubText.destroy();
         }
@@ -903,11 +882,8 @@ export default class RainbowBreaker extends Phaser.Scene {
         const pointer = this.input.activePointer;
 
         if (this.gameState === "WAITING_FOR_CALLBACK") return;
-
         if (!this.paddle || !this.paddle.body || !this.ball || !this.ball.body) return;
-        if (Phaser.Input.Keyboard.JustDown(this.enterKey) || Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            this.handleGlobalAction(true);
-        }
+        if (Phaser.Input.Keyboard.JustDown(this.enterKey) || Phaser.Input.Keyboard.JustDown(this.spaceKey)) this.handleGlobalAction(true);
 
         if (this.gameState === "PLAYING") {
             this.scoreText.setText(`Score: ${this.score.toLocaleString()}`);
@@ -917,11 +893,8 @@ export default class RainbowBreaker extends Phaser.Scene {
             const moved = Math.abs(pointer.x - this.lastMouseX) > 1;
             this.lastMouseX = pointer.x;
 
-            if (this.cursors.left.isDown || this.cursors.right.isDown) {
-                this.lastInputMethod = "keyboard";
-            } else if (moved || pointer.isDown) {
-                this.lastInputMethod = "mouse";
-            }
+            if (this.cursors.left.isDown || this.cursors.right.isDown) this.lastInputMethod = "keyboard";
+            else if (moved || pointer.isDown) this.lastInputMethod = "mouse";
 
             if (this.lastInputMethod === "keyboard") {
                 if (this.cursors.left.isDown) this.paddle.setVelocityX(-750);
@@ -929,21 +902,15 @@ export default class RainbowBreaker extends Phaser.Scene {
                 else this.paddle.setVelocityX(0);
             } else {
                 const isTouch = pointer.wasTouch;
-                if (!isTouch || (isTouch && pointer.isDown)) {
-                    this.paddle.setVelocityX((this.lastPointerX - this.paddle.x) * 20);
-                } else {
-                    this.paddle.setVelocityX(0);
-                }
+                if (!isTouch || (isTouch && pointer.isDown)) this.paddle.setVelocityX((this.lastPointerX - this.paddle.x) * 20);
+                else this.paddle.setVelocityX(0);
             }
 
             if (this.ball && this.ball.y > height + 20) {
                 this.ball.y = -100;
                 this.lives--;
-                
                 this.flashTextEffect(this.livesText, 0xff0000);
-                if (this.lives <= 0) { 
-                    this.gameOver();
-                }
+                if (this.lives <= 0) this.gameOver();
                 else {
                     this.playSoundEffet('sfx_lifedown');    
                     this.resetBall();
