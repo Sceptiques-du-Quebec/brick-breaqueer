@@ -1,6 +1,5 @@
 import * as Phaser from "phaser";
 import MidiAudioPlayer from "midi-audio-player";
-// import MidiAudioPlayer from "../../../../midi-audio-player";
 import DATA from "./rainbowbreaker.json";
 
 
@@ -41,9 +40,16 @@ export default class RainbowBreaker extends Phaser.Scene {
     launchTimer = null;
     countdownText = null;
     canContinue = true;
-    gridConfig = { cols: DATA.config.gridCols, rows: DATA.config.gridRows, brickW: 0, brickH: 0, startY: 0, bgflagW: 0, bgflagH: 0 };
-    rainbowColors = [0xff0000, 0xff7f00, 0xffff00, 0x00ff00, 0x0000ff, 0x4b0082, 0x9400d3];
     levelOrder = [];
+    gridConfig = {
+        cols: DATA.config.gridCols,
+        rows: DATA.config.gridRows,
+        brickW: 0,
+        brickH: 0,
+        startY: 0,
+        bgflagW: 0,
+        bgflagH: 0
+    };
 
 
     static init(settings) {
@@ -117,11 +123,11 @@ export default class RainbowBreaker extends Phaser.Scene {
 
         const g = this.make.graphics({ x: 0, y: 0, add: false });
         const paddleWidth = Math.max(100, width * 0.15);
-        g.fillStyle(0xffffff).fillRect(0, 0, paddleWidth, 20).generateTexture("paddle", paddleWidth, 20);
+        g.fillStyle(mainColor).fillRect(0, 0, paddleWidth, 20).generateTexture("paddle", paddleWidth, 20);
         g.clear();
 
         for (let r = 9; r > 0; r--) {
-            const color = this.rainbowColors[r % this.rainbowColors.length];
+            const color = DATA.rainbow[r % DATA.rainbow.length];
             g.fillStyle(color).fillCircle(9, 9, r);
         }
         g.generateTexture("ball", 18, 18);
@@ -165,16 +171,10 @@ export default class RainbowBreaker extends Phaser.Scene {
             .setResolution(2).setOrigin(1, 0).setDepth(10).setVisible(false);
 
         this.musicBtn = this.add.text(width * 0.35, height * 0.025, DATA.icons.music, iconStyle)
-            .setOrigin(0.5, 0)
-            .setInteractive({ useHandCursor: true })
-            .setDepth(10)
-            .setVisible(false);
+            .setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(10).setVisible(false);
 
         this.effectsBtn = this.add.text(width * 0.65, height * 0.025, DATA.icons.effets, iconStyle)
-            .setOrigin(0.5, 0)
-            .setInteractive({ useHandCursor: true })
-            .setDepth(10)
-            .setVisible(false);
+            .setOrigin(0.5, 0).setInteractive({ useHandCursor: true }).setDepth(10).setVisible(false);
 
         this.musicBtn.setOrigin(0.5, 0);
         this.musicBtn.setInteractive(new Phaser.Geom.Circle(15, 15, 35), Phaser.Geom.Circle.Contains);
@@ -241,7 +241,6 @@ export default class RainbowBreaker extends Phaser.Scene {
             }
         });
 
-
         this.historyText = this.add.text(width / 2, this.gridConfig.startY + this.gridConfig.totalHeight + 30, "", {
             font: `600 ${Math.max(12, baseSize * 0.8)}px "${fontName}"`, fill: mainColor,
             align: "center", wordWrap: { width: width * 0.8 }
@@ -256,7 +255,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             alpha: { start: 1, end: 0.7 },
             scale: { start: 1.8, end: 0 },
             tint: () => {
-                const base = Phaser.Display.Color.ValueToColor(Phaser.Utils.Array.GetRandom(this.rainbowColors));
+                const base = Phaser.Display.Color.ValueToColor(Phaser.Utils.Array.GetRandom(DATA.rainbow));
                 const washed = Phaser.Display.Color.Interpolate.ColorWithColor(base, new Phaser.Display.Color(255, 255, 255), 100, 40);
                 return Phaser.Display.Color.GetColor(washed.r, washed.g, washed.b);
             }
@@ -268,9 +267,7 @@ export default class RainbowBreaker extends Phaser.Scene {
             if (!canvas) return;
             const rect = canvas.getBoundingClientRect();
             const x = (event.clientX - rect.left) * (canvas.width / rect.width);
-            if (this.gameState === "PLAYING") {
-                this.lastPointerX = x;
-            }
+            if (this.gameState === "PLAYING") this.lastPointerX = x;
         }, { passive: true });
 
         this.input.on('pointerdown', (pointer) => {
@@ -287,9 +284,7 @@ export default class RainbowBreaker extends Phaser.Scene {
                     this.handleTogglePause();
                     pointer.ignoreNextUp = true;
                 }
-            } else {
-                pointer.ignoreNextUp = false;
-            }
+            } else pointer.ignoreNextUp = false;
         });
 
         this.input.on('pointerup', (pointer) => {
@@ -316,25 +311,29 @@ export default class RainbowBreaker extends Phaser.Scene {
 
 
     async playNextSong() {
+        if (!this.musicOn) return;
         if (this.songOrder.length === 0) return;
         if (this.songIndex >= this.songOrder.length) {
             Phaser.Utils.Array.Shuffle(this.songOrder);
             this.songIndex = 0;
-            if (this.songOrder[0] === this.currentSongKey && this.songOrder.length > 1) {
+            if (this.songOrder[0] === this.currentSongKey && this.songOrder.length > 1)
                 Phaser.Utils.Array.Shuffle(this.songOrder);
-            }
         }
-
         const nextKey = this.songOrder[this.songIndex];
-        // console.log('Song: ' + nextKey);
         this.player.play(this.cache.binary.get(`music_${nextKey}`));
-        this.songIndex++;
         this.currentSongKey = nextKey;
+        this.songIndex++;
     }
 
 
     addFloatingEffect(target) {
-        this.tweens.add({ targets: target, y: target.y - 5, duration: 800, ease: 'Sine.easeInOut', yoyo: true, loop: -1 });
+        this.tweens.add({ targets: target,
+            y: target.y - 5,
+            duration: 800,
+            ease: 'Sine.easeInOut',
+            yoyo: true,
+            loop: -1
+        });
     }
 
 
@@ -344,9 +343,9 @@ export default class RainbowBreaker extends Phaser.Scene {
         if (this.paddle) { this.paddle.destroy(); this.paddle = null; }
         if (this.ball) { this.ball.destroy(); this.ball = null; }
         if (this.lifeBonuses) { this.lifeBonuses.clear(true, true); }
-        this.trail = [];
-        this.trailG.clear();
         this.uiGroup.clear(true, true);
+        this.trailG.clear();
+        this.trail = [];
     }
 
 
@@ -355,18 +354,14 @@ export default class RainbowBreaker extends Phaser.Scene {
         const { width, height } = this.sys.game.config;
         this.gameState = "START";
 
-
-const fontName = this.registry.get('gameFont');
-    const mainColor = this.registry.get('gameColor');
-    
-    // On l'aligne à 95% de la largeur pour laisser une petite marge à droite
-    const versionText = this.add.text(width * 0.95, 20, `Version: ${DATA.config.version}`, {
-        font: `600 ${Math.max(10, Math.round(width / 60))}px "${fontName}"`,
-        fill: mainColor,
-        align: 'right'
-    }).setOrigin(1, 0).setAlpha(0.6).setDepth(10);
-    
-    this.uiGroup.add(versionText);
+        const fontName = this.registry.get('gameFont');
+        const mainColor = this.registry.get('gameColor');
+        const versionText = this.add.text(width * 0.95, 20, `v${DATA.config.version}`, {
+            font: `600 ${Math.max(10, Math.round(width / 60))}px "${fontName}"`,
+            fill: mainColor,
+            align: 'right'
+        }).setOrigin(1, 0).setAlpha(0.6).setDepth(10);
+        this.uiGroup.add(versionText);
 
         if (this.bgFlag) this.bgFlag.setAlpha(0);
         if (this.textures.exists('game_logo')) {
@@ -376,26 +371,11 @@ const fontName = this.registry.get('gameFont');
             logo.setScale(scale);
             this.uiGroup.add(logo);
             this.createStartText(logo.y + (logo.displayHeight / 2) + 50);
-        } else {
-            this.createStartText(height * 0.5);
-        }
-
+        } else this.createStartText(height * 0.5);
         if (this.livesGroup) this.livesGroup.clear(true, true);
 
-        const uiElements = [
-            this.scoreText,
-            this.levelText,
-            this.comboText,
-            this.statsText,
-            this.livesText,
-            this.highScoreText,
-            this.musicBtn,
-            this.effectsBtn
-        ];
-
-        uiElements.forEach(element => {
-            if (element) element.setVisible(false);
-        });
+        [this.scoreText, this.levelText, this.comboText, this.statsText, this.livesText, this.highScoreText, this.musicBtn, this.effectsBtn]
+            .forEach(element => element?.setVisible(false));
     }
 
 
@@ -404,12 +384,10 @@ const fontName = this.registry.get('gameFont');
         const fontName = this.registry.get('gameFont');
         const mainColor = this.registry.get('gameColor');
         const fontWeight = this.registry.get('gameWeight') || '900';
-
         const sub = this.add.text(width / 2, yPos, "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR COMMENCER", {
             font: `${fontWeight} ${Math.round(width / 45)}px "${fontName}"`,
             fill: mainColor
         }).setOrigin(0.5);
-
         this.addFloatingEffect(sub);
         this.uiGroup.add(sub);
     }
@@ -418,28 +396,21 @@ const fontName = this.registry.get('gameFont');
     startGame() {
         this.cleanupGame();
         this.gameState = "PLAYING";
-        this.scoreText.setVisible(true);
-        this.levelText.setVisible(true);
-        this.livesText.setVisible(true);
-        this.musicBtn.setVisible(true);
-        this.effectsBtn.setVisible(true);
-        this.score = 0; this.level = 0; this.lives = DATA.config.lives;
 
-        const totalFlags = DATA.flags.length;
-        let others = Array.from({ length: totalFlags - 1 }, (_, i) => i + 1);
-        for (let i = others.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [others[i], others[j]] = [others[j], others[i]];
+        this.score = 0; this.level = 0; this.lives = DATA.config.lives;
+        [this.scoreText, this.levelText, this.comboText, this.statsText, this.livesText, this.highScoreText, this.musicBtn, this.effectsBtn]
+            .forEach(element => element?.setVisible(true));
+
+        this.levelOrder = Int16Array.from({ length: DATA.flags.length }, (_, i) => i);
+        for (let i = this.levelOrder.length - 1; i > 1; i--) {
+            const j = Math.floor(Math.random() * (i)) + 1;
+            [this.levelOrder[i], this.levelOrder[j]] = [this.levelOrder[j], this.levelOrder[i]];
         }
-        this.levelOrder = [0, ...others];
 
         this.bricks = this.physics.add.staticGroup();
         this.createGameObjects();
-
-        if (this.musicOn) {
-            this.playNextSong();
-        }
         this.loadLevel(this.level);
+        this.playNextSong();
     }
 
 
@@ -450,19 +421,16 @@ const fontName = this.registry.get('gameFont');
 
         this.paddle = this.physics.add.image(width / 2, height - 40, "paddle").setImmovable(true).setTint(phaserColor);
         this.paddle.setCollideWorldBounds(true);
-        // this.paddle.body.checkCollision.down = false;
-        // this.paddle.setCollideWorldBounds(true);
-        if (!this.lifeBonuses) this.lifeBonuses = this.physics.add.group();
-
         this.ball = this.physics.add.image(width / 2, height - 150, "ball").setCircle(9).setBounce(1, 1).setCollideWorldBounds(true).setDepth(100);
         this.ball.setVisible(0);
         this.physics.add.collider(this.ball, this.paddle, (ball, paddle) => {
             this.playSoundEffet('sfx_paddle');
             this.comboCount = 0;
             let diff = ball.x - paddle.x;
-            ball.setVelocityX(10 * diff); 
+            ball.setVelocityX(10 * diff);
         });
 
+        if (!this.lifeBonuses) this.lifeBonuses = this.physics.add.group();
         this.physics.add.collider(this.ball, this.bricks, this.hitBrick, null, this);
         this.physics.add.overlap(this.paddle, this.lifeBonuses, this.collectLife, null, this);
     }
@@ -497,14 +465,15 @@ const fontName = this.registry.get('gameFont');
         this.bgFlag.setOrigin(0, 0);
         this.bgFlag.setAlpha(1);
 
-        for (let r = 0; r < this.gridConfig.rows; r++) {
-            for (let c = 0; c < this.gridConfig.cols; c++) {
-                const bx = startX + (c * this.gridConfig.brickW) + (this.gridConfig.brickW / 2);
-                const by = this.gridConfig.startY + (r * this.gridConfig.brickH) + (this.gridConfig.brickH / 2);
-                const b = this.bricks.create(bx, by, "brick_cover");
-                b.refreshBody();
-            }
-        }
+        const { rows, cols, brickW, brickH, startY } = this.gridConfig;
+        Int16Array.from({ length: rows * cols }).forEach((_, i) => {
+            const r = Math.floor(i / cols);
+            const c = i % cols;
+            const bx = startX + (c * brickW) + (brickW / 2);
+            const by = startY + (r * brickH) + (brickH / 2);
+            this.bricks.create(bx, by, "brick_cover").refreshBody();
+        });
+
         this.ball.setVisible(true).setAlpha(1);
         this.paddle.setVisible(true).setAlpha(1);
         this.resetBall();
@@ -513,17 +482,21 @@ const fontName = this.registry.get('gameFont');
 
     hitBrick(ball, brick) {
         if (!brick || !brick.active) return;
+
         const currentTime = this.time.now;
         const timeSinceLastHit = currentTime - this.lastBrickTime;
         if (timeSinceLastHit <= this.comboThreshold) this.comboCount++;
         else this.comboCount = 1;
+
         this.lastBrickTime = currentTime;
         let totalPoints;
         if (this.comboCount === 1) totalPoints = 50;
         else totalPoints = this.comboCount * 50;
+
         this.score += totalPoints;
         this.spawnComboWord(brick.x, brick.y, totalPoints, this.comboCount);
         this.particles.emitParticleAt(brick.x, brick.y, 20);
+
         if (Phaser.Math.Between(1, DATA.config.bonusChance) === 1) this.spawnLifeBonus(brick.x, brick.y);
         brick.destroy();
 
@@ -535,9 +508,7 @@ const fontName = this.registry.get('gameFont');
             this.flashTextEffect(this.scoreText, 0x00ff00);
             this.update();
             this.revealFlag();
-        } else {
-            this.playSoundEffet('sfx_brick');
-        }
+        } else this.playSoundEffet('sfx_brick');
     }
 
 
@@ -648,8 +619,6 @@ const fontName = this.registry.get('gameFont');
         this.canContinue = false;
         this.cancelSlowMotion();
 
-        if (this.lifeBonuses) this.lifeBonuses.clear(true, true);
-
         this.trail = [];
         this.trailG.clear();
         this.ball.setVelocity(0, 0).setVisible(false);
@@ -658,11 +627,11 @@ const fontName = this.registry.get('gameFont');
         const fontName = this.registry.get('gameFont');
         const fontWeight = this.registry.get('gameWeight');
         const mainColor = this.registry.get('gameColor');
-
         const flagIndex = this.levelOrder[this.level % this.levelOrder.length];
         const currentFlag = DATA.flags[flagIndex];
         const textureKey = currentFlag.id;
 
+        if (this.lifeBonuses) this.lifeBonuses.clear(true, true);
         this.historyText.setText(`${currentFlag.name.toUpperCase()}\n\n${currentFlag.history}`).setVisible(true);
 
         const targetW = this.gridConfig.bgflagW;
@@ -800,15 +769,12 @@ const fontName = this.registry.get('gameFont');
                 this.launchTimer.paused = true;
                 if (this.countdownText) this.countdownText.setVisible(false);
             }
-
             this.pauseText = this.add.text(width / 2, height * 0.65, "PAUSE", {
                 font: `${fontWeight} ${Math.round(width / 15)}px "${fontName}"`, fill: mainColor
             }).setOrigin(0.5).setResolution(2).setDepth(100);
-
             this.pauseSubText = this.add.text(width / 2, this.pauseText.y + (height * 0.1), "CLIQUEZ OU APPUYEZ SUR ENTRÉE POUR CONTINUER", {
                 font: `${fontWeight} ${Math.round(width / 45)}px "${fontName}"`, fill: mainColor
             }).setOrigin(0.5).setResolution(2).setDepth(100);
-
             this.addFloatingEffect(this.pauseSubText);
         } else {
             this.gameState = "PLAYING";
@@ -819,9 +785,7 @@ const fontName = this.registry.get('gameFont');
                 this.launchTimer.paused = false;
                 if (this.countdownText) this.countdownText.setVisible(true);
             }
-            else if (this.ball.body.velocity.x === 0 && this.ball.body.velocity.y === 0) {
-                this.resetBall();
-            }
+            else if (this.ball.body.velocity.x === 0 && this.ball.body.velocity.y === 0) this.resetBall();
             if (this.pauseText) this.pauseText.destroy();
             if (this.pauseSubText) this.pauseSubText.destroy();
         }
@@ -838,8 +802,7 @@ const fontName = this.registry.get('gameFont');
         const mainColor = this.registry.get('gameColor');
 
         if(this.musicOn) await this.player.stop();
-        this.playSoundEffet('sfx_gameover');   
-
+        this.playSoundEffet('sfx_gameover');
         const titleText = "FIN DE LA PARTIE";
         const title = this.add.text(width / 2, height * 0.65, titleText, { font: `${fontWeight} ${Math.round(width / 18)}px "${fontName}"`, fill: mainColor }).setOrigin(0.5).setResolution(2);
         this.uiGroup.add(title);
@@ -862,23 +825,11 @@ const fontName = this.registry.get('gameFont');
     handleGlobalAction(isKeyboard = false) {
         if (this.gameState === "WAITING_FOR_CALLBACK") return;
         switch (this.gameState) {
-            case "START":
-                this.startGame();
-                break;
-            case "GAMEOVER":
-                this.startGame();
-                break;
-            case "REVEAL":
-                if (!this.canContinue) return;
-                this.level++;
-                this.loadLevel(this.level);
-                break;
-            case "PLAYING":
-                if (isKeyboard) this.setPause(true);
-                break;
-            case "PAUSED":
-                this.setPause(false);
-                break;
+            case "START":    this.startGame(); break;
+            case "GAMEOVER": this.startGame(); break;
+            case "REVEAL":   if (!this.canContinue) return; this.level++; this.loadLevel(this.level); break;
+            case "PLAYING":  if (isKeyboard) this.setPause(true); break;
+            case "PAUSED":   this.setPause(false); break;
         }
     }
 
@@ -918,7 +869,7 @@ const fontName = this.registry.get('gameFont');
                 this.flashTextEffect(this.livesText, 0xff0000);
                 if (this.lives <= 0) this.gameOver();
                 else {
-                    this.playSoundEffet('sfx_lifedown');    
+                    this.playSoundEffet('sfx_lifedown');
                     this.resetBall();
                 }
             }
@@ -954,7 +905,7 @@ const fontName = this.registry.get('gameFont');
         this.trailG.clear();
         this.trail.forEach((p, i) => {
             const ratio = i / this.trail.length;
-            const color = this.rainbowColors[i % this.rainbowColors.length];
+            const color = DATA.rainbow[i % DATA.rainbow.length];
             const radius = 2 + (ratio * 7);
             this.trailG.fillStyle(color, ratio * 0.2);
             this.trailG.fillCircle(p.x, p.y, radius);

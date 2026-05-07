@@ -1,7 +1,7 @@
 {
   "config": {
-    "date": "2026-05-06 16:45:37",
-    "version": "2.0.4",
+    "date": "2026-05-06 22:06:57",
+    "version": "2.0.5",
     "width": 800,
     "height": 600,
     "lives": 5,
@@ -20,6 +20,15 @@
     "effectsVolume": 0.18,
     "parent": "rainbowbreaker-container"
   },
+  "rainbow": [
+    16711680,
+    16744192,
+    16776960,
+    65280,
+    255,
+    4915330,
+    9699539
+  ],
   "icons": {
     "life": "💗",
     "slow": "🌈",
