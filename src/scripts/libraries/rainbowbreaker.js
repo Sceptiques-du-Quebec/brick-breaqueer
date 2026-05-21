@@ -87,7 +87,7 @@ export default class RainbowBreaker extends Phaser.Scene {
         game.registry.set('gameFont', (settings.fontFamily || DATA.config.fontFamily).replace(/['"]/g, ''));
         game.registry.set('gameWeight', settings.fontWeight || DATA.config.fontWeight);
         game.registry.set('gameColor', settings.color || DATA.config.color);
-        game.registry.set('gameEffects', settings.effets || DATA.config.effets);
+        game.registry.set('gameEffets', settings.effets || DATA.config.effets);
         game.registry.set('gameMusic', settings.music || DATA.config.music);
 
         return game;
