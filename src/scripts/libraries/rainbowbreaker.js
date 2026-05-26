@@ -195,8 +195,8 @@ export default class RainbowBreaker extends Phaser.Scene {
             onEndFile: async () => await this.playNextSong()
         });
 
-        this.effectsOn = this.registry.get('gameEffets');
-        const effetsStore = localStorage.getItem('gameEffets');
+        this.effectsOn = this.registry.get('gameEffects');
+        const effetsStore = localStorage.getItem('gameEffects');
         if(effetsStore) this.effectsOn = effetsStore === 'yes' ? true : false;
 
         if (!this.musicOn) {
@@ -233,11 +233,11 @@ export default class RainbowBreaker extends Phaser.Scene {
             if (this.effectsOn) {
                 this.effectsBtn.setAlpha(1);
                 this.effectsBtn.clearTint();
-                localStorage.setItem('gameEffets', 'yes');
+                localStorage.setItem('gameEffects', 'yes');
             } else {
                 this.effectsBtn.setAlpha(0.3);
                 this.effectsBtn.setTint(0x808080);
-                localStorage.setItem('gameEffets', 'no');
+                localStorage.setItem('gameEffects', 'no');
             }
         });
 
